@@ -1,18 +1,24 @@
-"""Ofertas de empleo (lectura). La ingesta con agentes llega en H2."""
+"""Ofertas de empleo: lectura e ingesta con el agente de Mercado."""
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
+from fastapi.concurrency import run_in_threadpool
 from sqlalchemy import Select, select
 from sqlalchemy.orm import Session, selectinload
 
 from puente_api import schemas
 from puente_api.db import models
 from puente_api.db.session import get_db
+from puente_api.graph import runner
+from puente_api.llm import LLMClient, get_llm
+from puente_api.problems import ProblemError
+from puente_api.routers.uploads import read_input
 
 router = APIRouter(prefix="/postings", tags=["empresas"])
 
 DB = Annotated[Session, Depends(get_db)]
+LLM = Annotated[LLMClient, Depends(get_llm)]
 
 
 def _posting_query() -> Select[tuple[models.JobPosting]]:
@@ -53,3 +59,31 @@ def get_posting(posting_id: str, db: DB) -> models.JobPosting:
     if posting is None:
         raise HTTPException(status_code=404, detail=f"Oferta {posting_id} no existe")
     return posting
+
+
+@router.post(
+    "",
+    operation_id="ingestPosting",
+    status_code=202,
+    response_model=schemas.Accepted,
+    response_model_exclude_none=True,
+)
+async def ingest_posting(
+    db: DB,
+    llm: LLM,
+    company_id: Annotated[str, Form(alias="companyId")],
+    text: Annotated[str | None, Form(max_length=20000)] = None,
+    file: Annotated[UploadFile | None, File()] = None,
+) -> schemas.Accepted:
+    """Agente de Mercado: extrae, normaliza y persiste la oferta (bloqueada si discrimina)."""
+    if db.get(models.Company, company_id) is None:
+        raise ProblemError(422, f"Empresa {company_id} no existe")
+    uploaded = await read_input(text, file)
+    payload = {
+        "company_id": company_id,
+        "text": uploaded.text,
+        "input_type": uploaded.input_type,
+        "raw_input": uploaded.text,
+    }
+    thread_id, result = await run_in_threadpool(runner.run, db, llm, "posting.created", payload)
+    return schemas.Accepted(thread_id=thread_id, resource_id=result.get("posting_id"))

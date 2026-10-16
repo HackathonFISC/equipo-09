@@ -10,6 +10,10 @@ dependencies = [
   "sqlalchemy>=2.0",
   "litellm>=1.50",
   "pydantic-settings>=2.4",
+  "ortools>=9.15.6755",
+  "langgraph>=1.2.15",
+  "pypdf>=6.21.0",
+  "python-multipart>=0.0.32",
 ]
 
 [dependency-groups]

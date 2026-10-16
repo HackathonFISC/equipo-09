@@ -1,4 +1,4 @@
-import { Button } from "@puente/ui/components/button";
+import { buttonVariants } from "@puente/ui/components/button";
 import { cn } from "@puente/ui/lib/utils";
 import { Inbox, Plus } from "lucide-react";
 import type { Metadata, Route } from "next";
@@ -7,9 +7,11 @@ import { connection } from "next/server";
 
 import { DataSourceNote, ErrorState } from "@/components/data-states";
 import { PageShell, RoleHeader } from "@/components/page-shell";
+import { PostingIngest } from "@/components/posting-ingest";
 import { PostingList, postingStatusMeta } from "@/components/posting-list";
 import { loadPostings } from "@/lib/api/catalog";
 import type { PostingStatus } from "@/lib/api/client";
+import { mockPostings } from "@/lib/api/mocks";
 import { plural } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Ofertas" };
@@ -35,6 +37,10 @@ export default async function EmpresaPage({
 	await connection();
 	const status = parseStatus((await searchParams).estado);
 	const result = await loadPostings({ status });
+	// No hay "empresa actual" en el contrato: se usa la de las ofertas listadas.
+	const companyId =
+		(result.ok ? result.data[0]?.companyId : undefined) ??
+		mockPostings[0].companyId;
 
 	return (
 		<PageShell>
@@ -42,16 +48,17 @@ export default async function EmpresaPage({
 				title="Tus ofertas"
 				description="Cada oferta pasa por el agente de Mercado, que extrae requisitos, y por el Auditor, que detiene las que discriminan antes de publicarlas."
 				actions={
-					<Button
-						size="lg"
-						disabled
-						title="Se habilita con la ingesta de ofertas"
+					<a
+						href="#nueva-oferta"
+						className={cn(buttonVariants({ size: "lg" }), "h-11 px-4 text-sm")}
 					>
 						<Plus aria-hidden="true" />
 						Nueva oferta
-					</Button>
+					</a>
 				}
 			/>
+
+			<PostingIngest companyId={companyId} />
 
 			<nav aria-label="Filtrar por estado" className="flex flex-wrap gap-1">
 				{([undefined, ...FILTERS] as const).map((value) => {
