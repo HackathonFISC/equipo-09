@@ -1,0 +1,2978 @@
+[
+  {
+    "key": "ana",
+    "display_name": "Ana",
+    "birth_year": 2005,
+    "gender": "femenino",
+    "location": "barrio-balboa",
+    "max_commute_min": 60,
+    "transport_budget_daily": 4.0,
+    "min_salary": 600,
+    "studying": true,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "sab",
+        "start": "07:00",
+        "end": "16:00"
+      }
+    ],
+    "cv_raw_text": null,
+    "is_synthetic": true,
+    "persona": "demo",
+    "skills": [
+      {
+        "skill": "manejo-de-caja",
+        "level": 3,
+        "source": "entrevista",
+        "evidence": "Durante 3 años cobré en la caja de la fonda de mi familia."
+      },
+      {
+        "skill": "cuadre-de-caja",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Al final del día contaba el dinero y cuadraba la caja con mi mamá."
+      },
+      {
+        "skill": "control-de-inventario",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Llevaba en un cuaderno lo que entraba y salía de la despensa y avisaba qué comprar."
+      },
+      {
+        "skill": "atencion-al-cliente",
+        "level": 3,
+        "source": "entrevista",
+        "evidence": "Atendía a los clientes de la fonda en la hora del almuerzo, muchos eran fijos."
+      },
+      {
+        "skill": "atencion-de-fonda",
+        "level": 3,
+        "source": "entrevista",
+        "evidence": "Ayudé 3 años en la fonda familiar."
+      },
+      {
+        "skill": "calculo-basico",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Sacaba las cuentas y el vuelto sin calculadora."
+      }
+    ]
+  },
+  {
+    "key": "joven-01",
+    "display_name": "Edilma De León",
+    "birth_year": 2007,
+    "gender": "femenino",
+    "location": "puerto-caimito",
+    "max_commute_min": 30,
+    "transport_budget_daily": 2.0,
+    "min_salary": 500,
+    "studying": false,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mar",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "jue",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "vie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "sab",
+        "start": "06:00",
+        "end": "18:00"
+      }
+    ],
+    "cv_raw_text": null,
+    "is_synthetic": true,
+    "persona": "comercio",
+    "skills": [
+      {
+        "skill": "ventas-al-detalle",
+        "level": 3,
+        "source": "entrevista",
+        "evidence": "Trabajé en ventas en una tienda de ropa los fines de semana."
+      },
+      {
+        "skill": "manejo-de-caja",
+        "level": 3,
+        "source": "entrevista",
+        "evidence": "Cubría la caja cuando la cajera salía a almorzar."
+      },
+      {
+        "skill": "puntualidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Nunca llegué tarde en mi último trabajo."
+      },
+      {
+        "skill": "comunicacion-efectiva",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Explico las cosas con claridad a los clientes."
+      }
+    ]
+  },
+  {
+    "key": "joven-02",
+    "display_name": "Rosmery Quintero",
+    "birth_year": 2008,
+    "gender": "femenino",
+    "location": "chilibre",
+    "max_commute_min": 75,
+    "transport_budget_daily": 2.5,
+    "min_salary": 650,
+    "studying": true,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "16:00"
+      }
+    ],
+    "cv_raw_text": "Rosmery Quintero. Estuve 6 meses en un call center atendiendo llamadas de clientes. Hablo inglés conversacional; atendía la línea en inglés. Resolvía reclamos de facturación por teléfono.",
+    "is_synthetic": true,
+    "persona": "call_center",
+    "skills": [
+      {
+        "skill": "call-center",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Estuve 6 meses en un call center atendiendo llamadas de clientes."
+      },
+      {
+        "skill": "ingles-conversacional",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Hablo inglés conversacional; atendía la línea en inglés."
+      },
+      {
+        "skill": "manejo-de-quejas",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Resolvía reclamos de facturación por teléfono."
+      },
+      {
+        "skill": "responsabilidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me encargaba de abrir el local temprano."
+      },
+      {
+        "skill": "iniciativa",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Propuse ordenar la bodega por categorías y lo hicimos."
+      }
+    ]
+  },
+  {
+    "key": "joven-03",
+    "display_name": "Yuriana Jaén",
+    "birth_year": 2006,
+    "gender": "femenino",
+    "location": "playa-leona",
+    "max_commute_min": 90,
+    "transport_budget_daily": 3.5,
+    "min_salary": 550,
+    "studying": false,
+    "availability": [
+      {
+        "day": "vie",
+        "start": "08:00",
+        "end": "20:00"
+      },
+      {
+        "day": "sab",
+        "start": "08:00",
+        "end": "20:00"
+      },
+      {
+        "day": "dom",
+        "start": "08:00",
+        "end": "20:00"
+      }
+    ],
+    "cv_raw_text": null,
+    "is_synthetic": true,
+    "persona": "logistica",
+    "skills": [
+      {
+        "skill": "carga-y-descarga",
+        "level": 3,
+        "source": "entrevista",
+        "evidence": "Trabajé cargando y descargando camiones en una distribuidora."
+      },
+      {
+        "skill": "picking-y-packing",
+        "level": 1,
+        "source": "entrevista",
+        "evidence": "Preparaba pedidos y los empacaba para despacho."
+      },
+      {
+        "skill": "aprendizaje-rapido",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Aprendo rápido; aprendí el sistema de caja en una semana."
+      },
+      {
+        "skill": "comunicacion-efectiva",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Explico las cosas con claridad a los clientes."
+      }
+    ]
+  },
+  {
+    "key": "joven-04",
+    "display_name": "Ulises Cedeño",
+    "birth_year": 2006,
+    "gender": "masculino",
+    "location": "victoriano-lorenzo",
+    "max_commute_min": 45,
+    "transport_budget_daily": 6.0,
+    "min_salary": 400,
+    "studying": false,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "mar",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "mie",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "jue",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "vie",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "sab",
+        "start": "12:00",
+        "end": "22:00"
+      }
+    ],
+    "cv_raw_text": "Ulises Cedeño. Fui ayudante de cocina en un restaurante de comida rápida. Cocino comida típica panameña desde la adolescencia en casa.",
+    "is_synthetic": true,
+    "persona": "cocina",
+    "skills": [
+      {
+        "skill": "preparacion-de-alimentos",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Fui ayudante de cocina en un restaurante de comida rápida."
+      },
+      {
+        "skill": "cocina-panamena",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Cocino comida típica panameña desde la adolescencia en casa."
+      },
+      {
+        "skill": "comunicacion-efectiva",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Explico las cosas con claridad a los clientes."
+      },
+      {
+        "skill": "puntualidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Nunca llegué tarde en mi último trabajo."
+      }
+    ]
+  },
+  {
+    "key": "joven-05",
+    "display_name": "Moisés Vega",
+    "birth_year": 2004,
+    "gender": "masculino",
+    "location": "san-felipe",
+    "max_commute_min": 30,
+    "transport_budget_daily": 2.5,
+    "min_salary": 650,
+    "studying": false,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "mar",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "mie",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "jue",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "vie",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "sab",
+        "start": "12:00",
+        "end": "22:00"
+      }
+    ],
+    "cv_raw_text": null,
+    "is_synthetic": true,
+    "persona": "servicio",
+    "skills": [
+      {
+        "skill": "servicio-de-mesa",
+        "level": 3,
+        "source": "entrevista",
+        "evidence": "Atendí mesas en eventos y bodas."
+      },
+      {
+        "skill": "barista",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Preparaba café espresso en una cafetería del barrio."
+      },
+      {
+        "skill": "atencion-al-cliente",
+        "level": 3,
+        "source": "entrevista",
+        "evidence": "Tomaba pedidos y los llevaba a la mesa."
+      },
+      {
+        "skill": "trabajo-bajo-presion",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "En temporada alta atendía muchas mesas a la vez."
+      },
+      {
+        "skill": "responsabilidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me encargaba de abrir el local temprano."
+      },
+      {
+        "skill": "comunicacion-efectiva",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Explico las cosas con claridad a los clientes."
+      }
+    ]
+  },
+  {
+    "key": "joven-06",
+    "display_name": "Omar Jaén",
+    "birth_year": 2005,
+    "gender": "masculino",
+    "location": "bella-vista",
+    "max_commute_min": 75,
+    "transport_budget_daily": 5.0,
+    "min_salary": 650,
+    "studying": false,
+    "availability": [
+      {
+        "day": "vie",
+        "start": "08:00",
+        "end": "20:00"
+      },
+      {
+        "day": "sab",
+        "start": "08:00",
+        "end": "20:00"
+      },
+      {
+        "day": "dom",
+        "start": "08:00",
+        "end": "20:00"
+      }
+    ],
+    "cv_raw_text": "Omar Jaén. Manejo Word y correo electrónico para trabajo de oficina. Hacía listas y sumas en Excel para el negocio de mi tía. Organicé el archivo de expedientes en mi práctica profesional. Contestaba el teléfono de la oficina.",
+    "is_synthetic": true,
+    "persona": "oficina",
+    "skills": [
+      {
+        "skill": "ofimatica-basica",
+        "level": 3,
+        "source": "cv",
+        "evidence": "Manejo Word y correo electrónico para trabajo de oficina."
+      },
+      {
+        "skill": "excel-basico",
+        "level": 3,
+        "source": "cv",
+        "evidence": "Hacía listas y sumas en Excel para el negocio de mi tía."
+      },
+      {
+        "skill": "archivo-y-documentacion",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Organicé el archivo de expedientes en mi práctica profesional."
+      },
+      {
+        "skill": "atencion-telefonica",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Contestaba el teléfono de la oficina."
+      },
+      {
+        "skill": "iniciativa",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Propuse ordenar la bodega por categorías y lo hicimos."
+      },
+      {
+        "skill": "aprendizaje-rapido",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Aprendo rápido; aprendí el sistema de caja en una semana."
+      }
+    ]
+  },
+  {
+    "key": "joven-07",
+    "display_name": "Lineth Pinzón",
+    "birth_year": 2006,
+    "gender": "femenino",
+    "location": "arraijan",
+    "max_commute_min": 30,
+    "transport_budget_daily": 2.0,
+    "min_salary": 550,
+    "studying": false,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mar",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "jue",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "vie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "sab",
+        "start": "06:00",
+        "end": "18:00"
+      }
+    ],
+    "cv_raw_text": "Lineth Pinzón. Ayudo a vecinos a configurar computadoras e impresoras. Arreglo laptops: cambio de disco, memoria y formateo. Hice el cableado de red de un pequeño local.",
+    "is_synthetic": true,
+    "persona": "tecnologia",
+    "skills": [
+      {
+        "skill": "soporte-tecnico-basico",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Ayudo a vecinos a configurar computadoras e impresoras."
+      },
+      {
+        "skill": "reparacion-de-computadoras",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Arreglo laptops: cambio de disco, memoria y formateo."
+      },
+      {
+        "skill": "cableado-de-redes",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Hice el cableado de red de un pequeño local."
+      },
+      {
+        "skill": "trabajo-en-equipo",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me gusta trabajar en equipo; en el colegio coordinaba los proyectos de grupo."
+      },
+      {
+        "skill": "responsabilidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me encargaba de abrir el local temprano."
+      }
+    ]
+  },
+  {
+    "key": "joven-08",
+    "display_name": "Ricardo Morales",
+    "birth_year": 2000,
+    "gender": "masculino",
+    "location": "puerto-caimito",
+    "max_commute_min": 90,
+    "transport_budget_daily": 6.0,
+    "min_salary": 700,
+    "studying": true,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "15:00"
+      }
+    ],
+    "cv_raw_text": null,
+    "is_synthetic": true,
+    "persona": "digital",
+    "skills": [
+      {
+        "skill": "redes-sociales-negocios",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Manejo el Instagram del negocio de mi familia."
+      },
+      {
+        "skill": "diseno-grafico-basico",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Diseño artes en Canva para promociones."
+      },
+      {
+        "skill": "comunicacion-efectiva",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Explico las cosas con claridad a los clientes."
+      },
+      {
+        "skill": "responsabilidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me encargaba de abrir el local temprano."
+      }
+    ]
+  },
+  {
+    "key": "joven-09",
+    "display_name": "Omar Morales",
+    "birth_year": 2002,
+    "gender": "otro",
+    "location": "cerro-silvestre",
+    "max_commute_min": 60,
+    "transport_budget_daily": 4.0,
+    "min_salary": 550,
+    "studying": false,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "mar",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "mie",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "jue",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "vie",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "sab",
+        "start": "12:00",
+        "end": "22:00"
+      }
+    ],
+    "cv_raw_text": "Omar Morales. Trabajé de ayudante en una obra residencial. Sé usar herramientas manuales de albañilería.",
+    "is_synthetic": true,
+    "persona": "construccion",
+    "skills": [
+      {
+        "skill": "ayudante-de-obra",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Trabajé de ayudante en una obra residencial."
+      },
+      {
+        "skill": "herramientas-manuales",
+        "level": 3,
+        "source": "cv",
+        "evidence": "Sé usar herramientas manuales de albañilería."
+      },
+      {
+        "skill": "comunicacion-efectiva",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Explico las cosas con claridad a los clientes."
+      },
+      {
+        "skill": "iniciativa",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Propuse ordenar la bodega por categorías y lo hicimos."
+      }
+    ]
+  },
+  {
+    "key": "joven-10",
+    "display_name": "Iván Batista",
+    "birth_year": 2000,
+    "gender": "masculino",
+    "location": "guadalupe",
+    "max_commute_min": 60,
+    "transport_budget_daily": 5.0,
+    "min_salary": 500,
+    "studying": true,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "sab",
+        "start": "07:00",
+        "end": "15:00"
+      }
+    ],
+    "cv_raw_text": "Iván Batista. Ayudé a un electricista a instalar tomacorrientes y breakers. Uso taladro y esmeril con seguridad.",
+    "is_synthetic": true,
+    "persona": "electricidad",
+    "skills": [
+      {
+        "skill": "electricidad-residencial",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Ayudé a un electricista a instalar tomacorrientes y breakers."
+      },
+      {
+        "skill": "herramientas-electricas",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Uso taladro y esmeril con seguridad."
+      },
+      {
+        "skill": "aprendizaje-rapido",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Aprendo rápido; aprendí el sistema de caja en una semana."
+      },
+      {
+        "skill": "trabajo-en-equipo",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me gusta trabajar en equipo; en el colegio coordinaba los proyectos de grupo."
+      }
+    ]
+  },
+  {
+    "key": "joven-11",
+    "display_name": "Melany Arosemena",
+    "birth_year": 2005,
+    "gender": "femenino",
+    "location": "ancon",
+    "max_commute_min": 30,
+    "transport_budget_daily": 4.0,
+    "min_salary": 550,
+    "studying": false,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mar",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "jue",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "vie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "sab",
+        "start": "06:00",
+        "end": "18:00"
+      }
+    ],
+    "cv_raw_text": null,
+    "is_synthetic": true,
+    "persona": "cuidado",
+    "skills": [
+      {
+        "skill": "cuidado-adultos-mayores",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Cuidé a mi abuela durante dos años."
+      },
+      {
+        "skill": "primeros-auxilios",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Tomé un curso de primeros auxilios con la Cruz Roja."
+      },
+      {
+        "skill": "puntualidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Nunca llegué tarde en mi último trabajo."
+      },
+      {
+        "skill": "comunicacion-efectiva",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Explico las cosas con claridad a los clientes."
+      }
+    ]
+  },
+  {
+    "key": "joven-12",
+    "display_name": "Lineth Rodríguez",
+    "birth_year": 2008,
+    "gender": "femenino",
+    "location": "el-coco",
+    "max_commute_min": 45,
+    "transport_budget_daily": 2.5,
+    "min_salary": 650,
+    "studying": false,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mar",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "jue",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "vie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "sab",
+        "start": "06:00",
+        "end": "18:00"
+      }
+    ],
+    "cv_raw_text": "Lineth Rodríguez. Hice turnos de vigilancia en la garita de una barriada. Revisaba las cámaras de seguridad del edificio.",
+    "is_synthetic": true,
+    "persona": "seguridad",
+    "skills": [
+      {
+        "skill": "vigilancia-control-accesos",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Hice turnos de vigilancia en la garita de una barriada."
+      },
+      {
+        "skill": "monitoreo-cctv",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Revisaba las cámaras de seguridad del edificio."
+      },
+      {
+        "skill": "aprendizaje-rapido",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Aprendo rápido; aprendí el sistema de caja en una semana."
+      },
+      {
+        "skill": "puntualidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Nunca llegué tarde en mi último trabajo."
+      }
+    ]
+  },
+  {
+    "key": "joven-13",
+    "display_name": "Anayansi Mendoza",
+    "birth_year": 2004,
+    "gender": "femenino",
+    "location": "herrera",
+    "max_commute_min": 75,
+    "transport_budget_daily": 3.0,
+    "min_salary": 550,
+    "studying": true,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "13:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "13:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "13:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "13:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "13:00"
+      },
+      {
+        "day": "sab",
+        "start": "07:00",
+        "end": "13:00"
+      }
+    ],
+    "cv_raw_text": "Anayansi Mendoza. Hago delivery en moto para una app. Tengo licencia de conducir vigente.",
+    "is_synthetic": true,
+    "persona": "reparto",
+    "skills": [
+      {
+        "skill": "repartidor-en-moto",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Hago delivery en moto para una app."
+      },
+      {
+        "skill": "licencia-de-conducir",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Tengo licencia de conducir vigente."
+      },
+      {
+        "skill": "aprendizaje-rapido",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Aprendo rápido; aprendí el sistema de caja en una semana."
+      },
+      {
+        "skill": "responsabilidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me encargaba de abrir el local temprano."
+      }
+    ]
+  },
+  {
+    "key": "joven-14",
+    "display_name": "Kevin De León",
+    "birth_year": 2005,
+    "gender": "masculino",
+    "location": "vista-alegre",
+    "max_commute_min": 45,
+    "transport_budget_daily": 2.0,
+    "min_salary": 500,
+    "studying": false,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mar",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "jue",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "vie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "sab",
+        "start": "06:00",
+        "end": "18:00"
+      }
+    ],
+    "cv_raw_text": "Kevin De León. Hice limpieza de habitaciones en un hostal en temporada. Cubrí la recepción del hostal haciendo check-in. Tengo inglés básico para saludar y orientar a turistas.",
+    "is_synthetic": true,
+    "persona": "hoteleria",
+    "skills": [
+      {
+        "skill": "housekeeping",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Hice limpieza de habitaciones en un hostal en temporada."
+      },
+      {
+        "skill": "recepcion-hotelera",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Cubrí la recepción del hostal haciendo check-in."
+      },
+      {
+        "skill": "ingles-basico",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Tengo inglés básico para saludar y orientar a turistas."
+      },
+      {
+        "skill": "trabajo-en-equipo",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me gusta trabajar en equipo; en el colegio coordinaba los proyectos de grupo."
+      },
+      {
+        "skill": "puntualidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Nunca llegué tarde en mi último trabajo."
+      }
+    ]
+  },
+  {
+    "key": "joven-15",
+    "display_name": "Karla Mendoza",
+    "birth_year": 2001,
+    "gender": "femenino",
+    "location": "bella-vista",
+    "max_commute_min": 75,
+    "transport_budget_daily": 2.5,
+    "min_salary": 400,
+    "studying": true,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "sab",
+        "start": "07:00",
+        "end": "16:00"
+      }
+    ],
+    "cv_raw_text": null,
+    "is_synthetic": true,
+    "persona": "comercio",
+    "skills": [
+      {
+        "skill": "ventas-al-detalle",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Trabajé en ventas en una tienda de ropa los fines de semana."
+      },
+      {
+        "skill": "manejo-de-caja",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Cubría la caja cuando la cajera salía a almorzar."
+      },
+      {
+        "skill": "reposicion-de-mercancia",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Reponía mercancía en los anaqueles y revisaba fechas de vencimiento."
+      },
+      {
+        "skill": "atencion-al-cliente",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Atendía clientes y les ayudaba a encontrar productos."
+      },
+      {
+        "skill": "comunicacion-efectiva",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Explico las cosas con claridad a los clientes."
+      },
+      {
+        "skill": "iniciativa",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Propuse ordenar la bodega por categorías y lo hicimos."
+      }
+    ]
+  },
+  {
+    "key": "joven-16",
+    "display_name": "Lineth Castillo",
+    "birth_year": 2004,
+    "gender": "femenino",
+    "location": "barrio-colon",
+    "max_commute_min": 60,
+    "transport_budget_daily": 3.5,
+    "min_salary": 400,
+    "studying": false,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mar",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "jue",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "vie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "sab",
+        "start": "06:00",
+        "end": "18:00"
+      }
+    ],
+    "cv_raw_text": "Lineth Castillo. Estuve 6 meses en un call center atendiendo llamadas de clientes. Hablo inglés conversacional; atendía la línea en inglés. Resolvía reclamos de facturación por teléfono.",
+    "is_synthetic": true,
+    "persona": "call_center",
+    "skills": [
+      {
+        "skill": "call-center",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Estuve 6 meses en un call center atendiendo llamadas de clientes."
+      },
+      {
+        "skill": "ingles-conversacional",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Hablo inglés conversacional; atendía la línea en inglés."
+      },
+      {
+        "skill": "manejo-de-quejas",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Resolvía reclamos de facturación por teléfono."
+      },
+      {
+        "skill": "comunicacion-efectiva",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Explico las cosas con claridad a los clientes."
+      },
+      {
+        "skill": "trabajo-en-equipo",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me gusta trabajar en equipo; en el colegio coordinaba los proyectos de grupo."
+      }
+    ]
+  },
+  {
+    "key": "joven-17",
+    "display_name": "María Ríos",
+    "birth_year": 2005,
+    "gender": "femenino",
+    "location": "juan-demostenes-arosemena",
+    "max_commute_min": 75,
+    "transport_budget_daily": 3.5,
+    "min_salary": 650,
+    "studying": true,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "13:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "13:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "13:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "13:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "13:00"
+      }
+    ],
+    "cv_raw_text": "María Ríos. Trabajé cargando y descargando camiones en una distribuidora. Preparaba pedidos y los empacaba para despacho. Usaba el escáner para registrar la mercancía. Ayudaba en los conteos de inventario de la bodega.",
+    "is_synthetic": true,
+    "persona": "logistica",
+    "skills": [
+      {
+        "skill": "carga-y-descarga",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Trabajé cargando y descargando camiones en una distribuidora."
+      },
+      {
+        "skill": "picking-y-packing",
+        "level": 3,
+        "source": "cv",
+        "evidence": "Preparaba pedidos y los empacaba para despacho."
+      },
+      {
+        "skill": "escaner-de-codigos",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Usaba el escáner para registrar la mercancía."
+      },
+      {
+        "skill": "inventario-en-bodega",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Ayudaba en los conteos de inventario de la bodega."
+      },
+      {
+        "skill": "comunicacion-efectiva",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Explico las cosas con claridad a los clientes."
+      },
+      {
+        "skill": "iniciativa",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Propuse ordenar la bodega por categorías y lo hicimos."
+      }
+    ]
+  },
+  {
+    "key": "joven-18",
+    "display_name": "Joel Samaniego",
+    "birth_year": 2001,
+    "gender": "masculino",
+    "location": "barrio-colon",
+    "max_commute_min": 60,
+    "transport_budget_daily": 4.0,
+    "min_salary": 400,
+    "studying": true,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "16:00"
+      }
+    ],
+    "cv_raw_text": "Joel Samaniego. Fui ayudante de cocina en un restaurante de comida rápida. Cocino comida típica panameña desde la adolescencia en casa. Tengo el carné de manipulador de alimentos vigente.",
+    "is_synthetic": true,
+    "persona": "cocina",
+    "skills": [
+      {
+        "skill": "preparacion-de-alimentos",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Fui ayudante de cocina en un restaurante de comida rápida."
+      },
+      {
+        "skill": "cocina-panamena",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Cocino comida típica panameña desde la adolescencia en casa."
+      },
+      {
+        "skill": "manipulacion-de-alimentos",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Tengo el carné de manipulador de alimentos vigente."
+      },
+      {
+        "skill": "trabajo-en-equipo",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me gusta trabajar en equipo; en el colegio coordinaba los proyectos de grupo."
+      },
+      {
+        "skill": "aprendizaje-rapido",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Aprendo rápido; aprendí el sistema de caja en una semana."
+      }
+    ]
+  },
+  {
+    "key": "joven-19",
+    "display_name": "Yariela Castillo",
+    "birth_year": 2000,
+    "gender": "femenino",
+    "location": "san-francisco",
+    "max_commute_min": 60,
+    "transport_budget_daily": 3.5,
+    "min_salary": 550,
+    "studying": true,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "sab",
+        "start": "07:00",
+        "end": "15:00"
+      }
+    ],
+    "cv_raw_text": "Yariela Castillo. Atendí mesas en eventos y bodas. Preparaba café espresso en una cafetería del barrio.",
+    "is_synthetic": true,
+    "persona": "servicio",
+    "skills": [
+      {
+        "skill": "servicio-de-mesa",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Atendí mesas en eventos y bodas."
+      },
+      {
+        "skill": "barista",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Preparaba café espresso en una cafetería del barrio."
+      },
+      {
+        "skill": "trabajo-en-equipo",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me gusta trabajar en equipo; en el colegio coordinaba los proyectos de grupo."
+      },
+      {
+        "skill": "iniciativa",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Propuse ordenar la bodega por categorías y lo hicimos."
+      }
+    ]
+  },
+  {
+    "key": "joven-20",
+    "display_name": "Itzel Herrera",
+    "birth_year": 2002,
+    "gender": "femenino",
+    "location": "arraijan",
+    "max_commute_min": 60,
+    "transport_budget_daily": 4.0,
+    "min_salary": 550,
+    "studying": true,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "sab",
+        "start": "07:00",
+        "end": "15:00"
+      }
+    ],
+    "cv_raw_text": null,
+    "is_synthetic": true,
+    "persona": "oficina",
+    "skills": [
+      {
+        "skill": "ofimatica-basica",
+        "level": 3,
+        "source": "entrevista",
+        "evidence": "Manejo Word y correo electrónico para trabajo de oficina."
+      },
+      {
+        "skill": "excel-basico",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Hacía listas y sumas en Excel para el negocio de mi tía."
+      },
+      {
+        "skill": "iniciativa",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Propuse ordenar la bodega por categorías y lo hicimos."
+      },
+      {
+        "skill": "comunicacion-efectiva",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Explico las cosas con claridad a los clientes."
+      }
+    ]
+  },
+  {
+    "key": "joven-21",
+    "display_name": "Karla Pérez",
+    "birth_year": 2003,
+    "gender": "femenino",
+    "location": "ancon",
+    "max_commute_min": 90,
+    "transport_budget_daily": 6.0,
+    "min_salary": 450,
+    "studying": false,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "mar",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "mie",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "jue",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "vie",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "sab",
+        "start": "12:00",
+        "end": "22:00"
+      }
+    ],
+    "cv_raw_text": "Karla Pérez. Ayudo a vecinos a configurar computadoras e impresoras. Arreglo laptops: cambio de disco, memoria y formateo. Hice el cableado de red de un pequeño local. Aprendí Python básico en un curso en línea.",
+    "is_synthetic": true,
+    "persona": "tecnologia",
+    "skills": [
+      {
+        "skill": "soporte-tecnico-basico",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Ayudo a vecinos a configurar computadoras e impresoras."
+      },
+      {
+        "skill": "reparacion-de-computadoras",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Arreglo laptops: cambio de disco, memoria y formateo."
+      },
+      {
+        "skill": "cableado-de-redes",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Hice el cableado de red de un pequeño local."
+      },
+      {
+        "skill": "programacion-basica",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Aprendí Python básico en un curso en línea."
+      },
+      {
+        "skill": "trabajo-en-equipo",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me gusta trabajar en equipo; en el colegio coordinaba los proyectos de grupo."
+      },
+      {
+        "skill": "comunicacion-efectiva",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Explico las cosas con claridad a los clientes."
+      }
+    ]
+  },
+  {
+    "key": "joven-22",
+    "display_name": "Alexis Morales",
+    "birth_year": 2008,
+    "gender": "masculino",
+    "location": "barrio-balboa",
+    "max_commute_min": 90,
+    "transport_budget_daily": 3.0,
+    "min_salary": 450,
+    "studying": false,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mar",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "jue",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "vie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "sab",
+        "start": "06:00",
+        "end": "18:00"
+      }
+    ],
+    "cv_raw_text": "Alexis Morales. Manejo el Instagram del negocio de mi familia. Diseño artes en Canva para promociones. Edito reels con CapCut.",
+    "is_synthetic": true,
+    "persona": "digital",
+    "skills": [
+      {
+        "skill": "redes-sociales-negocios",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Manejo el Instagram del negocio de mi familia."
+      },
+      {
+        "skill": "diseno-grafico-basico",
+        "level": 3,
+        "source": "cv",
+        "evidence": "Diseño artes en Canva para promociones."
+      },
+      {
+        "skill": "edicion-de-video-basica",
+        "level": 3,
+        "source": "cv",
+        "evidence": "Edito reels con CapCut."
+      },
+      {
+        "skill": "responsabilidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me encargaba de abrir el local temprano."
+      },
+      {
+        "skill": "puntualidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Nunca llegué tarde en mi último trabajo."
+      }
+    ]
+  },
+  {
+    "key": "joven-23",
+    "display_name": "Abdiel Cedeño",
+    "birth_year": 2005,
+    "gender": "masculino",
+    "location": "ernesto-cordoba-campos",
+    "max_commute_min": 45,
+    "transport_budget_daily": 5.0,
+    "min_salary": 650,
+    "studying": false,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mar",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "jue",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "vie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "sab",
+        "start": "06:00",
+        "end": "18:00"
+      }
+    ],
+    "cv_raw_text": "Abdiel Cedeño. Trabajé de ayudante en una obra residencial. Sé usar herramientas manuales de albañilería. Ayudé a bloquear y repellar en la casa de mis abuelos.",
+    "is_synthetic": true,
+    "persona": "construccion",
+    "skills": [
+      {
+        "skill": "ayudante-de-obra",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Trabajé de ayudante en una obra residencial."
+      },
+      {
+        "skill": "herramientas-manuales",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Sé usar herramientas manuales de albañilería."
+      },
+      {
+        "skill": "albanileria",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Ayudé a bloquear y repellar en la casa de mis abuelos."
+      },
+      {
+        "skill": "comunicacion-efectiva",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Explico las cosas con claridad a los clientes."
+      },
+      {
+        "skill": "aprendizaje-rapido",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Aprendo rápido; aprendí el sistema de caja en una semana."
+      }
+    ]
+  },
+  {
+    "key": "joven-24",
+    "display_name": "Yariela Mendoza",
+    "birth_year": 2001,
+    "gender": "prefiero_no_decir",
+    "location": "barrio-colon",
+    "max_commute_min": 60,
+    "transport_budget_daily": 4.0,
+    "min_salary": 500,
+    "studying": true,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "sab",
+        "start": "07:00",
+        "end": "15:00"
+      }
+    ],
+    "cv_raw_text": "Yariela Mendoza. Ayudé a un electricista a instalar tomacorrientes y breakers. Uso taladro y esmeril con seguridad. Puedo leer planos eléctricos sencillos.",
+    "is_synthetic": true,
+    "persona": "electricidad",
+    "skills": [
+      {
+        "skill": "electricidad-residencial",
+        "level": 3,
+        "source": "cv",
+        "evidence": "Ayudé a un electricista a instalar tomacorrientes y breakers."
+      },
+      {
+        "skill": "herramientas-electricas",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Uso taladro y esmeril con seguridad."
+      },
+      {
+        "skill": "lectura-de-planos",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Puedo leer planos eléctricos sencillos."
+      },
+      {
+        "skill": "comunicacion-efectiva",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Explico las cosas con claridad a los clientes."
+      },
+      {
+        "skill": "trabajo-en-equipo",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me gusta trabajar en equipo; en el colegio coordinaba los proyectos de grupo."
+      }
+    ]
+  },
+  {
+    "key": "joven-25",
+    "display_name": "Ricardo Sánchez",
+    "birth_year": 2000,
+    "gender": "masculino",
+    "location": "veracruz",
+    "max_commute_min": 75,
+    "transport_budget_daily": 3.5,
+    "min_salary": 500,
+    "studying": false,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mar",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "jue",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "vie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "sab",
+        "start": "06:00",
+        "end": "18:00"
+      }
+    ],
+    "cv_raw_text": "Ricardo Sánchez. Cuidé a mi abuela durante dos años. Tomé un curso de primeros auxilios con la Cruz Roja. Sé tomar la presión arterial.",
+    "is_synthetic": true,
+    "persona": "cuidado",
+    "skills": [
+      {
+        "skill": "cuidado-adultos-mayores",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Cuidé a mi abuela durante dos años."
+      },
+      {
+        "skill": "primeros-auxilios",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Tomé un curso de primeros auxilios con la Cruz Roja."
+      },
+      {
+        "skill": "signos-vitales",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Sé tomar la presión arterial."
+      },
+      {
+        "skill": "comunicacion-efectiva",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Explico las cosas con claridad a los clientes."
+      },
+      {
+        "skill": "responsabilidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me encargaba de abrir el local temprano."
+      }
+    ]
+  },
+  {
+    "key": "joven-26",
+    "display_name": "José Sánchez",
+    "birth_year": 2001,
+    "gender": "masculino",
+    "location": "pedregal",
+    "max_commute_min": 90,
+    "transport_budget_daily": 2.5,
+    "min_salary": 600,
+    "studying": true,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "sab",
+        "start": "07:00",
+        "end": "16:00"
+      }
+    ],
+    "cv_raw_text": "José Sánchez. Hice turnos de vigilancia en la garita de una barriada. Revisaba las cámaras de seguridad del edificio.",
+    "is_synthetic": true,
+    "persona": "seguridad",
+    "skills": [
+      {
+        "skill": "vigilancia-control-accesos",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Hice turnos de vigilancia en la garita de una barriada."
+      },
+      {
+        "skill": "monitoreo-cctv",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Revisaba las cámaras de seguridad del edificio."
+      },
+      {
+        "skill": "puntualidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Nunca llegué tarde en mi último trabajo."
+      },
+      {
+        "skill": "trabajo-en-equipo",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me gusta trabajar en equipo; en el colegio coordinaba los proyectos de grupo."
+      }
+    ]
+  },
+  {
+    "key": "joven-27",
+    "display_name": "Ericka Cedeño",
+    "birth_year": 2005,
+    "gender": "femenino",
+    "location": "arnulfo-arias",
+    "max_commute_min": 30,
+    "transport_budget_daily": 4.0,
+    "min_salary": 600,
+    "studying": true,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "13:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "13:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "13:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "13:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "13:00"
+      }
+    ],
+    "cv_raw_text": null,
+    "is_synthetic": true,
+    "persona": "reparto",
+    "skills": [
+      {
+        "skill": "repartidor-en-moto",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Hago delivery en moto para una app."
+      },
+      {
+        "skill": "licencia-de-conducir",
+        "level": 1,
+        "source": "entrevista",
+        "evidence": "Tengo licencia de conducir vigente."
+      },
+      {
+        "skill": "aprendizaje-rapido",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Aprendo rápido; aprendí el sistema de caja en una semana."
+      },
+      {
+        "skill": "responsabilidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me encargaba de abrir el local temprano."
+      }
+    ]
+  },
+  {
+    "key": "joven-28",
+    "display_name": "Bryan Arosemena",
+    "birth_year": 2002,
+    "gender": "masculino",
+    "location": "el-coco",
+    "max_commute_min": 90,
+    "transport_budget_daily": 3.0,
+    "min_salary": 500,
+    "studying": true,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "16:00"
+      }
+    ],
+    "cv_raw_text": "Bryan Arosemena. Hice limpieza de habitaciones en un hostal en temporada. Cubrí la recepción del hostal haciendo check-in.",
+    "is_synthetic": true,
+    "persona": "hoteleria",
+    "skills": [
+      {
+        "skill": "housekeeping",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Hice limpieza de habitaciones en un hostal en temporada."
+      },
+      {
+        "skill": "recepcion-hotelera",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Cubrí la recepción del hostal haciendo check-in."
+      },
+      {
+        "skill": "trabajo-en-equipo",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me gusta trabajar en equipo; en el colegio coordinaba los proyectos de grupo."
+      },
+      {
+        "skill": "aprendizaje-rapido",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Aprendo rápido; aprendí el sistema de caja en una semana."
+      }
+    ]
+  },
+  {
+    "key": "joven-29",
+    "display_name": "Edwin Sánchez",
+    "birth_year": 2002,
+    "gender": "masculino",
+    "location": "tocumen",
+    "max_commute_min": 30,
+    "transport_budget_daily": 3.0,
+    "min_salary": 500,
+    "studying": true,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "sab",
+        "start": "07:00",
+        "end": "15:00"
+      }
+    ],
+    "cv_raw_text": "Edwin Sánchez. Trabajé en ventas en una tienda de ropa los fines de semana. Cubría la caja cuando la cajera salía a almorzar. Reponía mercancía en los anaqueles y revisaba fechas de vencimiento. Atendía clientes y les ayudaba a encontrar productos. Usé el sistema POS de la tienda para cobrar.",
+    "is_synthetic": true,
+    "persona": "comercio",
+    "skills": [
+      {
+        "skill": "ventas-al-detalle",
+        "level": 3,
+        "source": "cv",
+        "evidence": "Trabajé en ventas en una tienda de ropa los fines de semana."
+      },
+      {
+        "skill": "manejo-de-caja",
+        "level": 3,
+        "source": "cv",
+        "evidence": "Cubría la caja cuando la cajera salía a almorzar."
+      },
+      {
+        "skill": "reposicion-de-mercancia",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Reponía mercancía en los anaqueles y revisaba fechas de vencimiento."
+      },
+      {
+        "skill": "atencion-al-cliente",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Atendía clientes y les ayudaba a encontrar productos."
+      },
+      {
+        "skill": "punto-de-venta-pos",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Usé el sistema POS de la tienda para cobrar."
+      },
+      {
+        "skill": "puntualidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Nunca llegué tarde en mi último trabajo."
+      },
+      {
+        "skill": "responsabilidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me encargaba de abrir el local temprano."
+      }
+    ]
+  },
+  {
+    "key": "joven-30",
+    "display_name": "Joel Morales",
+    "birth_year": 2006,
+    "gender": "masculino",
+    "location": "arraijan",
+    "max_commute_min": 60,
+    "transport_budget_daily": 5.0,
+    "min_salary": 550,
+    "studying": true,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "sab",
+        "start": "07:00",
+        "end": "15:00"
+      }
+    ],
+    "cv_raw_text": "Joel Morales. Estuve 6 meses en un call center atendiendo llamadas de clientes. Hablo inglés conversacional; atendía la línea en inglés.",
+    "is_synthetic": true,
+    "persona": "call_center",
+    "skills": [
+      {
+        "skill": "call-center",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Estuve 6 meses en un call center atendiendo llamadas de clientes."
+      },
+      {
+        "skill": "ingles-conversacional",
+        "level": 3,
+        "source": "cv",
+        "evidence": "Hablo inglés conversacional; atendía la línea en inglés."
+      },
+      {
+        "skill": "comunicacion-efectiva",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Explico las cosas con claridad a los clientes."
+      },
+      {
+        "skill": "trabajo-en-equipo",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me gusta trabajar en equipo; en el colegio coordinaba los proyectos de grupo."
+      }
+    ]
+  },
+  {
+    "key": "joven-31",
+    "display_name": "Omar Mendoza",
+    "birth_year": 2004,
+    "gender": "masculino",
+    "location": "ernesto-cordoba-campos",
+    "max_commute_min": 45,
+    "transport_budget_daily": 3.0,
+    "min_salary": 600,
+    "studying": false,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "mar",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "mie",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "jue",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "vie",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "sab",
+        "start": "12:00",
+        "end": "22:00"
+      }
+    ],
+    "cv_raw_text": "Omar Mendoza. Trabajé cargando y descargando camiones en una distribuidora. Preparaba pedidos y los empacaba para despacho. Usaba el escáner para registrar la mercancía.",
+    "is_synthetic": true,
+    "persona": "logistica",
+    "skills": [
+      {
+        "skill": "carga-y-descarga",
+        "level": 3,
+        "source": "cv",
+        "evidence": "Trabajé cargando y descargando camiones en una distribuidora."
+      },
+      {
+        "skill": "picking-y-packing",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Preparaba pedidos y los empacaba para despacho."
+      },
+      {
+        "skill": "escaner-de-codigos",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Usaba el escáner para registrar la mercancía."
+      },
+      {
+        "skill": "responsabilidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me encargaba de abrir el local temprano."
+      },
+      {
+        "skill": "iniciativa",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Propuse ordenar la bodega por categorías y lo hicimos."
+      }
+    ]
+  },
+  {
+    "key": "joven-32",
+    "display_name": "Omar Cedeño",
+    "birth_year": 2000,
+    "gender": "masculino",
+    "location": "mateo-iturralde",
+    "max_commute_min": 90,
+    "transport_budget_daily": 3.0,
+    "min_salary": 600,
+    "studying": true,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "sab",
+        "start": "07:00",
+        "end": "16:00"
+      }
+    ],
+    "cv_raw_text": null,
+    "is_synthetic": true,
+    "persona": "cocina",
+    "skills": [
+      {
+        "skill": "preparacion-de-alimentos",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Fui ayudante de cocina en un restaurante de comida rápida."
+      },
+      {
+        "skill": "cocina-panamena",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Cocino comida típica panameña desde la adolescencia en casa."
+      },
+      {
+        "skill": "puntualidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Nunca llegué tarde en mi último trabajo."
+      },
+      {
+        "skill": "trabajo-en-equipo",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me gusta trabajar en equipo; en el colegio coordinaba los proyectos de grupo."
+      }
+    ]
+  },
+  {
+    "key": "joven-33",
+    "display_name": "Ricardo Mendoza",
+    "birth_year": 2002,
+    "gender": "masculino",
+    "location": "betania",
+    "max_commute_min": 90,
+    "transport_budget_daily": 3.5,
+    "min_salary": 650,
+    "studying": false,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mar",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "jue",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "vie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "sab",
+        "start": "06:00",
+        "end": "18:00"
+      }
+    ],
+    "cv_raw_text": "Ricardo Mendoza. Atendí mesas en eventos y bodas. Preparaba café espresso en una cafetería del barrio.",
+    "is_synthetic": true,
+    "persona": "servicio",
+    "skills": [
+      {
+        "skill": "servicio-de-mesa",
+        "level": 3,
+        "source": "cv",
+        "evidence": "Atendí mesas en eventos y bodas."
+      },
+      {
+        "skill": "barista",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Preparaba café espresso en una cafetería del barrio."
+      },
+      {
+        "skill": "puntualidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Nunca llegué tarde en mi último trabajo."
+      },
+      {
+        "skill": "responsabilidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me encargaba de abrir el local temprano."
+      }
+    ]
+  },
+  {
+    "key": "joven-34",
+    "display_name": "Massiel Pinzón",
+    "birth_year": 2004,
+    "gender": "femenino",
+    "location": "las-mananitas",
+    "max_commute_min": 60,
+    "transport_budget_daily": 2.0,
+    "min_salary": 650,
+    "studying": true,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "sab",
+        "start": "07:00",
+        "end": "15:00"
+      }
+    ],
+    "cv_raw_text": "Massiel Pinzón. Manejo Word y correo electrónico para trabajo de oficina. Hacía listas y sumas en Excel para el negocio de mi tía. Organicé el archivo de expedientes en mi práctica profesional.",
+    "is_synthetic": true,
+    "persona": "oficina",
+    "skills": [
+      {
+        "skill": "ofimatica-basica",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Manejo Word y correo electrónico para trabajo de oficina."
+      },
+      {
+        "skill": "excel-basico",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Hacía listas y sumas en Excel para el negocio de mi tía."
+      },
+      {
+        "skill": "archivo-y-documentacion",
+        "level": 3,
+        "source": "cv",
+        "evidence": "Organicé el archivo de expedientes en mi práctica profesional."
+      },
+      {
+        "skill": "aprendizaje-rapido",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Aprendo rápido; aprendí el sistema de caja en una semana."
+      },
+      {
+        "skill": "responsabilidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me encargaba de abrir el local temprano."
+      }
+    ]
+  },
+  {
+    "key": "joven-35",
+    "display_name": "Alexis Vega",
+    "birth_year": 2000,
+    "gender": "masculino",
+    "location": "curundu",
+    "max_commute_min": 90,
+    "transport_budget_daily": 5.0,
+    "min_salary": 600,
+    "studying": false,
+    "availability": [
+      {
+        "day": "vie",
+        "start": "08:00",
+        "end": "20:00"
+      },
+      {
+        "day": "sab",
+        "start": "08:00",
+        "end": "20:00"
+      },
+      {
+        "day": "dom",
+        "start": "08:00",
+        "end": "20:00"
+      }
+    ],
+    "cv_raw_text": "Alexis Vega. Ayudo a vecinos a configurar computadoras e impresoras. Arreglo laptops: cambio de disco, memoria y formateo. Hice el cableado de red de un pequeño local.",
+    "is_synthetic": true,
+    "persona": "tecnologia",
+    "skills": [
+      {
+        "skill": "soporte-tecnico-basico",
+        "level": 3,
+        "source": "cv",
+        "evidence": "Ayudo a vecinos a configurar computadoras e impresoras."
+      },
+      {
+        "skill": "reparacion-de-computadoras",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Arreglo laptops: cambio de disco, memoria y formateo."
+      },
+      {
+        "skill": "cableado-de-redes",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Hice el cableado de red de un pequeño local."
+      },
+      {
+        "skill": "puntualidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Nunca llegué tarde en mi último trabajo."
+      },
+      {
+        "skill": "responsabilidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me encargaba de abrir el local temprano."
+      }
+    ]
+  },
+  {
+    "key": "joven-36",
+    "display_name": "Lineth De León",
+    "birth_year": 2008,
+    "gender": "prefiero_no_decir",
+    "location": "juan-diaz",
+    "max_commute_min": 60,
+    "transport_budget_daily": 6.0,
+    "min_salary": 600,
+    "studying": false,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "mar",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "mie",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "jue",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "vie",
+        "start": "12:00",
+        "end": "22:00"
+      },
+      {
+        "day": "sab",
+        "start": "12:00",
+        "end": "22:00"
+      }
+    ],
+    "cv_raw_text": "Lineth De León. Manejo el Instagram del negocio de mi familia. Diseño artes en Canva para promociones. Edito reels con CapCut. Monté una tienda en línea pequeña para vender accesorios.",
+    "is_synthetic": true,
+    "persona": "digital",
+    "skills": [
+      {
+        "skill": "redes-sociales-negocios",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Manejo el Instagram del negocio de mi familia."
+      },
+      {
+        "skill": "diseno-grafico-basico",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Diseño artes en Canva para promociones."
+      },
+      {
+        "skill": "edicion-de-video-basica",
+        "level": 2,
+        "source": "cv",
+        "evidence": "Edito reels con CapCut."
+      },
+      {
+        "skill": "comercio-electronico",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Monté una tienda en línea pequeña para vender accesorios."
+      },
+      {
+        "skill": "responsabilidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me encargaba de abrir el local temprano."
+      },
+      {
+        "skill": "aprendizaje-rapido",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Aprendo rápido; aprendí el sistema de caja en una semana."
+      }
+    ]
+  },
+  {
+    "key": "joven-37",
+    "display_name": "Ricardo González",
+    "birth_year": 2004,
+    "gender": "masculino",
+    "location": "guadalupe",
+    "max_commute_min": 75,
+    "transport_budget_daily": 2.5,
+    "min_salary": 600,
+    "studying": false,
+    "availability": [
+      {
+        "day": "vie",
+        "start": "08:00",
+        "end": "20:00"
+      },
+      {
+        "day": "sab",
+        "start": "08:00",
+        "end": "20:00"
+      },
+      {
+        "day": "dom",
+        "start": "08:00",
+        "end": "20:00"
+      }
+    ],
+    "cv_raw_text": null,
+    "is_synthetic": true,
+    "persona": "construccion",
+    "skills": [
+      {
+        "skill": "ayudante-de-obra",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Trabajé de ayudante en una obra residencial."
+      },
+      {
+        "skill": "herramientas-manuales",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Sé usar herramientas manuales de albañilería."
+      },
+      {
+        "skill": "aprendizaje-rapido",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Aprendo rápido; aprendí el sistema de caja en una semana."
+      },
+      {
+        "skill": "comunicacion-efectiva",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Explico las cosas con claridad a los clientes."
+      }
+    ]
+  },
+  {
+    "key": "joven-38",
+    "display_name": "Gloriela Mendoza",
+    "birth_year": 2002,
+    "gender": "femenino",
+    "location": "vista-alegre",
+    "max_commute_min": 90,
+    "transport_budget_daily": 2.0,
+    "min_salary": 700,
+    "studying": false,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mar",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "jue",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "vie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "sab",
+        "start": "06:00",
+        "end": "18:00"
+      }
+    ],
+    "cv_raw_text": null,
+    "is_synthetic": true,
+    "persona": "electricidad",
+    "skills": [
+      {
+        "skill": "electricidad-residencial",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Ayudé a un electricista a instalar tomacorrientes y breakers."
+      },
+      {
+        "skill": "herramientas-electricas",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Uso taladro y esmeril con seguridad."
+      },
+      {
+        "skill": "puntualidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Nunca llegué tarde en mi último trabajo."
+      },
+      {
+        "skill": "comunicacion-efectiva",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Explico las cosas con claridad a los clientes."
+      }
+    ]
+  },
+  {
+    "key": "joven-39",
+    "display_name": "Arelys Sánchez",
+    "birth_year": 2002,
+    "gender": "femenino",
+    "location": "amelia-denis-de-icaza",
+    "max_commute_min": 90,
+    "transport_budget_daily": 3.5,
+    "min_salary": 600,
+    "studying": true,
+    "availability": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "13:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "13:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "13:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "13:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "13:00"
+      },
+      {
+        "day": "sab",
+        "start": "07:00",
+        "end": "13:00"
+      }
+    ],
+    "cv_raw_text": "Arelys Sánchez. Cuidé a mi abuela durante dos años. Tomé un curso de primeros auxilios con la Cruz Roja. Sé tomar la presión arterial. Me gusta acompañar y escuchar a las personas mayores.",
+    "is_synthetic": true,
+    "persona": "cuidado",
+    "skills": [
+      {
+        "skill": "cuidado-adultos-mayores",
+        "level": 3,
+        "source": "cv",
+        "evidence": "Cuidé a mi abuela durante dos años."
+      },
+      {
+        "skill": "primeros-auxilios",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Tomé un curso de primeros auxilios con la Cruz Roja."
+      },
+      {
+        "skill": "signos-vitales",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Sé tomar la presión arterial."
+      },
+      {
+        "skill": "empatia",
+        "level": 1,
+        "source": "cv",
+        "evidence": "Me gusta acompañar y escuchar a las personas mayores."
+      },
+      {
+        "skill": "iniciativa",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Propuse ordenar la bodega por categorías y lo hicimos."
+      },
+      {
+        "skill": "responsabilidad",
+        "level": 2,
+        "source": "entrevista",
+        "evidence": "Me encargaba de abrir el local temprano."
+      }
+    ]
+  }
+]
