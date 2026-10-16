@@ -24,7 +24,7 @@ export type Result<T> =
 	| { ok: true; data: T; source: DataSource; reason?: string }
 	| { ok: false; message: string; problem?: Problem };
 
-type Attempt<T> =
+export type Attempt<T> =
 	| { kind: "ok"; data: T }
 	| { kind: "unavailable"; reason: string }
 	| { kind: "error"; message: string; problem?: Problem };
@@ -34,7 +34,7 @@ type ApiCall<T> = (
 ) => Promise<{ data?: T; error?: unknown; response: Response }>;
 
 const UNAVAILABLE = new Set([404, 405, 501]);
-const MOCK_ALWAYS = "Modo de datos de ejemplo activado.";
+export const MOCK_ALWAYS = "Modo de datos de ejemplo activado.";
 
 const GUARDRAIL_COPY: Record<NonNullable<Problem["guardrail"]>, string> = {
 	inyeccion: "Detectamos instrucciones dirigidas al sistema y no las seguimos.",
@@ -63,7 +63,7 @@ export function describeProblem(problem: Problem | undefined, status: number) {
 	return `La API respondió ${status}.`;
 }
 
-async function attempt<T>(
+export async function attempt<T>(
 	call: ApiCall<T>,
 	timeoutMs = 30_000,
 ): Promise<Attempt<T>> {
@@ -98,7 +98,7 @@ async function attempt<T>(
 	}
 }
 
-async function runMock<T>(
+export async function runMock<T>(
 	fn: () => Promise<T>,
 	reason: string,
 ): Promise<Result<T>> {
@@ -117,7 +117,7 @@ async function runMock<T>(
 }
 
 /** Llama a la API; si el endpoint no está disponible, usa el mock. */
-async function withMock<T>(
+export async function withMock<T>(
 	call: ApiCall<T>,
 	fallback: () => Promise<T>,
 ): Promise<Result<T>> {
