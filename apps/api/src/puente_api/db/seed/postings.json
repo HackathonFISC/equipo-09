@@ -1,0 +1,1532 @@
+[
+  {
+    "key": "cajera-minisuper-barrio-colon",
+    "company": "minisuper-el-progreso",
+    "title": "Cajero/a de minisúper",
+    "raw_input": "Se busca cajero/a para minisúper en Barrio Colón, La Chorrera. Turno de 7:00 a.m. a 3:00 p.m., lunes a sábado. Manejo de caja y cuadre al cierre, atención al cliente, apoyo en inventario. Pago quincenal B/. 650 + prestaciones.",
+    "input_type": "texto",
+    "location": "barrio-colon",
+    "schedule": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "sab",
+        "start": "07:00",
+        "end": "15:00"
+      }
+    ],
+    "salary_min": 650,
+    "salary_max": 650,
+    "vacancies": 2,
+    "status": "publicada",
+    "requirements": [
+      {
+        "skill": "manejo-de-caja",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "cuadre-de-caja",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "atencion-al-cliente",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "control-de-inventario",
+        "weight": 1,
+        "required": false
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "auxiliar-inventario-puerto-caimito",
+    "company": "distribuidora-chorrera",
+    "title": "Auxiliar de inventario",
+    "raw_input": "Distribuidora en Puerto Caimito requiere auxiliar de inventario. Conteos cíclicos, recepción de mercancía, Excel básico. Horario lunes a viernes 8:00 a 4:00. Salario B/. 700.",
+    "input_type": "texto",
+    "location": "puerto-caimito",
+    "schedule": [
+      {
+        "day": "lun",
+        "start": "08:00",
+        "end": "16:00"
+      },
+      {
+        "day": "mar",
+        "start": "08:00",
+        "end": "16:00"
+      },
+      {
+        "day": "mie",
+        "start": "08:00",
+        "end": "16:00"
+      },
+      {
+        "day": "jue",
+        "start": "08:00",
+        "end": "16:00"
+      },
+      {
+        "day": "vie",
+        "start": "08:00",
+        "end": "16:00"
+      }
+    ],
+    "salary_min": 700,
+    "salary_max": 700,
+    "vacancies": 1,
+    "status": "publicada",
+    "requirements": [
+      {
+        "skill": "control-de-inventario",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "recepcion-de-mercancia",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "excel-basico",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "calculo-basico",
+        "weight": 1,
+        "required": false
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "cajeras-supermercado-arraijan",
+    "company": "supermercados-la-canasta",
+    "title": "Cajeras para supermercado",
+    "raw_input": "URGENTE: Supermercado en Arraiján busca cajeras. Mujeres de 18 a 25 años, buena presencia, enviar foto reciente al correo. Experiencia en caja y atención al cliente. Turnos rotativos. B/. 640 mensuales.",
+    "input_type": "texto",
+    "location": "arraijan",
+    "schedule": [
+      {
+        "day": "lun",
+        "start": "06:00",
+        "end": "14:00"
+      },
+      {
+        "day": "mar",
+        "start": "06:00",
+        "end": "14:00"
+      },
+      {
+        "day": "mie",
+        "start": "06:00",
+        "end": "14:00"
+      },
+      {
+        "day": "jue",
+        "start": "06:00",
+        "end": "14:00"
+      },
+      {
+        "day": "vie",
+        "start": "06:00",
+        "end": "14:00"
+      },
+      {
+        "day": "sab",
+        "start": "06:00",
+        "end": "14:00"
+      }
+    ],
+    "salary_min": 640,
+    "salary_max": 640,
+    "vacancies": 4,
+    "status": "borrador",
+    "requirements": [
+      {
+        "skill": "manejo-de-caja",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "atencion-al-cliente",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "punto-de-venta-pos",
+        "weight": 1,
+        "required": false
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "atencion-farmacia-vista-alegre",
+    "company": "farmacias-salud-total",
+    "title": "Dependiente de farmacia",
+    "raw_input": "Farmacia en Vista Alegre, Arraiján, busca dependiente para atención al cliente y caja. Deseable conocimiento de inventario. Lunes a sábado de 9:00 a.m. a 5:00 p.m. B/. 680.",
+    "input_type": "texto",
+    "location": "vista-alegre",
+    "schedule": [
+      {
+        "day": "lun",
+        "start": "09:00",
+        "end": "17:00"
+      },
+      {
+        "day": "mar",
+        "start": "09:00",
+        "end": "17:00"
+      },
+      {
+        "day": "mie",
+        "start": "09:00",
+        "end": "17:00"
+      },
+      {
+        "day": "jue",
+        "start": "09:00",
+        "end": "17:00"
+      },
+      {
+        "day": "vie",
+        "start": "09:00",
+        "end": "17:00"
+      },
+      {
+        "day": "sab",
+        "start": "09:00",
+        "end": "17:00"
+      }
+    ],
+    "salary_min": 680,
+    "salary_max": 680,
+    "vacancies": 1,
+    "status": "publicada",
+    "requirements": [
+      {
+        "skill": "atencion-al-cliente",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "manejo-de-caja",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "asistencia-de-farmacia",
+        "weight": 1,
+        "required": false
+      },
+      {
+        "skill": "control-de-inventario",
+        "weight": 1,
+        "required": false
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "ayudante-bodega-tocumen",
+    "company": "logistica-istmo",
+    "title": "Ayudante de bodega",
+    "raw_input": "Centro logístico en Tocumen solicita ayudantes de bodega. Solo varones, máximo 30 años. Carga y descarga, picking y packing. Lunes a sábado, 7:00 a 4:00. B/. 720.",
+    "input_type": "texto",
+    "location": "tocumen",
+    "schedule": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "sab",
+        "start": "07:00",
+        "end": "16:00"
+      }
+    ],
+    "salary_min": 720,
+    "salary_max": 720,
+    "vacancies": 5,
+    "status": "borrador",
+    "requirements": [
+      {
+        "skill": "carga-y-descarga",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "picking-y-packing",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "escaner-de-codigos",
+        "weight": 1,
+        "required": false
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "montacarguista-tocumen",
+    "company": "logistica-istmo",
+    "title": "Operador de montacargas",
+    "raw_input": "Se requiere operador de montacargas con certificación vigente. Manejo de inventario en bodega y escáner. Turno de 6:00 a 2:00, lunes a sábado. B/. 850.",
+    "input_type": "texto",
+    "location": "tocumen",
+    "schedule": [
+      {
+        "day": "lun",
+        "start": "06:00",
+        "end": "14:00"
+      },
+      {
+        "day": "mar",
+        "start": "06:00",
+        "end": "14:00"
+      },
+      {
+        "day": "mie",
+        "start": "06:00",
+        "end": "14:00"
+      },
+      {
+        "day": "jue",
+        "start": "06:00",
+        "end": "14:00"
+      },
+      {
+        "day": "vie",
+        "start": "06:00",
+        "end": "14:00"
+      },
+      {
+        "day": "sab",
+        "start": "06:00",
+        "end": "14:00"
+      }
+    ],
+    "salary_min": 850,
+    "salary_max": 850,
+    "vacancies": 2,
+    "status": "publicada",
+    "requirements": [
+      {
+        "skill": "montacargas",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "inventario-en-bodega",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "seguridad-salud-ocupacional",
+        "weight": 2,
+        "required": true
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "agente-call-center-bilingue",
+    "company": "contacto-global",
+    "title": "Agente de call center bilingüe",
+    "raw_input": "Call center en Bella Vista contrata agentes bilingües. Inglés conversacional, manejo de quejas, digitación. Capacitación pagada. Turnos de 8 horas lunes a viernes. B/. 900 + bonos.",
+    "input_type": "texto",
+    "location": "bella-vista",
+    "schedule": [
+      {
+        "day": "lun",
+        "start": "09:00",
+        "end": "17:00"
+      },
+      {
+        "day": "mar",
+        "start": "09:00",
+        "end": "17:00"
+      },
+      {
+        "day": "mie",
+        "start": "09:00",
+        "end": "17:00"
+      },
+      {
+        "day": "jue",
+        "start": "09:00",
+        "end": "17:00"
+      },
+      {
+        "day": "vie",
+        "start": "09:00",
+        "end": "17:00"
+      }
+    ],
+    "salary_min": 900,
+    "salary_max": 1050,
+    "vacancies": 10,
+    "status": "publicada",
+    "requirements": [
+      {
+        "skill": "call-center",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "ingles-conversacional",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "manejo-de-quejas",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "digitacion-de-datos",
+        "weight": 1,
+        "required": false
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "agente-cobros-call-center",
+    "company": "contacto-global",
+    "title": "Agente de cobros",
+    "raw_input": "Buscamos agentes de cobranza telefónica. Menores de 35 años. Residentes de Costa del Este o Punta Pacífica preferiblemente. Lunes a viernes 8:00 a 5:00. B/. 750 + comisiones.",
+    "input_type": "texto",
+    "location": "bella-vista",
+    "schedule": [
+      {
+        "day": "lun",
+        "start": "08:00",
+        "end": "17:00"
+      },
+      {
+        "day": "mar",
+        "start": "08:00",
+        "end": "17:00"
+      },
+      {
+        "day": "mie",
+        "start": "08:00",
+        "end": "17:00"
+      },
+      {
+        "day": "jue",
+        "start": "08:00",
+        "end": "17:00"
+      },
+      {
+        "day": "vie",
+        "start": "08:00",
+        "end": "17:00"
+      }
+    ],
+    "salary_min": 750,
+    "salary_max": 900,
+    "vacancies": 4,
+    "status": "borrador",
+    "requirements": [
+      {
+        "skill": "cobranza-telefonica",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "atencion-telefonica",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "negociacion",
+        "weight": 1,
+        "required": false
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "recepcionista-hotel",
+    "company": "hotel-bahia-azul",
+    "title": "Recepcionista de hotel",
+    "raw_input": "Hotel en Bella Vista busca recepcionista. Inglés para atención al cliente, manejo de reservaciones y caja. Turnos rotativos incluye fines de semana. B/. 800.",
+    "input_type": "texto",
+    "location": "bella-vista",
+    "schedule": [
+      {
+        "day": "mie",
+        "start": "14:00",
+        "end": "22:00"
+      },
+      {
+        "day": "jue",
+        "start": "14:00",
+        "end": "22:00"
+      },
+      {
+        "day": "vie",
+        "start": "14:00",
+        "end": "22:00"
+      },
+      {
+        "day": "sab",
+        "start": "14:00",
+        "end": "22:00"
+      },
+      {
+        "day": "dom",
+        "start": "14:00",
+        "end": "22:00"
+      }
+    ],
+    "salary_min": 800,
+    "salary_max": 800,
+    "vacancies": 1,
+    "status": "publicada",
+    "requirements": [
+      {
+        "skill": "recepcion-hotelera",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "ingles-atencion-cliente",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "reservaciones",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "manejo-de-caja",
+        "weight": 1,
+        "required": false
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "camarista-hotel",
+    "company": "hotel-bahia-azul",
+    "title": "Camarista",
+    "raw_input": "Se solicita camarista para housekeeping. Limpieza de habitaciones, manejo de químicos de limpieza. Lunes a sábado 7:00 a 3:00. B/. 650.",
+    "input_type": "texto",
+    "location": "bella-vista",
+    "schedule": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "sab",
+        "start": "07:00",
+        "end": "15:00"
+      }
+    ],
+    "salary_min": 650,
+    "salary_max": 650,
+    "vacancies": 3,
+    "status": "publicada",
+    "requirements": [
+      {
+        "skill": "housekeeping",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "quimicos-de-limpieza",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "trabajo-en-equipo",
+        "weight": 1,
+        "required": false
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "recepcionista-oficina-soltera",
+    "company": "tecnoservicios-pty",
+    "title": "Recepcionista",
+    "raw_input": "Empresa en Pueblo Nuevo busca recepcionista soltera, sin hijos, con disponibilidad total. Enviar hoja de vida con foto tamaño carné. Atención telefónica, agenda y archivo. B/. 700.",
+    "input_type": "texto",
+    "location": "pueblo-nuevo",
+    "schedule": [
+      {
+        "day": "lun",
+        "start": "08:00",
+        "end": "17:00"
+      },
+      {
+        "day": "mar",
+        "start": "08:00",
+        "end": "17:00"
+      },
+      {
+        "day": "mie",
+        "start": "08:00",
+        "end": "17:00"
+      },
+      {
+        "day": "jue",
+        "start": "08:00",
+        "end": "17:00"
+      },
+      {
+        "day": "vie",
+        "start": "08:00",
+        "end": "17:00"
+      }
+    ],
+    "salary_min": 700,
+    "salary_max": 700,
+    "vacancies": 1,
+    "status": "borrador",
+    "requirements": [
+      {
+        "skill": "recepcion-de-oficina",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "atencion-telefonica",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "agenda-y-citas",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "archivo-y-documentacion",
+        "weight": 1,
+        "required": false
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "tecnico-soporte-pueblo-nuevo",
+    "company": "tecnoservicios-pty",
+    "title": "Técnico de soporte",
+    "raw_input": "Técnico de soporte nivel 1: reparación de computadoras, cableado de redes, mesa de ayuda. Lunes a viernes 8:00 a 5:00. B/. 850 a 950 según experiencia.",
+    "input_type": "texto",
+    "location": "pueblo-nuevo",
+    "schedule": [
+      {
+        "day": "lun",
+        "start": "08:00",
+        "end": "17:00"
+      },
+      {
+        "day": "mar",
+        "start": "08:00",
+        "end": "17:00"
+      },
+      {
+        "day": "mie",
+        "start": "08:00",
+        "end": "17:00"
+      },
+      {
+        "day": "jue",
+        "start": "08:00",
+        "end": "17:00"
+      },
+      {
+        "day": "vie",
+        "start": "08:00",
+        "end": "17:00"
+      }
+    ],
+    "salary_min": 850,
+    "salary_max": 950,
+    "vacancies": 2,
+    "status": "publicada",
+    "requirements": [
+      {
+        "skill": "soporte-tecnico-basico",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "reparacion-de-computadoras",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "cableado-de-redes",
+        "weight": 1,
+        "required": false
+      },
+      {
+        "skill": "ofimatica-basica",
+        "weight": 1,
+        "required": true
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "cocinero-fonda-calidonia",
+    "company": "restaurante-sabor-criollo",
+    "title": "Ayudante de cocina",
+    "raw_input": "Restaurante de comida panameña en Calidonia busca ayudante de cocina. Carné de manipulador de alimentos vigente. Lunes a sábado 6:00 a.m. a 2:00 p.m. B/. 620.",
+    "input_type": "texto",
+    "location": "calidonia",
+    "schedule": [
+      {
+        "day": "lun",
+        "start": "06:00",
+        "end": "14:00"
+      },
+      {
+        "day": "mar",
+        "start": "06:00",
+        "end": "14:00"
+      },
+      {
+        "day": "mie",
+        "start": "06:00",
+        "end": "14:00"
+      },
+      {
+        "day": "jue",
+        "start": "06:00",
+        "end": "14:00"
+      },
+      {
+        "day": "vie",
+        "start": "06:00",
+        "end": "14:00"
+      },
+      {
+        "day": "sab",
+        "start": "06:00",
+        "end": "14:00"
+      }
+    ],
+    "salary_min": 620,
+    "salary_max": 620,
+    "vacancies": 2,
+    "status": "publicada",
+    "requirements": [
+      {
+        "skill": "preparacion-de-alimentos",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "cocina-panamena",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "manipulacion-de-alimentos",
+        "weight": 3,
+        "required": true
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "mesera-restaurante",
+    "company": "restaurante-sabor-criollo",
+    "title": "Mesera",
+    "raw_input": "Se busca mesera con excelente presentación, entre 20 y 28 años. Requisito: prueba de embarazo negativa. Servicio de mesa y caja. Viernes a domingo 4:00 p.m. a 11:00 p.m. B/. 450 + propinas.",
+    "input_type": "texto",
+    "location": "calidonia",
+    "schedule": [
+      {
+        "day": "vie",
+        "start": "16:00",
+        "end": "23:00"
+      },
+      {
+        "day": "sab",
+        "start": "16:00",
+        "end": "23:00"
+      },
+      {
+        "day": "dom",
+        "start": "16:00",
+        "end": "23:00"
+      }
+    ],
+    "salary_min": 450,
+    "salary_max": 450,
+    "vacancies": 2,
+    "status": "borrador",
+    "requirements": [
+      {
+        "skill": "servicio-de-mesa",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "atencion-al-cliente",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "manejo-de-caja",
+        "weight": 1,
+        "required": false
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "barista-san-francisco",
+    "company": "cafe-la-esquina",
+    "title": "Barista",
+    "raw_input": "Café de especialidad en San Francisco busca barista. Deseable experiencia en caja. Capacitamos. Martes a domingo 7:00 a 3:00. B/. 620.",
+    "input_type": "texto",
+    "location": "san-francisco",
+    "schedule": [
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "sab",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "dom",
+        "start": "07:00",
+        "end": "15:00"
+      }
+    ],
+    "salary_min": 620,
+    "salary_max": 620,
+    "vacancies": 1,
+    "status": "publicada",
+    "requirements": [
+      {
+        "skill": "barista",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "atencion-al-cliente",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "manejo-de-caja",
+        "weight": 1,
+        "required": false
+      },
+      {
+        "skill": "aprendizaje-rapido",
+        "weight": 1,
+        "required": false
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "ayudante-obra-juan-diaz",
+    "company": "constructora-horizonte",
+    "title": "Ayudante general de obra",
+    "raw_input": "Constructora contrata ayudantes generales para proyecto residencial en Juan Díaz. Uso de herramientas manuales, conocimiento de seguridad ocupacional. Mayores de 18 años. Lunes a sábado 7:00 a 4:00. B/. 700.",
+    "input_type": "texto",
+    "location": "juan-diaz",
+    "schedule": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "sab",
+        "start": "07:00",
+        "end": "16:00"
+      }
+    ],
+    "salary_min": 700,
+    "salary_max": 700,
+    "vacancies": 8,
+    "status": "publicada",
+    "requirements": [
+      {
+        "skill": "ayudante-de-obra",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "herramientas-manuales",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "seguridad-salud-ocupacional",
+        "weight": 2,
+        "required": true
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "electricista-residencial",
+    "company": "constructora-horizonte",
+    "title": "Ayudante de electricista",
+    "raw_input": "Ayudante de electricista residencial con lectura de planos básica. Lunes a viernes 7:00 a 4:00. B/. 780.",
+    "input_type": "texto",
+    "location": "juan-diaz",
+    "schedule": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "16:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "16:00"
+      }
+    ],
+    "salary_min": 780,
+    "salary_max": 780,
+    "vacancies": 2,
+    "status": "publicada",
+    "requirements": [
+      {
+        "skill": "electricidad-residencial",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "lectura-de-planos",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "herramientas-electricas",
+        "weight": 2,
+        "required": true
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "vendedor-tienda-ropa",
+    "company": "tiendas-moda-urbana",
+    "title": "Vendedor/a de tienda",
+    "raw_input": "Tienda de ropa en Villa Lucre busca vendedores. Ventas al detalle, visual merchandising, caja. No residentes de Curundú, El Chorrillo ni San Miguelito. Lunes a domingo turnos rotativos. B/. 650 + comisión.",
+    "input_type": "texto",
+    "location": "jose-domingo-espinar",
+    "schedule": [
+      {
+        "day": "lun",
+        "start": "10:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mar",
+        "start": "10:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mie",
+        "start": "10:00",
+        "end": "18:00"
+      },
+      {
+        "day": "jue",
+        "start": "10:00",
+        "end": "18:00"
+      },
+      {
+        "day": "vie",
+        "start": "10:00",
+        "end": "18:00"
+      },
+      {
+        "day": "sab",
+        "start": "10:00",
+        "end": "18:00"
+      },
+      {
+        "day": "dom",
+        "start": "10:00",
+        "end": "18:00"
+      }
+    ],
+    "salary_min": 650,
+    "salary_max": 800,
+    "vacancies": 3,
+    "status": "borrador",
+    "requirements": [
+      {
+        "skill": "ventas-al-detalle",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "visual-merchandising",
+        "weight": 1,
+        "required": false
+      },
+      {
+        "skill": "manejo-de-caja",
+        "weight": 2,
+        "required": true
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "community-manager-junior",
+    "company": "tiendas-moda-urbana",
+    "title": "Community manager junior",
+    "raw_input": "Buscamos community manager junior para redes sociales de la tienda. Diseño básico en Canva, edición de reels. Medio tiempo lunes a viernes 1:00 a 5:00 p.m. B/. 450.",
+    "input_type": "foto",
+    "location": "jose-domingo-espinar",
+    "schedule": [
+      {
+        "day": "lun",
+        "start": "13:00",
+        "end": "17:00"
+      },
+      {
+        "day": "mar",
+        "start": "13:00",
+        "end": "17:00"
+      },
+      {
+        "day": "mie",
+        "start": "13:00",
+        "end": "17:00"
+      },
+      {
+        "day": "jue",
+        "start": "13:00",
+        "end": "17:00"
+      },
+      {
+        "day": "vie",
+        "start": "13:00",
+        "end": "17:00"
+      }
+    ],
+    "salary_min": 450,
+    "salary_max": 450,
+    "vacancies": 1,
+    "status": "publicada",
+    "requirements": [
+      {
+        "skill": "community-management",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "diseno-grafico-basico",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "edicion-de-video-basica",
+        "weight": 2,
+        "required": true
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "agente-seguridad-betania",
+    "company": "seguridad-centinela",
+    "title": "Agente de seguridad",
+    "raw_input": "Agencia de seguridad solicita agentes para control de accesos y monitoreo CCTV. Turnos de 12 horas. B/. 720.",
+    "input_type": "texto",
+    "location": "betania",
+    "schedule": [
+      {
+        "day": "lun",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "mie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "vie",
+        "start": "06:00",
+        "end": "18:00"
+      },
+      {
+        "day": "dom",
+        "start": "06:00",
+        "end": "18:00"
+      }
+    ],
+    "salary_min": 720,
+    "salary_max": 720,
+    "vacancies": 6,
+    "status": "publicada",
+    "requirements": [
+      {
+        "skill": "vigilancia-control-accesos",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "monitoreo-cctv",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "reporte-de-incidentes",
+        "weight": 2,
+        "required": true
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "recepcion-clinica-chorrera",
+    "company": "clinica-familiar-oeste",
+    "title": "Recepcionista de clínica",
+    "raw_input": "Clínica en La Chorrera busca recepcionista: agenda de citas, atención telefónica, facturación, caja. Lunes a viernes 7:00 a 3:00. B/. 700.",
+    "input_type": "texto",
+    "location": "barrio-balboa",
+    "schedule": [
+      {
+        "day": "lun",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mar",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "mie",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "jue",
+        "start": "07:00",
+        "end": "15:00"
+      },
+      {
+        "day": "vie",
+        "start": "07:00",
+        "end": "15:00"
+      }
+    ],
+    "salary_min": 700,
+    "salary_max": 700,
+    "vacancies": 1,
+    "status": "publicada",
+    "requirements": [
+      {
+        "skill": "recepcion-de-clinica",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "agenda-y-citas",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "facturacion",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "manejo-de-caja",
+        "weight": 1,
+        "required": false
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "repartidor-moto",
+    "company": "delivery-rapido",
+    "title": "Repartidor en moto",
+    "raw_input": "Repartidores con moto propia y licencia de conducir vigente. Uso de Waze. Horario flexible. Pago por entrega (aprox. B/. 600-900).",
+    "input_type": "texto",
+    "location": "san-francisco",
+    "schedule": [
+      {
+        "day": "lun",
+        "start": "11:00",
+        "end": "21:00"
+      },
+      {
+        "day": "mar",
+        "start": "11:00",
+        "end": "21:00"
+      },
+      {
+        "day": "mie",
+        "start": "11:00",
+        "end": "21:00"
+      },
+      {
+        "day": "jue",
+        "start": "11:00",
+        "end": "21:00"
+      },
+      {
+        "day": "vie",
+        "start": "11:00",
+        "end": "21:00"
+      },
+      {
+        "day": "sab",
+        "start": "11:00",
+        "end": "21:00"
+      },
+      {
+        "day": "dom",
+        "start": "11:00",
+        "end": "21:00"
+      }
+    ],
+    "salary_min": 600,
+    "salary_max": 900,
+    "vacancies": 10,
+    "status": "publicada",
+    "requirements": [
+      {
+        "skill": "repartidor-en-moto",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "licencia-de-conducir",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "gps-y-mapas",
+        "weight": 2,
+        "required": true
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "impulsadora-supermercado",
+    "company": "supermercados-la-canasta",
+    "title": "Impulsador/a de productos",
+    "raw_input": "Agencia busca impulsadores/as para degustaciones en supermercado de Arraiján. Fines de semana 9:00 a 5:00. B/. 35 por día.",
+    "input_type": "foto",
+    "location": "arraijan",
+    "schedule": [
+      {
+        "day": "sab",
+        "start": "09:00",
+        "end": "17:00"
+      },
+      {
+        "day": "dom",
+        "start": "09:00",
+        "end": "17:00"
+      }
+    ],
+    "salary_min": 280,
+    "salary_max": 280,
+    "vacancies": 4,
+    "status": "publicada",
+    "requirements": [
+      {
+        "skill": "promocion-en-tienda",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "comunicacion-efectiva",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "atencion-al-cliente",
+        "weight": 1,
+        "required": false
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "reponedor-supermercado",
+    "company": "supermercados-la-canasta",
+    "title": "Reponedor/a de mercancía",
+    "raw_input": "Reponedores para turno de tarde: surtir anaqueles, etiquetado de precios, control de inventario. Lunes a viernes 2:00 p.m. a 10:00 p.m. B/. 680.",
+    "input_type": "pdf",
+    "location": "arraijan",
+    "schedule": [
+      {
+        "day": "lun",
+        "start": "14:00",
+        "end": "22:00"
+      },
+      {
+        "day": "mar",
+        "start": "14:00",
+        "end": "22:00"
+      },
+      {
+        "day": "mie",
+        "start": "14:00",
+        "end": "22:00"
+      },
+      {
+        "day": "jue",
+        "start": "14:00",
+        "end": "22:00"
+      },
+      {
+        "day": "vie",
+        "start": "14:00",
+        "end": "22:00"
+      }
+    ],
+    "salary_min": 680,
+    "salary_max": 680,
+    "vacancies": 3,
+    "status": "publicada",
+    "requirements": [
+      {
+        "skill": "reposicion-de-mercancia",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "etiquetado-de-precios",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "control-de-inventario",
+        "weight": 1,
+        "required": false
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  },
+  {
+    "key": "digitador-datos-calidonia",
+    "company": "contacto-global",
+    "title": "Digitador/a de datos",
+    "raw_input": "Digitadores para proyecto de 3 meses. Excel intermedio, digitación rápida y orientación al detalle. Lunes a viernes 8:00 a 12:00. B/. 400.",
+    "input_type": "texto",
+    "location": "calidonia",
+    "schedule": [
+      {
+        "day": "lun",
+        "start": "08:00",
+        "end": "12:00"
+      },
+      {
+        "day": "mar",
+        "start": "08:00",
+        "end": "12:00"
+      },
+      {
+        "day": "mie",
+        "start": "08:00",
+        "end": "12:00"
+      },
+      {
+        "day": "jue",
+        "start": "08:00",
+        "end": "12:00"
+      },
+      {
+        "day": "vie",
+        "start": "08:00",
+        "end": "12:00"
+      }
+    ],
+    "salary_min": 400,
+    "salary_max": 400,
+    "vacancies": 5,
+    "status": "publicada",
+    "requirements": [
+      {
+        "skill": "digitacion-de-datos",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "skill": "excel-intermedio",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "skill": "orientacion-al-detalle",
+        "weight": 2,
+        "required": true
+      }
+    ],
+    "is_synthetic": true,
+    "source": "sintética, redactada siguiendo el formato de portales públicos de empleo de Panamá"
+  }
+]

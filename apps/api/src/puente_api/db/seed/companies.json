@@ -1,0 +1,17 @@
+[
+  {"key": "minisuper-el-progreso", "name": "Minisúper El Progreso", "location": "barrio-colon", "contact_email": "rrhh@elprogreso.example", "is_synthetic": true},
+  {"key": "supermercados-la-canasta", "name": "Supermercados La Canasta", "location": "arraijan", "contact_email": "empleos@lacanasta.example", "is_synthetic": true},
+  {"key": "farmacias-salud-total", "name": "Farmacias Salud Total", "location": "vista-alegre", "contact_email": "talento@saludtotal.example", "is_synthetic": true},
+  {"key": "logistica-istmo", "name": "Logística Istmo", "location": "tocumen", "contact_email": "seleccion@logisticaistmo.example", "is_synthetic": true},
+  {"key": "contacto-global", "name": "Contacto Global Call Center", "location": "bella-vista", "contact_email": "reclutamiento@contactoglobal.example", "is_synthetic": true},
+  {"key": "hotel-bahia-azul", "name": "Hotel Bahía Azul", "location": "bella-vista", "contact_email": "rrhh@bahiaazul.example", "is_synthetic": true},
+  {"key": "restaurante-sabor-criollo", "name": "Restaurante Sabor Criollo", "location": "calidonia", "contact_email": "trabajo@saborcriollo.example", "is_synthetic": true},
+  {"key": "cafe-la-esquina", "name": "Café La Esquina", "location": "san-francisco", "contact_email": "hola@cafelaesquina.example", "is_synthetic": true},
+  {"key": "constructora-horizonte", "name": "Constructora Horizonte", "location": "juan-diaz", "contact_email": "obras@horizonte.example", "is_synthetic": true},
+  {"key": "tecnoservicios-pty", "name": "TecnoServicios PTY", "location": "pueblo-nuevo", "contact_email": "empleos@tecnoservicios.example", "is_synthetic": true},
+  {"key": "tiendas-moda-urbana", "name": "Tiendas Moda Urbana", "location": "jose-domingo-espinar", "contact_email": "rrhh@modaurbana.example", "is_synthetic": true},
+  {"key": "seguridad-centinela", "name": "Seguridad Centinela", "location": "betania", "contact_email": "personal@centinela.example", "is_synthetic": true},
+  {"key": "clinica-familiar-oeste", "name": "Clínica Familiar del Oeste", "location": "barrio-balboa", "contact_email": "admin@clinicaoeste.example", "is_synthetic": true},
+  {"key": "delivery-rapido", "name": "Delivery Rápido", "location": "san-francisco", "contact_email": "repartidores@deliveryrapido.example", "is_synthetic": true},
+  {"key": "distribuidora-chorrera", "name": "Distribuidora La Chorrera", "location": "puerto-caimito", "contact_email": "bodega@distchorrera.example", "is_synthetic": true}
+]

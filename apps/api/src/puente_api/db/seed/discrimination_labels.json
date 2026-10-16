@@ -1,0 +1,200 @@
+[
+  {
+    "posting": "cajera-minisuper-barrio-colon",
+    "discriminatory": false,
+    "findings": []
+  },
+  {
+    "posting": "auxiliar-inventario-puerto-caimito",
+    "discriminatory": false,
+    "findings": []
+  },
+  {
+    "posting": "cajeras-supermercado-arraijan",
+    "discriminatory": true,
+    "findings": [
+      {
+        "kind": "genero",
+        "text": "Mujeres"
+      },
+      {
+        "kind": "edad",
+        "text": "de 18 a 25 años"
+      },
+      {
+        "kind": "apariencia",
+        "text": "buena presencia"
+      },
+      {
+        "kind": "foto",
+        "text": "enviar foto reciente"
+      }
+    ]
+  },
+  {
+    "posting": "atencion-farmacia-vista-alegre",
+    "discriminatory": false,
+    "findings": []
+  },
+  {
+    "posting": "ayudante-bodega-tocumen",
+    "discriminatory": true,
+    "findings": [
+      {
+        "kind": "genero",
+        "text": "Solo varones"
+      },
+      {
+        "kind": "edad",
+        "text": "máximo 30 años"
+      }
+    ]
+  },
+  {
+    "posting": "montacarguista-tocumen",
+    "discriminatory": false,
+    "findings": []
+  },
+  {
+    "posting": "agente-call-center-bilingue",
+    "discriminatory": false,
+    "findings": []
+  },
+  {
+    "posting": "agente-cobros-call-center",
+    "discriminatory": true,
+    "findings": [
+      {
+        "kind": "edad",
+        "text": "Menores de 35 años"
+      },
+      {
+        "kind": "residencia",
+        "text": "Residentes de Costa del Este o Punta Pacífica preferiblemente"
+      }
+    ]
+  },
+  {
+    "posting": "recepcionista-hotel",
+    "discriminatory": false,
+    "findings": []
+  },
+  {
+    "posting": "camarista-hotel",
+    "discriminatory": false,
+    "findings": []
+  },
+  {
+    "posting": "recepcionista-oficina-soltera",
+    "discriminatory": true,
+    "findings": [
+      {
+        "kind": "genero",
+        "text": "recepcionista soltera"
+      },
+      {
+        "kind": "estado_civil",
+        "text": "soltera, sin hijos"
+      },
+      {
+        "kind": "foto",
+        "text": "con foto tamaño carné"
+      }
+    ]
+  },
+  {
+    "posting": "tecnico-soporte-pueblo-nuevo",
+    "discriminatory": false,
+    "findings": []
+  },
+  {
+    "posting": "cocinero-fonda-calidonia",
+    "discriminatory": false,
+    "findings": [],
+    "notes": "Exigir carné de manipulador es un requisito legal y legítimo (control de precisión)."
+  },
+  {
+    "posting": "mesera-restaurante",
+    "discriminatory": true,
+    "findings": [
+      {
+        "kind": "genero",
+        "text": "mesera"
+      },
+      {
+        "kind": "apariencia",
+        "text": "excelente presentación"
+      },
+      {
+        "kind": "edad",
+        "text": "entre 20 y 28 años"
+      },
+      {
+        "kind": "embarazo",
+        "text": "prueba de embarazo"
+      }
+    ]
+  },
+  {
+    "posting": "barista-san-francisco",
+    "discriminatory": false,
+    "findings": []
+  },
+  {
+    "posting": "ayudante-obra-juan-diaz",
+    "discriminatory": false,
+    "findings": [],
+    "notes": "'Mayores de 18 años' es el mínimo legal de edad para construcción: no es discriminatorio (control de precisión)."
+  },
+  {
+    "posting": "electricista-residencial",
+    "discriminatory": false,
+    "findings": []
+  },
+  {
+    "posting": "vendedor-tienda-ropa",
+    "discriminatory": true,
+    "findings": [
+      {
+        "kind": "residencia",
+        "text": "No residentes de Curundú, El Chorrillo ni San Miguelito"
+      }
+    ]
+  },
+  {
+    "posting": "community-manager-junior",
+    "discriminatory": false,
+    "findings": []
+  },
+  {
+    "posting": "agente-seguridad-betania",
+    "discriminatory": false,
+    "findings": []
+  },
+  {
+    "posting": "recepcion-clinica-chorrera",
+    "discriminatory": false,
+    "findings": []
+  },
+  {
+    "posting": "repartidor-moto",
+    "discriminatory": false,
+    "findings": [],
+    "notes": "Exigir licencia de conducir es inherente al puesto (control de precisión)."
+  },
+  {
+    "posting": "impulsadora-supermercado",
+    "discriminatory": false,
+    "findings": []
+  },
+  {
+    "posting": "reponedor-supermercado",
+    "discriminatory": false,
+    "findings": []
+  },
+  {
+    "posting": "digitador-datos-calidonia",
+    "discriminatory": false,
+    "findings": []
+  }
+]
