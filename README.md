@@ -7,9 +7,9 @@ Reto: 0
 
 ## Equipo
 
-- Integrante 1
-- Integrante 2
-- Integrante 3
+- Sebastian Olivera (@sebolive386)
+- Jose Vasquez (@devoncats)
+- Kenneth Zhong (@Xyryung)
 
 ## Problema
 
