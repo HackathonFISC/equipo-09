@@ -1,8 +1,11 @@
-import { Button } from "@puente/ui/components/button";
+import { buttonVariants } from "@puente/ui/components/button";
+import { cn } from "@puente/ui/lib/utils";
 import { MapPinned } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { connection } from "next/server";
 
+import { ContinueProfile } from "@/components/continue-profile";
 import { PageShell, RoleHeader } from "@/components/page-shell";
 import { loadLocations } from "@/lib/api/catalog";
 
@@ -64,12 +67,16 @@ export default async function JovenPage() {
 				</ol>
 
 				<div className="flex flex-col gap-2">
-					<Button size="lg" className="h-12 w-full text-base" disabled>
+					<Link
+						href="/joven/registro"
+						className={cn(
+							buttonVariants({ size: "lg" }),
+							"h-12 w-full text-base",
+						)}
+					>
 						Empezar registro
-					</Button>
-					<p className="text-center text-muted-foreground text-sm">
-						El registro se habilita en la próxima versión de esta demo.
-					</p>
+					</Link>
+					<ContinueProfile />
 				</div>
 			</section>
 
