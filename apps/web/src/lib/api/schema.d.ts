@@ -791,6 +791,7 @@ export interface operations {
         };
         responses: {
             202: components["responses"]["Accepted"];
+            404: components["responses"]["NotFound"];
             413: components["responses"]["Problem"];
             422: components["responses"]["ValidationError"];
         };
@@ -822,6 +823,7 @@ export interface operations {
                     "application/json": components["schemas"]["InterviewStep"];
                 };
             };
+            404: components["responses"]["NotFound"];
             422: components["responses"]["ValidationError"];
         };
     };
