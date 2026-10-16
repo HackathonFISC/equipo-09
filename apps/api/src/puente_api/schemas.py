@@ -1,5 +1,6 @@
 """Esquemas de respuesta: reflejan `components/schemas` de packages/api-spec/openapi.yaml."""
 
+from datetime import datetime
 from typing import Any, Literal
 
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field, field_validator
@@ -92,3 +93,103 @@ class JobPosting(ApiModel):
     @classmethod
     def _normalize_schedule(cls, value: Any) -> list[dict[str, Any]]:
         return normalize_slots(value)
+
+
+# --- Jóvenes -----------------------------------------------------------------
+
+HHMM = r"^([01]\d|2[0-3]):[0-5]\d$"
+Gender = Literal["femenino", "masculino", "otro", "prefiero_no_decir"]
+
+
+class TimeSlotIn(ApiModel):
+    day: Day
+    start: str = Field(pattern=HHMM)
+    end: str = Field(pattern=HHMM)
+
+
+class ProfileSkill(ApiModel):
+    skill: Skill
+    level: int = Field(ge=1, le=3)
+    source: Literal["cv", "entrevista", "orientador"]
+    evidence: str
+
+
+class YouthCreate(ApiModel):
+    display_name: str = Field(min_length=1, max_length=120)
+    birth_year: int = Field(ge=1990, le=2010)
+    gender: Gender | None = None
+    location_id: str
+    max_commute_min: int = Field(ge=5, le=180)
+    transport_budget_daily: float = Field(ge=0, le=50)
+    min_salary: float | None = Field(default=None, ge=0, le=5000)
+    studying: bool | None = None
+    availability: list[TimeSlotIn]
+
+
+class Youth(ApiModel):
+    id: str
+    display_name: str
+    birth_year: int
+    gender: Gender | None = None
+    location_id: str
+    max_commute_min: int
+    transport_budget_daily: float
+    min_salary: float | None = None
+    studying: bool | None = None
+    availability: list[TimeSlot] = []
+    skills: list[ProfileSkill] = []
+    is_synthetic: bool
+
+    @field_validator("availability", mode="before")
+    @classmethod
+    def _normalize_availability(cls, value: Any) -> list[dict[str, Any]]:
+        return normalize_slots(value)
+
+
+class InterviewAnswer(ApiModel):
+    answer: str | None = Field(default=None, max_length=2000)
+
+
+class InterviewStep(ApiModel):
+    done: bool
+    question: str | None = None
+    index: int | None = None
+    discovered_skills: list[ProfileSkill] = []
+
+
+# --- Agentes -----------------------------------------------------------------
+
+
+class Accepted(ApiModel):
+    thread_id: str
+    resource_id: str | None = None
+
+
+AgentName = Literal[
+    "supervisor",
+    "mercado",
+    "perfil",
+    "matching",
+    "formacion",
+    "postulacion",
+    "entrevista",
+    "auditor",
+    "orientador",
+]
+
+
+class AgentTrace(ApiModel):
+    agent: AgentName
+    step: int
+    input_summary: str | None = None
+    decision: str
+    reason: str | None = None
+    duration_ms: int | None = None
+    langfuse_trace_id: str | None = None
+    created_at: datetime
+
+
+class Trace(ApiModel):
+    thread_id: str
+    status: Literal["en_curso", "esperando_revision", "completado", "error"]
+    steps: list[AgentTrace]

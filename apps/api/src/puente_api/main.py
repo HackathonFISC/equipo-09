@@ -12,7 +12,8 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from puente_api.config import get_settings
 from puente_api.db.session import init_db
-from puente_api.routers import catalogs, postings
+from puente_api.problems import ProblemError
+from puente_api.routers import catalogs, postings, traces, youth
 
 API_PREFIX = "/api/v1"
 PROBLEM_JSON = "application/problem+json"
@@ -33,16 +34,19 @@ app.add_middleware(
 )
 
 
-def _problem(status: int, detail: str | None = None) -> JSONResponse:
-    body = {"title": HTTPStatus(status).phrase, "status": status}
+def _problem(status: int, detail: str | None = None, guardrail: str | None = None) -> JSONResponse:
+    body: dict[str, str | int] = {"title": HTTPStatus(status).phrase, "status": status}
     if detail:
         body["detail"] = detail
+    if guardrail:
+        body["guardrail"] = guardrail
     return JSONResponse(body, status_code=status, media_type=PROBLEM_JSON)
 
 
 @app.exception_handler(StarletteHTTPException)
 async def http_problem(_request: Request, exc: StarletteHTTPException) -> JSONResponse:
-    return _problem(exc.status_code, str(exc.detail) if exc.detail else None)
+    guardrail = exc.guardrail if isinstance(exc, ProblemError) else None
+    return _problem(exc.status_code, str(exc.detail) if exc.detail else None, guardrail)
 
 
 @app.exception_handler(RequestValidationError)
@@ -63,6 +67,8 @@ def health() -> dict[str, str]:
 
 api.include_router(catalogs.router)
 api.include_router(postings.router)
+api.include_router(youth.router)
+api.include_router(traces.router)
 app.include_router(api)
 
 

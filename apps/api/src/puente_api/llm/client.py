@@ -154,3 +154,8 @@ class LLMClient:
         if not content:
             raise LLMError("respuesta vacía")
         return content
+
+
+def get_llm() -> LLMClient:
+    """Dependencia de FastAPI; los tests la sustituyen por un cliente con LLM simulado."""
+    return LLMClient()
