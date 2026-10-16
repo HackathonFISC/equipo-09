@@ -1,35 +1,38 @@
 {
-  "name": "web",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev --port 3001",
-    "build": "next build",
-    "check-types": "tsc --noEmit",
-    "start": "next start",
-    "env:generate": "varlock codegen"
-  },
-  "dependencies": {
-    "@puente/ui": "workspace:*",
-    "@swc/helpers": "^0.5.23",
-    "@varlock/nextjs-integration": "1.2.2",
-    "babel-plugin-react-compiler": "^1.0.0",
-    "lucide-react": "catalog:",
-    "next": "^16.3.4",
-    "next-themes": "catalog:",
-    "react": "catalog:",
-    "react-dom": "catalog:",
-    "sonner": "catalog:",
-    "varlock": "catalog:",
-    "zod": "catalog:"
-  },
-  "devDependencies": {
-    "@puente/config": "workspace:*",
-    "@tailwindcss/postcss": "catalog:",
-    "@types/node": "catalog:",
-    "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
-    "tailwindcss": "catalog:",
-    "typescript": "catalog:"
-  }
+	"name": "web",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev --port 3001",
+		"build": "next build",
+		"check-types": "tsc --noEmit",
+		"start": "next start",
+		"env:generate": "varlock codegen",
+		"api:generate": "openapi-typescript ../../packages/api-spec/openapi.yaml -o src/lib/api/schema.d.ts"
+	},
+	"dependencies": {
+		"@puente/ui": "workspace:*",
+		"@swc/helpers": "^0.5.23",
+		"@varlock/nextjs-integration": "1.2.2",
+		"babel-plugin-react-compiler": "^1.0.0",
+		"lucide-react": "catalog:",
+		"next": "^16.3.4",
+		"next-themes": "catalog:",
+		"openapi-fetch": "^0.17.0",
+		"react": "catalog:",
+		"react-dom": "catalog:",
+		"sonner": "catalog:",
+		"varlock": "catalog:",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@puente/config": "workspace:*",
+		"@tailwindcss/postcss": "catalog:",
+		"@types/node": "catalog:",
+		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
+		"openapi-typescript": "^7.13.0",
+		"tailwindcss": "catalog:",
+		"typescript": "catalog:"
+	}
 }
