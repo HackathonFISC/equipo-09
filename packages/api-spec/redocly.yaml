@@ -1,0 +1,10 @@
+extends:
+  - recommended
+rules:
+  info-license: off
+  # MVP de hackathon sin autenticación: el rol se elige en la web (ver docs/02 §7).
+  security-defined: off
+  # El único servidor es localhost.
+  no-server-example.com: off
+  # Listados y catálogos no tienen respuestas 4xx propias.
+  operation-4xx-response: off

@@ -1,0 +1,832 @@
+openapi: 3.1.0
+info:
+  title: Puente API
+  version: 0.1.0
+  summary: Sistema agéntico de inserción laboral juvenil (Reto 3, Hackathon FISC 2026).
+  description: |
+    Contrato de la API de Puente. Es la fuente de verdad para `apps/api` (FastAPI) y `apps/web` (Next.js).
+
+    Las operaciones que disparan agentes responden `202 Accepted` con un `threadId`.
+    El progreso se consulta en `/traces/{threadId}` y las decisiones humanas en `/reviews`.
+  contact:
+    name: Equipo 09
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Local
+tags:
+  - name: sistema
+    description: Salud del servicio
+  - name: jovenes
+    description: Perfil, entrevista, matches y ruta de formación
+  - name: empresas
+    description: Empresas y ofertas
+  - name: formacion
+    description: Centros, cursos y sesiones
+  - name: matching
+    description: Corridas del solver de asignación y auditoría
+  - name: orientador
+    description: Bandeja de revisión humana (HITL)
+  - name: trazas
+    description: Línea de tiempo de decisiones por agente
+  - name: catalogos
+    description: Corregimientos y taxonomía de habilidades
+
+paths:
+  /health:
+    get:
+      tags: [sistema]
+      operationId: getHealth
+      summary: Estado del servicio
+      security: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status: { type: string, enum: [ok] }
+
+  /youth:
+    post:
+      tags: [jovenes]
+      operationId: createYouth
+      summary: Registrar joven
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/YouthCreate" }
+      responses:
+        "201":
+          description: Creado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Youth" }
+        "422": { $ref: "#/components/responses/ValidationError" }
+
+  /youth/{youthId}:
+    parameters: [{ $ref: "#/components/parameters/YouthId" }]
+    get:
+      tags: [jovenes]
+      operationId: getYouth
+      summary: Perfil del joven con habilidades
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Youth" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /youth/{youthId}/cv:
+    parameters: [{ $ref: "#/components/parameters/YouthId" }]
+    post:
+      tags: [jovenes]
+      operationId: uploadCv
+      summary: Subir CV (PDF, foto o texto) y extraer habilidades
+      description: Dispara el agente de Perfil.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: PDF, JPG o PNG, máximo 5 MB
+                text:
+                  type: string
+                  maxLength: 20000
+      responses:
+        "202": { $ref: "#/components/responses/Accepted" }
+        "413": { $ref: "#/components/responses/Problem" }
+        "422": { $ref: "#/components/responses/ValidationError" }
+
+  /youth/{youthId}/interview:
+    parameters: [{ $ref: "#/components/parameters/YouthId" }]
+    post:
+      tags: [jovenes]
+      operationId: answerInterview
+      summary: Responder la entrevista de perfil
+      description: Envía la respuesta actual y devuelve la siguiente pregunta o el perfil final.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                answer:
+                  type: [string, "null"]
+                  maxLength: 2000
+                  description: Null para iniciar la entrevista
+      responses:
+        "200":
+          description: Siguiente paso
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InterviewStep" }
+        "422": { $ref: "#/components/responses/ValidationError" }
+
+  /youth/{youthId}/matches:
+    parameters: [{ $ref: "#/components/parameters/YouthId" }]
+    get:
+      tags: [jovenes]
+      operationId: listYouthMatches
+      summary: Vacantes recomendadas al joven
+      parameters:
+        - name: status
+          in: query
+          schema: { $ref: "#/components/schemas/MatchStatus" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/MatchResult" }
+
+  /youth/{youthId}/training-plan:
+    parameters: [{ $ref: "#/components/parameters/YouthId" }]
+    post:
+      tags: [jovenes]
+      operationId: createTrainingPlan
+      summary: Calcular ruta de formación óptima
+      description: Dispara el agente de Ruta de formación (solver MIP).
+      responses:
+        "202": { $ref: "#/components/responses/Accepted" }
+    get:
+      tags: [jovenes]
+      operationId: getTrainingPlan
+      summary: Última ruta de formación
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TrainingPlan" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /companies:
+    post:
+      tags: [empresas]
+      operationId: createCompany
+      summary: Registrar empresa
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CompanyCreate" }
+      responses:
+        "201":
+          description: Creada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Company" }
+        "422": { $ref: "#/components/responses/ValidationError" }
+
+  /postings:
+    get:
+      tags: [empresas]
+      operationId: listPostings
+      summary: Listar ofertas
+      parameters:
+        - name: status
+          in: query
+          schema: { $ref: "#/components/schemas/PostingStatus" }
+        - name: companyId
+          in: query
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/JobPosting" }
+    post:
+      tags: [empresas]
+      operationId: ingestPosting
+      summary: Ingerir oferta (texto, foto o PDF)
+      description: Dispara Inteligencia de mercado y Auditor. Si hay requisitos discriminatorios, la oferta queda `bloqueada` y se crea un `review_task`.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [companyId]
+              properties:
+                companyId: { type: string, format: uuid }
+                text: { type: string, maxLength: 20000 }
+                file: { type: string, format: binary }
+      responses:
+        "202": { $ref: "#/components/responses/Accepted" }
+        "422": { $ref: "#/components/responses/ValidationError" }
+
+  /postings/{postingId}:
+    parameters: [{ $ref: "#/components/parameters/PostingId" }]
+    get:
+      tags: [empresas]
+      operationId: getPosting
+      summary: Detalle de oferta con requisitos y hallazgos
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/JobPosting" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /postings/{postingId}/shortlist:
+    parameters: [{ $ref: "#/components/parameters/PostingId" }]
+    get:
+      tags: [empresas]
+      operationId: getShortlist
+      summary: Lista corta aprobada por el orientador
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Application" }
+
+  /training-centers:
+    post:
+      tags: [formacion]
+      operationId: createTrainingCenter
+      summary: Registrar centro de formación
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, locationId]
+              properties:
+                name: { type: string, minLength: 2, maxLength: 200 }
+                locationId: { type: string, format: uuid }
+      responses:
+        "201":
+          description: Creado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TrainingCenter" }
+
+  /courses:
+    get:
+      tags: [formacion]
+      operationId: listCourses
+      summary: Listar cursos con sesiones
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Course" }
+    post:
+      tags: [formacion]
+      operationId: createCourse
+      summary: Crear curso con sesiones
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CourseCreate" }
+      responses:
+        "201":
+          description: Creado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Course" }
+        "422": { $ref: "#/components/responses/ValidationError" }
+
+  /match-runs:
+    post:
+      tags: [matching]
+      operationId: createMatchRun
+      summary: Ejecutar matching
+      description: Matching (CP-SAT) → Auditor (contrafactuales) → Postulación. Las listas cortas quedan pendientes de revisión.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                youthIds:
+                  type: array
+                  items: { type: string, format: uuid }
+                postingIds:
+                  type: array
+                  items: { type: string, format: uuid }
+                timeLimitSeconds: { type: number, minimum: 1, maximum: 30, default: 5 }
+      responses:
+        "202": { $ref: "#/components/responses/Accepted" }
+
+  /match-runs/{runId}:
+    parameters:
+      - name: runId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      tags: [matching]
+      operationId: getMatchRun
+      summary: Resultado de una corrida y su auditoría
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MatchRun" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /reviews:
+    get:
+      tags: [orientador]
+      operationId: listReviews
+      summary: Bandeja de revisión del orientador
+      parameters:
+        - name: status
+          in: query
+          schema: { $ref: "#/components/schemas/ReviewStatus" }
+        - name: kind
+          in: query
+          schema: { $ref: "#/components/schemas/ReviewKind" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ReviewTask" }
+
+  /reviews/{reviewId}/decision:
+    parameters:
+      - name: reviewId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    post:
+      tags: [orientador]
+      operationId: decideReview
+      summary: Aprobar, editar o rechazar una decisión
+      description: Reanuda el grafo LangGraph detenido en `interrupt`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ReviewDecision" }
+      responses:
+        "202": { $ref: "#/components/responses/Accepted" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Problem" }
+
+  /traces/{threadId}:
+    parameters:
+      - name: threadId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [trazas]
+      operationId: getTrace
+      summary: Línea de tiempo de decisiones por agente
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [threadId, status, steps]
+                properties:
+                  threadId: { type: string }
+                  status: { type: string, enum: [en_curso, esperando_revision, completado, error] }
+                  steps:
+                    type: array
+                    items: { $ref: "#/components/schemas/AgentTrace" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /locations:
+    get:
+      tags: [catalogos]
+      operationId: listLocations
+      summary: Corregimientos
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Location" }
+
+  /skills:
+    get:
+      tags: [catalogos]
+      operationId: listSkills
+      summary: Taxonomía ESCO-lite
+      parameters:
+        - name: q
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Skill" }
+
+components:
+  parameters:
+    YouthId:
+      name: youthId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    PostingId:
+      name: postingId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+
+  responses:
+    Accepted:
+      description: Trabajo agéntico iniciado
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [threadId]
+            properties:
+              threadId: { type: string }
+              resourceId: { type: string, format: uuid }
+    NotFound:
+      description: No encontrado
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+    ValidationError:
+      description: Entrada inválida, absurda o bloqueada por guardrails
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+    Problem:
+      description: Error
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+
+  schemas:
+    Problem:
+      type: object
+      required: [title, status]
+      properties:
+        type: { type: string }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        guardrail:
+          type: string
+          enum: [inyeccion, fuera_de_alcance, dato_absurdo, archivo_invalido, pii]
+
+    TimeSlot:
+      type: object
+      required: [day, start, end]
+      properties:
+        day: { type: string, enum: [lun, mar, mie, jue, vie, sab, dom] }
+        start: { type: string, pattern: "^([01]\\d|2[0-3]):[0-5]\\d$", examples: ["08:00"] }
+        end: { type: string, pattern: "^([01]\\d|2[0-3]):[0-5]\\d$", examples: ["17:00"] }
+
+    Location:
+      type: object
+      required: [id, corregimiento, distrito, provincia]
+      properties:
+        id: { type: string, format: uuid }
+        corregimiento: { type: string }
+        distrito: { type: string }
+        provincia: { type: string }
+        lat: { type: number }
+        lng: { type: number }
+
+    Skill:
+      type: object
+      required: [id, labelEs]
+      properties:
+        id: { type: string, format: uuid }
+        escoUri: { type: string, format: uri }
+        labelEs: { type: string }
+        group: { type: string }
+
+    ProfileSkill:
+      type: object
+      required: [skill, level, source, evidence]
+      properties:
+        skill: { $ref: "#/components/schemas/Skill" }
+        level: { type: integer, minimum: 1, maximum: 3 }
+        source: { type: string, enum: [cv, entrevista, orientador] }
+        evidence: { type: string, description: Fragmento textual que justifica la habilidad }
+
+    YouthCreate:
+      type: object
+      required: [displayName, birthYear, locationId, maxCommuteMin, transportBudgetDaily, availability]
+      properties:
+        displayName: { type: string, minLength: 1, maxLength: 120 }
+        birthYear: { type: integer, minimum: 1990, maximum: 2010 }
+        gender: { type: string, enum: [femenino, masculino, otro, prefiero_no_decir] }
+        locationId: { type: string, format: uuid }
+        maxCommuteMin: { type: integer, minimum: 5, maximum: 180 }
+        transportBudgetDaily: { type: number, minimum: 0, maximum: 50 }
+        minSalary: { type: number, minimum: 0, maximum: 5000 }
+        studying: { type: boolean }
+        availability:
+          type: array
+          items: { $ref: "#/components/schemas/TimeSlot" }
+
+    Youth:
+      allOf:
+        - $ref: "#/components/schemas/YouthCreate"
+        - type: object
+          required: [id, skills, isSynthetic]
+          properties:
+            id: { type: string, format: uuid }
+            skills:
+              type: array
+              items: { $ref: "#/components/schemas/ProfileSkill" }
+            isSynthetic: { type: boolean }
+
+    InterviewStep:
+      type: object
+      required: [done]
+      properties:
+        done: { type: boolean }
+        question: { type: string }
+        index: { type: integer }
+        discoveredSkills:
+          type: array
+          items: { $ref: "#/components/schemas/ProfileSkill" }
+
+    CompanyCreate:
+      type: object
+      required: [name, locationId]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 200 }
+        locationId: { type: string, format: uuid }
+        contactEmail: { type: string, format: email }
+
+    Company:
+      allOf:
+        - $ref: "#/components/schemas/CompanyCreate"
+        - type: object
+          required: [id]
+          properties:
+            id: { type: string, format: uuid }
+
+    PostingStatus:
+      type: string
+      enum: [borrador, bloqueada, publicada, cerrada]
+
+    PostingRequirement:
+      type: object
+      required: [skill, weight, required]
+      properties:
+        skill: { $ref: "#/components/schemas/Skill" }
+        weight: { type: integer, minimum: 1, maximum: 3 }
+        required: { type: boolean }
+
+    JobPosting:
+      type: object
+      required: [id, companyId, title, status, inputType, requirements]
+      properties:
+        id: { type: string, format: uuid }
+        companyId: { type: string, format: uuid }
+        title: { type: string }
+        inputType: { type: string, enum: [texto, foto, pdf] }
+        location: { $ref: "#/components/schemas/Location" }
+        schedule:
+          type: array
+          items: { $ref: "#/components/schemas/TimeSlot" }
+        salaryMin: { type: number }
+        salaryMax: { type: number }
+        vacancies: { type: integer, minimum: 1 }
+        status: { $ref: "#/components/schemas/PostingStatus" }
+        requirements:
+          type: array
+          items: { $ref: "#/components/schemas/PostingRequirement" }
+        auditFindings:
+          type: array
+          items: { $ref: "#/components/schemas/AuditCheck" }
+
+    TrainingCenter:
+      type: object
+      required: [id, name, locationId]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        locationId: { type: string, format: uuid }
+
+    CourseSession:
+      type: object
+      required: [schedule, startDate, seatsTotal]
+      properties:
+        id: { type: string, format: uuid }
+        schedule:
+          type: array
+          items: { $ref: "#/components/schemas/TimeSlot" }
+        startDate: { type: string, format: date }
+        seatsTotal: { type: integer, minimum: 1 }
+        seatsTaken: { type: integer, minimum: 0 }
+
+    CourseCreate:
+      type: object
+      required: [centerId, title, hours, cost, skillIds, sessions]
+      properties:
+        centerId: { type: string, format: uuid }
+        title: { type: string }
+        hours: { type: integer, minimum: 1 }
+        cost: { type: number, minimum: 0 }
+        skillIds:
+          type: array
+          items: { type: string, format: uuid }
+        sessions:
+          type: array
+          minItems: 1
+          items: { $ref: "#/components/schemas/CourseSession" }
+
+    Course:
+      allOf:
+        - $ref: "#/components/schemas/CourseCreate"
+        - type: object
+          required: [id]
+          properties:
+            id: { type: string, format: uuid }
+
+    TrainingPlan:
+      type: object
+      required: [id, youthId, items, totalCost, unlockedPostings, explanation]
+      properties:
+        id: { type: string, format: uuid }
+        youthId: { type: string, format: uuid }
+        items:
+          type: array
+          items:
+            type: object
+            required: [courseTitle, session]
+            properties:
+              courseTitle: { type: string }
+              session: { $ref: "#/components/schemas/CourseSession" }
+              commuteMin: { type: integer }
+        totalCost: { type: number }
+        unlockedPostings: { type: integer }
+        explanation: { type: string }
+
+    MatchStatus:
+      type: string
+      enum: [propuesto, aprobado, rechazado]
+
+    ScoreBreakdown:
+      type: object
+      description: Desglose determinista del puntaje; la explicación del LLM solo verbaliza estos valores.
+      required: [skillCoverage, commute, cost, schedule, salary]
+      properties:
+        skillCoverage: { type: number, minimum: 0, maximum: 1 }
+        commute: { type: number, minimum: 0, maximum: 1 }
+        cost: { type: number, minimum: 0, maximum: 1 }
+        schedule: { type: number, minimum: 0, maximum: 1 }
+        salary: { type: number, minimum: 0, maximum: 1 }
+        missingSkills:
+          type: array
+          items: { type: string }
+
+    MatchResult:
+      type: object
+      required: [runId, youthId, postingId, score, scoreBreakdown, constraintsChecked, explanation, status]
+      properties:
+        runId: { type: string, format: uuid }
+        youthId: { type: string, format: uuid }
+        postingId: { type: string, format: uuid }
+        score: { type: number }
+        scoreBreakdown: { $ref: "#/components/schemas/ScoreBreakdown" }
+        constraintsChecked:
+          type: object
+          required: [commuteMin, dailyCost, scheduleOverlap, salaryOk]
+          properties:
+            commuteMin: { type: integer }
+            dailyCost: { type: number }
+            scheduleOverlap: { type: boolean }
+            salaryOk: { type: boolean }
+        explanation: { type: string }
+        status: { $ref: "#/components/schemas/MatchStatus" }
+
+    AuditCheck:
+      type: object
+      required: [id, kind, passed]
+      properties:
+        id: { type: string, format: uuid }
+        kind: { type: string, enum: [discriminacion, contrafactual] }
+        variable: { type: string, enum: [nombre, genero, corregimiento] }
+        parity: { type: number, minimum: 0, maximum: 1 }
+        passed: { type: boolean }
+        findings:
+          type: array
+          items: { type: string }
+
+    MatchRun:
+      type: object
+      required: [id, solverStatus, results, audit]
+      properties:
+        id: { type: string, format: uuid }
+        solverStatus: { type: string, enum: [OPTIMAL, FEASIBLE, INFEASIBLE, TIMEOUT] }
+        solveMs: { type: integer }
+        threadId: { type: string }
+        results:
+          type: array
+          items: { $ref: "#/components/schemas/MatchResult" }
+        audit:
+          type: array
+          items: { $ref: "#/components/schemas/AuditCheck" }
+
+    Application:
+      type: object
+      required: [id, matchResult, status]
+      properties:
+        id: { type: string, format: uuid }
+        matchResult: { $ref: "#/components/schemas/MatchResult" }
+        tailoredCv: { type: string }
+        coverLetter: { type: string }
+        status: { type: string, enum: [en_lista_corta, enviada, entrevista, descartada] }
+        interviewSlots:
+          type: array
+          items:
+            type: object
+            required: [startsAt, endsAt]
+            properties:
+              startsAt: { type: string, format: date-time }
+              endsAt: { type: string, format: date-time }
+
+    ReviewKind:
+      type: string
+      enum: [bloqueo_oferta, lista_corta, alerta_sesgo]
+
+    ReviewStatus:
+      type: string
+      enum: [pendiente, aprobada, editada, rechazada]
+
+    ReviewTask:
+      type: object
+      required: [id, kind, subjectId, proposal, explanation, status, threadId, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        kind: { $ref: "#/components/schemas/ReviewKind" }
+        subjectId: { type: string, format: uuid }
+        proposal: { type: object, additionalProperties: true }
+        explanation: { type: string }
+        agent: { type: string }
+        status: { $ref: "#/components/schemas/ReviewStatus" }
+        reviewer: { type: string }
+        comment: { type: string }
+        threadId: { type: string }
+        createdAt: { type: string, format: date-time }
+        resolvedAt: { type: string, format: date-time }
+
+    ReviewDecision:
+      type: object
+      required: [decision, reviewer]
+      properties:
+        decision: { type: string, enum: [aprobar, editar, rechazar] }
+        reviewer: { type: string, minLength: 1 }
+        comment: { type: string, maxLength: 2000 }
+        edits:
+          type: object
+          additionalProperties: true
+          description: Cambios del orientador (p. ej. orden de la lista corta o texto corregido de la oferta)
+
+    AgentTrace:
+      type: object
+      required: [agent, step, decision, createdAt]
+      properties:
+        agent:
+          type: string
+          enum: [supervisor, mercado, perfil, matching, formacion, postulacion, entrevista, auditor, orientador]
+        step: { type: integer }
+        inputSummary: { type: string }
+        decision: { type: string }
+        reason: { type: string }
+        durationMs: { type: integer }
+        langfuseTraceId: { type: string }
+        createdAt: { type: string, format: date-time }

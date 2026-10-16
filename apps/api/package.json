@@ -1,0 +1,11 @@
+{
+  "name": "api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Backend Python (FastAPI + LangGraph). Los scripts delegan en uv para que turbo/pnpm lo orquesten.",
+  "scripts": {
+    "dev": "uv run uvicorn puente_api.main:app --reload --port 8000",
+    "test": "uv run pytest",
+    "evals": "uv run pytest tests/evals -q"
+  }
+}

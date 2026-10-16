@@ -1,0 +1,14 @@
+{
+  "name": "@puente/api-spec",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Contrato OpenAPI 3.1 de Puente (fuente de verdad) y vista Scalar.",
+  "scripts": {
+    "lint": "redocly lint openapi.yaml",
+    "preview": "serve . -l 4010"
+  },
+  "devDependencies": {
+    "@redocly/cli": "^2.0.0",
+    "serve": "^14.2.4"
+  }
+}
