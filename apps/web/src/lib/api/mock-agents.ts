@@ -213,7 +213,7 @@ export async function uploadCv(
 	const found = extractSkills(text).map(
 		({ skill, evidence }): ProfileSkill => ({
 			skill,
-			level: /\b(años|siempre|encargad)/i.test(evidence) ? 2 : 1,
+			level: /\b(años|siempre|encarga)/i.test(evidence) ? 2 : 1,
 			source: "cv",
 			evidence,
 		}),
@@ -271,7 +271,7 @@ export async function answerInterview(
 		const found = extractSkills(answer).map(
 			({ skill, evidence }): ProfileSkill => ({
 				skill,
-				level: /\b(años|siempre|todos los días|encargad)/i.test(evidence)
+				level: /\b(años|siempre|todos los días|encarga)/i.test(evidence)
 					? 2
 					: 1,
 				source: "entrevista",

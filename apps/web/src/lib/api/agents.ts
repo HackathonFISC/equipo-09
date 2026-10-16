@@ -54,7 +54,7 @@ function asProblem(error: unknown): Problem | undefined {
 
 export function describeProblem(problem: Problem | undefined, status: number) {
 	if (problem?.guardrail) {
-		return `${GUARDRAIL_COPY[problem.guardrail]}${problem.detail ? ` ${problem.detail}` : ""}`;
+		return problem.detail ?? GUARDRAIL_COPY[problem.guardrail];
 	}
 	if (problem?.detail) return problem.detail;
 	if (problem?.title) return problem.title;

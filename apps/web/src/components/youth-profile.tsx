@@ -347,6 +347,8 @@ function Interview({
 	const answerId = useId();
 	const questionId = useId();
 	const [state, setState] = useState<InterviewState>({ status: "idle" });
+	// El título no cambia a mitad de entrevista aunque aparezcan habilidades.
+	const [startedShort] = useState(shortVersion);
 	const [answer, setAnswer] = useState("");
 	const [pending, setPending] = useState(false);
 	const [error, setError] = useState<Extract<
@@ -398,7 +400,7 @@ function Interview({
 						className="size-5 text-agent-perfil"
 						aria-hidden="true"
 					/>
-					{shortVersion ? "Completa tu perfil" : "¿No tienes CV?"}
+					{startedShort ? "Completa tu perfil" : "¿No tienes CV?"}
 				</h2>
 				<p className="text-muted-foreground text-sm">
 					Responde hasta {MAX_QUESTIONS} preguntas cortas con tus palabras. No
