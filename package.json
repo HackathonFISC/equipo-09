@@ -14,6 +14,7 @@
     "dev:api": "turbo run dev -F api --",
     "api:lint": "pnpm --filter @puente/api-spec lint",
     "api:docs": "pnpm --filter @puente/api-spec preview",
+    "api:generate": "pnpm --filter web api:generate",
     "env:generate": "varlock codegen --path ./apps/web/",
     "postinstall": "varlock codegen --path ./apps/web/",
     "check": "biome check --write ."
