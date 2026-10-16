@@ -1,0 +1,115 @@
+{
+  "training_centers": [
+    {"key": "inadeh-chorrera", "name": "INADEH — Centro de Formación Panamá Oeste (La Chorrera)", "location": "barrio-balboa", "is_synthetic": true, "source": "INADEH tiene sede en el distrito; nombre de la sede aproximado"},
+    {"key": "inadeh-arraijan", "name": "INADEH — Centro de Formación Arraiján", "location": "arraijan", "is_synthetic": true, "source": "INADEH tiene sede en el distrito; nombre de la sede aproximado"},
+    {"key": "inadeh-calidonia", "name": "INADEH — Centro de Formación Metropolitano (Calidonia)", "location": "calidonia", "is_synthetic": true, "source": "INADEH tiene sede en el distrito; nombre de la sede aproximado"},
+    {"key": "inadeh-tocumen", "name": "INADEH — Centro de Formación Panamá Este (Tocumen)", "location": "tocumen", "is_synthetic": true, "source": "INADEH tiene sede en el distrito; nombre de la sede aproximado"}
+  ],
+  "courses": [
+    {
+      "key": "atencion-cliente-caja", "center": "inadeh-chorrera", "title": "Atención al cliente y manejo de caja",
+      "hours": 60, "cost": 0, "skills": ["atencion-al-cliente", "manejo-de-caja", "cuadre-de-caja", "punto-de-venta-pos"],
+      "is_synthetic": true,
+      "sessions": [
+        {"key": "s1", "start_date": "2026-11-02", "seats_total": 25, "seats_taken": 18, "schedule": [{"day": "lun", "start": "18:00", "end": "21:00"}, {"day": "mie", "start": "18:00", "end": "21:00"}]},
+        {"key": "s2", "start_date": "2026-11-07", "seats_total": 25, "seats_taken": 9, "schedule": [{"day": "sab", "start": "08:00", "end": "13:00"}]}
+      ]
+    },
+    {
+      "key": "excel-basico-intermedio", "center": "inadeh-chorrera", "title": "Excel básico e intermedio",
+      "hours": 40, "cost": 0, "skills": ["excel-basico", "excel-intermedio", "ofimatica-basica"],
+      "is_synthetic": true,
+      "sessions": [
+        {"key": "s1", "start_date": "2026-11-03", "seats_total": 20, "seats_taken": 20, "schedule": [{"day": "mar", "start": "18:00", "end": "21:00"}, {"day": "jue", "start": "18:00", "end": "21:00"}]},
+        {"key": "s2", "start_date": "2026-11-14", "seats_total": 20, "seats_taken": 6, "schedule": [{"day": "sab", "start": "08:00", "end": "12:00"}]},
+        {"key": "s3", "start_date": "2026-12-01", "seats_total": 20, "seats_taken": 0, "schedule": [{"day": "mar", "start": "08:00", "end": "12:00"}, {"day": "jue", "start": "08:00", "end": "12:00"}]}
+      ]
+    },
+    {
+      "key": "control-inventarios", "center": "inadeh-arraijan", "title": "Control de inventarios y bodega",
+      "hours": 48, "cost": 0, "skills": ["control-de-inventario", "inventario-en-bodega", "recepcion-de-mercancia", "escaner-de-codigos"],
+      "is_synthetic": true,
+      "sessions": [
+        {"key": "s1", "start_date": "2026-11-09", "seats_total": 20, "seats_taken": 11, "schedule": [{"day": "lun", "start": "13:00", "end": "17:00"}, {"day": "mie", "start": "13:00", "end": "17:00"}]}
+      ]
+    },
+    {
+      "key": "ingles-atencion-cliente", "center": "inadeh-calidonia", "title": "Inglés para atención al cliente",
+      "hours": 120, "cost": 0, "skills": ["ingles-basico", "ingles-atencion-cliente", "ingles-conversacional"],
+      "is_synthetic": true,
+      "sessions": [
+        {"key": "s1", "start_date": "2026-11-02", "seats_total": 30, "seats_taken": 24, "schedule": [{"day": "lun", "start": "17:30", "end": "20:30"}, {"day": "mie", "start": "17:30", "end": "20:30"}, {"day": "vie", "start": "17:30", "end": "20:30"}]},
+        {"key": "s2", "start_date": "2026-11-07", "seats_total": 30, "seats_taken": 12, "schedule": [{"day": "sab", "start": "08:00", "end": "14:00"}]}
+      ]
+    },
+    {
+      "key": "manipulacion-alimentos", "center": "inadeh-calidonia", "title": "Manipulación de alimentos e higiene (BPM)",
+      "hours": 20, "cost": 5, "skills": ["manipulacion-de-alimentos", "higiene-bpm"],
+      "is_synthetic": true,
+      "sessions": [
+        {"key": "s1", "start_date": "2026-10-26", "seats_total": 35, "seats_taken": 20, "schedule": [{"day": "sab", "start": "08:00", "end": "13:00"}]},
+        {"key": "s2", "start_date": "2026-11-16", "seats_total": 35, "seats_taken": 3, "schedule": [{"day": "lun", "start": "08:00", "end": "12:00"}, {"day": "mar", "start": "08:00", "end": "12:00"}]}
+      ]
+    },
+    {
+      "key": "cocina-panamena", "center": "inadeh-calidonia", "title": "Cocina panameña básica",
+      "hours": 80, "cost": 25, "skills": ["cocina-basica", "cocina-panamena", "preparacion-de-alimentos", "control-de-porciones"],
+      "is_synthetic": true,
+      "sessions": [
+        {"key": "s1", "start_date": "2026-11-04", "seats_total": 15, "seats_taken": 10, "schedule": [{"day": "mar", "start": "13:00", "end": "17:00"}, {"day": "jue", "start": "13:00", "end": "17:00"}]}
+      ]
+    },
+    {
+      "key": "barista-servicio-mesa", "center": "inadeh-calidonia", "title": "Barismo y servicio de mesa",
+      "hours": 40, "cost": 20, "skills": ["barista", "servicio-de-mesa", "atencion-al-cliente"],
+      "is_synthetic": true,
+      "sessions": [
+        {"key": "s1", "start_date": "2026-11-10", "seats_total": 15, "seats_taken": 7, "schedule": [{"day": "mar", "start": "18:00", "end": "21:00"}, {"day": "jue", "start": "18:00", "end": "21:00"}]},
+        {"key": "s2", "start_date": "2026-11-14", "seats_total": 15, "seats_taken": 2, "schedule": [{"day": "sab", "start": "13:00", "end": "18:00"}]}
+      ]
+    },
+    {
+      "key": "montacargas", "center": "inadeh-tocumen", "title": "Operación segura de montacargas",
+      "hours": 40, "cost": 0, "skills": ["montacargas", "seguridad-salud-ocupacional", "carga-y-descarga"],
+      "is_synthetic": true,
+      "sessions": [
+        {"key": "s1", "start_date": "2026-11-09", "seats_total": 12, "seats_taken": 8, "schedule": [{"day": "lun", "start": "07:00", "end": "12:00"}, {"day": "mar", "start": "07:00", "end": "12:00"}]},
+        {"key": "s2", "start_date": "2026-11-21", "seats_total": 12, "seats_taken": 4, "schedule": [{"day": "sab", "start": "07:00", "end": "15:00"}]}
+      ]
+    },
+    {
+      "key": "electricidad-residencial", "center": "inadeh-tocumen", "title": "Electricidad residencial",
+      "hours": 160, "cost": 30, "skills": ["electricidad-residencial", "lectura-de-planos", "herramientas-electricas", "seguridad-salud-ocupacional"],
+      "is_synthetic": true,
+      "sessions": [
+        {"key": "s1", "start_date": "2026-11-02", "seats_total": 20, "seats_taken": 15, "schedule": [{"day": "lun", "start": "18:00", "end": "21:30"}, {"day": "mie", "start": "18:00", "end": "21:30"}, {"day": "vie", "start": "18:00", "end": "21:30"}]}
+      ]
+    },
+    {
+      "key": "soporte-tecnico", "center": "inadeh-arraijan", "title": "Soporte técnico y reparación de computadoras",
+      "hours": 100, "cost": 15, "skills": ["soporte-tecnico-basico", "reparacion-de-computadoras", "cableado-de-redes"],
+      "is_synthetic": true,
+      "sessions": [
+        {"key": "s1", "start_date": "2026-11-03", "seats_total": 18, "seats_taken": 12, "schedule": [{"day": "mar", "start": "18:00", "end": "21:00"}, {"day": "jue", "start": "18:00", "end": "21:00"}]},
+        {"key": "s2", "start_date": "2026-11-14", "seats_total": 18, "seats_taken": 5, "schedule": [{"day": "sab", "start": "08:00", "end": "14:00"}]}
+      ]
+    },
+    {
+      "key": "recepcion-hotelera", "center": "inadeh-calidonia", "title": "Recepción hotelera y reservaciones",
+      "hours": 80, "cost": 0, "skills": ["recepcion-hotelera", "reservaciones", "atencion-telefonica"],
+      "is_synthetic": true,
+      "sessions": [
+        {"key": "s1", "start_date": "2026-11-16", "seats_total": 20, "seats_taken": 6, "schedule": [{"day": "lun", "start": "08:00", "end": "12:00"}, {"day": "mie", "start": "08:00", "end": "12:00"}]}
+      ]
+    },
+    {
+      "key": "redes-sociales-negocios", "center": "inadeh-chorrera", "title": "Redes sociales y diseño para negocios",
+      "hours": 40, "cost": 0, "skills": ["redes-sociales-negocios", "community-management", "diseno-grafico-basico", "edicion-de-video-basica"],
+      "is_synthetic": true,
+      "sessions": [
+        {"key": "s1", "start_date": "2026-11-05", "seats_total": 25, "seats_taken": 14, "schedule": [{"day": "jue", "start": "18:00", "end": "21:00"}]},
+        {"key": "s2", "start_date": "2026-11-21", "seats_total": 25, "seats_taken": 3, "schedule": [{"day": "sab", "start": "13:00", "end": "17:00"}]}
+      ]
+    }
+  ]
+}

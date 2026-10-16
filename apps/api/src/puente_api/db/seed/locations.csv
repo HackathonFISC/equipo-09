@@ -1,0 +1,51 @@
+key,corregimiento,distrito,provincia,lat,lng,metro,zona
+san-felipe,San Felipe,Panamá,Panamá,8.9520,-79.5350,0,urbana
+el-chorrillo,El Chorrillo,Panamá,Panamá,8.9500,-79.5430,0,urbana
+santa-ana,Santa Ana,Panamá,Panamá,8.9570,-79.5380,1,urbana
+calidonia,Calidonia,Panamá,Panamá,8.9660,-79.5370,1,urbana
+curundu,Curundú,Panamá,Panamá,8.9730,-79.5450,1,urbana
+betania,Betania,Panamá,Panamá,9.0030,-79.5250,1,urbana
+bella-vista,Bella Vista,Panamá,Panamá,8.9830,-79.5220,1,urbana
+pueblo-nuevo,Pueblo Nuevo,Panamá,Panamá,9.0060,-79.5070,1,urbana
+san-francisco,San Francisco,Panamá,Panamá,8.9950,-79.5050,0,urbana
+parque-lefevre,Parque Lefevre,Panamá,Panamá,9.0170,-79.4900,0,urbana
+rio-abajo,Río Abajo,Panamá,Panamá,9.0250,-79.4880,0,urbana
+juan-diaz,Juan Díaz,Panamá,Panamá,9.0400,-79.4520,1,urbana
+don-bosco,Don Bosco,Panamá,Panamá,9.0550,-79.4650,1,urbana
+pedregal,Pedregal,Panamá,Panamá,9.0680,-79.4320,1,urbana
+ancon,Ancón,Panamá,Panamá,8.9800,-79.5650,1,urbana
+las-cumbres,Las Cumbres,Panamá,Panamá,9.0900,-79.5300,1,urbana
+ernesto-cordoba-campos,Ernesto Córdoba Campos,Panamá,Panamá,9.1000,-79.5400,0,urbana
+alcalde-diaz,Alcalde Díaz,Panamá,Panamá,9.1250,-79.5550,0,periurbana
+chilibre,Chilibre,Panamá,Panamá,9.1550,-79.6200,0,periurbana
+caimitillo,Caimitillo,Panamá,Panamá,9.1800,-79.5600,0,periurbana
+las-mananitas,Las Mañanitas,Panamá,Panamá,9.1000,-79.3950,1,urbana
+tocumen,Tocumen,Panamá,Panamá,9.0800,-79.3800,1,urbana
+24-de-diciembre,24 de Diciembre,Panamá,Panamá,9.0950,-79.3550,1,periurbana
+las-garzas,Las Garzas,Panamá,Panamá,9.0900,-79.3300,0,periurbana
+pacora,Pacora,Panamá,Panamá,9.0800,-79.2900,0,periurbana
+san-martin,San Martín,Panamá,Panamá,9.1300,-79.1800,0,periurbana
+amelia-denis-de-icaza,Amelia Denis de Icaza,San Miguelito,Panamá,9.0350,-79.5000,1,urbana
+belisario-porras,Belisario Porras,San Miguelito,Panamá,9.0600,-79.4950,1,urbana
+jose-domingo-espinar,José Domingo Espinar,San Miguelito,Panamá,9.0450,-79.4700,1,urbana
+mateo-iturralde,Mateo Iturralde,San Miguelito,Panamá,9.0300,-79.5120,1,urbana
+victoriano-lorenzo,Victoriano Lorenzo,San Miguelito,Panamá,9.0400,-79.5150,1,urbana
+arnulfo-arias,Arnulfo Arias,San Miguelito,Panamá,9.0750,-79.4800,1,urbana
+belisario-frias,Belisario Frías,San Miguelito,Panamá,9.0800,-79.5000,1,urbana
+omar-torrijos,Omar Torrijos,San Miguelito,Panamá,9.0600,-79.4750,1,urbana
+rufina-alfaro,Rufina Alfaro,San Miguelito,Panamá,9.0500,-79.4550,1,urbana
+arraijan,Arraiján,Arraiján,Panamá Oeste,8.9500,-79.6550,0,urbana
+burunga,Burunga,Arraiján,Panamá Oeste,8.9350,-79.6650,0,urbana
+cerro-silvestre,Cerro Silvestre,Arraiján,Panamá Oeste,8.9500,-79.6850,0,urbana
+juan-demostenes-arosemena,Juan Demóstenes Arosemena,Arraiján,Panamá Oeste,8.9850,-79.7000,0,urbana
+nuevo-emperador,Nuevo Emperador,Arraiján,Panamá Oeste,9.0000,-79.7200,0,periurbana
+santa-clara-arraijan,Santa Clara,Arraiján,Panamá Oeste,8.9300,-79.7400,0,periurbana
+veracruz,Veracruz,Arraiján,Panamá Oeste,8.8900,-79.6200,0,urbana
+vista-alegre,Vista Alegre,Arraiján,Panamá Oeste,8.9300,-79.7000,0,urbana
+barrio-balboa,Barrio Balboa,La Chorrera,Panamá Oeste,8.8800,-79.7800,0,urbana
+barrio-colon,Barrio Colón,La Chorrera,Panamá Oeste,8.8750,-79.7900,0,urbana
+guadalupe,Guadalupe,La Chorrera,Panamá Oeste,8.8650,-79.8100,0,urbana
+el-coco,El Coco,La Chorrera,Panamá Oeste,8.8600,-79.8250,0,urbana
+puerto-caimito,Puerto Caimito,La Chorrera,Panamá Oeste,8.8700,-79.7550,0,urbana
+playa-leona,Playa Leona,La Chorrera,Panamá Oeste,8.9000,-79.8100,0,periurbana
+herrera,Herrera,La Chorrera,Panamá Oeste,8.8400,-79.8300,0,periurbana
