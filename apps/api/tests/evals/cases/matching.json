@@ -1,0 +1,425 @@
+[
+  {
+    "id": "match-01-basico",
+    "category": "matching",
+    "type": "matching",
+    "description": "Cada joven recibe la oferta de su corregimiento",
+    "metric": "Asignación joven→oferta idéntica a la esperada y 0 restricciones duras violadas",
+    "input": {
+      "commute": "base",
+      "youths": [
+        {
+          "id": "y1",
+          "location_id": "A",
+          "max_commute_min": 45,
+          "transport_budget_daily": 3.0,
+          "availability": [
+            "lun,mar,mie 07:00-17:00"
+          ],
+          "min_salary": 500.0,
+          "skills": {
+            "sk-caja": 3
+          }
+        },
+        {
+          "id": "y2",
+          "location_id": "B",
+          "max_commute_min": 45,
+          "transport_budget_daily": 3.0,
+          "availability": [
+            "lun,mar,mie 07:00-17:00"
+          ],
+          "min_salary": 500.0,
+          "skills": {
+            "sk-caja": 3
+          }
+        }
+      ],
+      "postings": [
+        {
+          "id": "p1",
+          "location_id": "A",
+          "schedule": [
+            "lun,mar,mie 08:00-16:00"
+          ],
+          "salary_min": 600.0,
+          "salary_max": 600.0,
+          "vacancies": 1,
+          "requirements": [
+            {
+              "skill_id": "sk-caja",
+              "weight": 3,
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "p2",
+          "location_id": "B",
+          "schedule": [
+            "lun,mar,mie 08:00-16:00"
+          ],
+          "salary_min": 600.0,
+          "salary_max": 600.0,
+          "vacancies": 1,
+          "requirements": [
+            {
+              "skill_id": "sk-caja",
+              "weight": 3,
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "assignments": {
+        "y1": "p1",
+        "y2": "p2"
+      }
+    }
+  },
+  {
+    "id": "match-02-traslado-duro",
+    "category": "matching",
+    "type": "matching",
+    "description": "Traslado > máximo del joven: no se asigna (restricción dura)",
+    "metric": "Asignación joven→oferta idéntica a la esperada y 0 restricciones duras violadas",
+    "input": {
+      "commute": "base",
+      "youths": [
+        {
+          "id": "y1",
+          "location_id": "A",
+          "max_commute_min": 30,
+          "transport_budget_daily": 3.0,
+          "availability": [
+            "lun,mar,mie 07:00-17:00"
+          ],
+          "min_salary": 500.0,
+          "skills": {
+            "sk-caja": 3
+          }
+        }
+      ],
+      "postings": [
+        {
+          "id": "p1",
+          "location_id": "C",
+          "schedule": [
+            "lun,mar,mie 08:00-16:00"
+          ],
+          "salary_min": 600.0,
+          "salary_max": 600.0,
+          "vacancies": 1,
+          "requirements": [
+            {
+              "skill_id": "sk-caja",
+              "weight": 3,
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "assignments": {
+        "y1": null
+      }
+    }
+  },
+  {
+    "id": "match-03-horario-duro",
+    "category": "matching",
+    "type": "matching",
+    "description": "Sin cobertura de horario: no se asigna",
+    "metric": "Asignación joven→oferta idéntica a la esperada y 0 restricciones duras violadas",
+    "input": {
+      "commute": "base",
+      "youths": [
+        {
+          "id": "y1",
+          "location_id": "A",
+          "max_commute_min": 45,
+          "transport_budget_daily": 3.0,
+          "availability": [
+            "jue,vie 08:00-16:00"
+          ],
+          "min_salary": 500.0,
+          "skills": {
+            "sk-caja": 3
+          }
+        }
+      ],
+      "postings": [
+        {
+          "id": "p1",
+          "location_id": "A",
+          "schedule": [
+            "lun,mar,mie 08:00-16:00"
+          ],
+          "salary_min": 600.0,
+          "salary_max": 600.0,
+          "vacancies": 1,
+          "requirements": [
+            {
+              "skill_id": "sk-caja",
+              "weight": 3,
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "assignments": {
+        "y1": null
+      }
+    }
+  },
+  {
+    "id": "match-04-requisito-obligatorio",
+    "category": "matching",
+    "type": "matching",
+    "description": "Falta habilidad obligatoria: no se asigna",
+    "metric": "Asignación joven→oferta idéntica a la esperada y 0 restricciones duras violadas",
+    "input": {
+      "commute": "base",
+      "youths": [
+        {
+          "id": "y1",
+          "location_id": "A",
+          "max_commute_min": 45,
+          "transport_budget_daily": 3.0,
+          "availability": [
+            "lun,mar,mie 07:00-17:00"
+          ],
+          "min_salary": 500.0,
+          "skills": {
+            "sk-atencion": 3
+          }
+        }
+      ],
+      "postings": [
+        {
+          "id": "p1",
+          "location_id": "A",
+          "schedule": [
+            "lun,mar,mie 08:00-16:00"
+          ],
+          "salary_min": 600.0,
+          "salary_max": 600.0,
+          "vacancies": 1,
+          "requirements": [
+            {
+              "skill_id": "sk-caja",
+              "weight": 3,
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "assignments": {
+        "y1": null
+      }
+    }
+  },
+  {
+    "id": "match-05-requisito-holgura",
+    "category": "matching",
+    "type": "matching",
+    "description": "Con tolerancia (relaxed) se asigna y la holgura queda registrada y penalizada",
+    "metric": "Asignación esperada + holgura 'habilidades_obligatorias' registrada",
+    "input": {
+      "commute": "base",
+      "params": "relaxed",
+      "youths": [
+        {
+          "id": "y1",
+          "location_id": "A",
+          "max_commute_min": 45,
+          "transport_budget_daily": 3.0,
+          "availability": [
+            "lun,mar,mie 07:00-17:00"
+          ],
+          "min_salary": 500.0,
+          "skills": {
+            "sk-atencion": 3
+          }
+        }
+      ],
+      "postings": [
+        {
+          "id": "p1",
+          "location_id": "A",
+          "schedule": [
+            "lun,mar,mie 08:00-16:00"
+          ],
+          "salary_min": 600.0,
+          "salary_max": 600.0,
+          "vacancies": 1,
+          "requirements": [
+            {
+              "skill_id": "sk-caja",
+              "weight": 3,
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "assignments": {
+        "y1": "p1"
+      },
+      "slacks": [
+        "habilidades_obligatorias"
+      ]
+    }
+  },
+  {
+    "id": "match-06-presupuesto-duro",
+    "category": "matching",
+    "type": "matching",
+    "description": "Costo de transporte > presupuesto diario: no se asigna",
+    "metric": "Asignación joven→oferta idéntica a la esperada y 0 restricciones duras violadas",
+    "input": {
+      "commute": "base",
+      "youths": [
+        {
+          "id": "y1",
+          "location_id": "A",
+          "max_commute_min": 45,
+          "transport_budget_daily": 0.6,
+          "availability": [
+            "lun,mar,mie 07:00-17:00"
+          ],
+          "min_salary": 500.0,
+          "skills": {
+            "sk-caja": 3
+          }
+        }
+      ],
+      "postings": [
+        {
+          "id": "p1",
+          "location_id": "B",
+          "schedule": [
+            "lun,mar,mie 08:00-16:00"
+          ],
+          "salary_min": 600.0,
+          "salary_max": 600.0,
+          "vacancies": 1,
+          "requirements": [
+            {
+              "skill_id": "sk-caja",
+              "weight": 3,
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "assignments": {
+        "y1": null
+      }
+    }
+  },
+  {
+    "id": "match-07-cupos",
+    "category": "matching",
+    "type": "matching",
+    "description": "Nunca se asignan más jóvenes que vacantes",
+    "metric": "Carga por oferta ≤ vacantes y total de asignados esperado",
+    "input": {
+      "commute": "base",
+      "youths": [
+        {
+          "id": "y1",
+          "location_id": "A",
+          "max_commute_min": 45,
+          "transport_budget_daily": 3.0,
+          "availability": [
+            "lun,mar,mie 07:00-17:00"
+          ],
+          "min_salary": 500.0,
+          "skills": {
+            "sk-caja": 3
+          }
+        },
+        {
+          "id": "y2",
+          "location_id": "A",
+          "max_commute_min": 45,
+          "transport_budget_daily": 3.0,
+          "availability": [
+            "lun,mar,mie 07:00-17:00"
+          ],
+          "min_salary": 500.0,
+          "skills": {
+            "sk-caja": 3
+          }
+        },
+        {
+          "id": "y3",
+          "location_id": "A",
+          "max_commute_min": 45,
+          "transport_budget_daily": 3.0,
+          "availability": [
+            "lun,mar,mie 07:00-17:00"
+          ],
+          "min_salary": 500.0,
+          "skills": {
+            "sk-caja": 3
+          }
+        }
+      ],
+      "postings": [
+        {
+          "id": "p1",
+          "location_id": "A",
+          "schedule": [
+            "lun,mar,mie 08:00-16:00"
+          ],
+          "salary_min": 600.0,
+          "salary_max": 600.0,
+          "vacancies": 1,
+          "requirements": [
+            {
+              "skill_id": "sk-caja",
+              "weight": 3,
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "p2",
+          "location_id": "A",
+          "schedule": [
+            "lun,mar,mie 08:00-16:00"
+          ],
+          "salary_min": 600.0,
+          "salary_max": 600.0,
+          "vacancies": 1,
+          "requirements": [
+            {
+              "skill_id": "sk-caja",
+              "weight": 3,
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "assigned_count": 2,
+      "max_load": {
+        "p1": 1,
+        "p2": 1
+      }
+    }
+  }
+]
