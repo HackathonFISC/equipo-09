@@ -1,5 +1,6 @@
 """Punto de entrada de la API. El contrato vive en packages/api-spec/openapi.yaml."""
 
+import logging
 from contextlib import asynccontextmanager
 from http import HTTPStatus
 
@@ -14,10 +15,11 @@ from puente_api.config import get_settings
 from puente_api.db.session import init_db
 from puente_api.graph.guardrail_port import GuardrailBlocked
 from puente_api.problems import ProblemError
-from puente_api.routers import catalogs, matching, postings, reviews, traces, youth
+from puente_api.routers import catalogs, courses, matching, postings, reviews, traces, youth
 
 API_PREFIX = "/api/v1"
 PROBLEM_JSON = "application/problem+json"
+log = logging.getLogger("puente_api")
 
 
 @asynccontextmanager
@@ -27,12 +29,6 @@ async def lifespan(_app: FastAPI):
 
 
 app = FastAPI(title="Puente API", version="0.1.0", docs_url=None, redoc_url=None, lifespan=lifespan)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=get_settings().cors_origins,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 
 def _problem(status: int, detail: str | None = None, guardrail: str | None = None) -> JSONResponse:
@@ -42,6 +38,30 @@ def _problem(status: int, detail: str | None = None, guardrail: str | None = Non
     if guardrail:
         body["guardrail"] = guardrail
     return JSONResponse(body, status_code=status, media_type=PROBLEM_JSON)
+
+
+# Se registra ANTES que CORS para quedar por dentro de él: así un error no controlado también
+# lleva las cabeceras CORS y la web ve un 500 con mensaje en español, no un "error de red"
+# (que en modo `auto` la haría caer a datos de ejemplo sin avisar).
+@app.middleware("http")
+async def unexpected_errors(request: Request, call_next):
+    try:
+        return await call_next(request)
+    except Exception:
+        log.exception("Error no controlado en %s %s", request.method, request.url.path)
+        return _problem(
+            500,
+            "Ocurrió un error interno en Puente. Quedó registrado en los logs de la API; "
+            "inténtalo de nuevo.",
+        )
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=get_settings().cors_origins,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.exception_handler(StarletteHTTPException)
@@ -73,6 +93,7 @@ def health() -> dict[str, str]:
 
 
 api.include_router(catalogs.router)
+api.include_router(courses.router)
 api.include_router(postings.router)
 api.include_router(youth.router)
 api.include_router(matching.youth_router)

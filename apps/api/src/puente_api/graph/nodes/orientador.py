@@ -93,11 +93,9 @@ def _apply_shortlist(
         results[mid].status = "aprobado"
         app = applications[mid]
         app.status = "enviada"
-        session.add(
-            models.InterviewSlot(
-                application_id=app.id, starts_at=slots[mid][0], ends_at=slots[mid][1]
-            )
-        )
+        # Se guarda en UTC como el resto de fechas (SQLite descarta la zona horaria).
+        starts, ends = (t.astimezone(UTC) for t in slots[mid])
+        session.add(models.InterviewSlot(application_id=app.id, starts_at=starts, ends_at=ends))
     for mid in dropped:
         results[mid].status = "rechazado"
         applications[mid].status = "descartada"
