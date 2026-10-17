@@ -79,7 +79,8 @@ export function PostingIngest({ companyId }: { companyId: string }) {
 					</h2>
 					<p className="text-muted-foreground text-sm">
 						Pega el anuncio tal como lo tienes. Mercado lo convierte en
-						requisitos medibles y el Auditor lo revisa antes de publicarlo.
+						requisitos medibles y detiene los discriminatorios antes de
+						publicarlo.
 					</p>
 				</div>
 

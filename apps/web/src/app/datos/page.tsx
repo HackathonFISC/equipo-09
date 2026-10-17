@@ -15,6 +15,7 @@ import {
 	loadSkills,
 } from "@/lib/api/catalog";
 import { API_BASE_URL, type PostingStatus } from "@/lib/api/client";
+import { skillGroupLabel } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Datos semilla" };
 
@@ -175,7 +176,10 @@ export default async function DatosPage() {
 							<li key={s.id} className="border px-2 py-0.5 text-xs">
 								{s.labelEs}
 								{s.group ? (
-									<span className="text-muted-foreground"> · {s.group}</span>
+									<span className="text-muted-foreground">
+										{" "}
+										{skillGroupLabel(s.group)}
+									</span>
 								) : null}
 							</li>
 						))}

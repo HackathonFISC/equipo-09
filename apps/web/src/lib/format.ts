@@ -68,3 +68,28 @@ export function formatSchedule(slots: TimeSlot[] = []): string | null {
 export function plural(n: number, one: string, many: string) {
 	return `${n} ${n === 1 ? one : many}`;
 }
+
+/** Grupos de ESCO-lite (`skills.csv`, columna `group`) en español legible. */
+const SKILL_GROUP_LABEL: Record<string, string> = {
+	administracion: "Administración",
+	atencion_cliente: "Atención al cliente",
+	belleza: "Belleza",
+	construccion_oficios: "Construcción y oficios",
+	digital: "Digital",
+	gastronomia: "Gastronomía",
+	hoteleria_turismo: "Hotelería y turismo",
+	idiomas: "Idiomas",
+	limpieza: "Limpieza",
+	logistica: "Logística",
+	mantenimiento_tecnico: "Mantenimiento técnico",
+	salud_cuidado: "Salud y cuidado",
+	seguridad: "Seguridad",
+	transporte: "Transporte",
+	transversal: "Transversales",
+	ventas_comercio: "Ventas y comercio",
+};
+
+export function skillGroupLabel(group?: string | null): string {
+	if (!group) return "Sin grupo";
+	return SKILL_GROUP_LABEL[group] ?? group.replaceAll("_", " ");
+}
