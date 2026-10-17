@@ -19,6 +19,7 @@ from puente_api.db import models
 from puente_api.graph.state import PuenteState, deps
 from puente_api.graph.taxonomy import SkillIndex, fold
 from puente_api.llm.prompts import POSTULACION_SYSTEM, POSTULACION_USER
+from puente_api.solvers.matching import C_BUDGET, C_COMMUTE, C_REQUIRED
 from puente_api.tracing import traced
 
 MAX_CANDIDATES = 40
@@ -32,12 +33,25 @@ class ApplicationDraft(BaseModel):
     skills_used: list[str] = Field(default_factory=list, max_length=40)
 
 
+def _too_generic(key: str, skill: models.Skill) -> bool:
+    """Alias transversal de una sola palabra («equipo», «responsable», «compromiso»).
+
+    Son palabras de uso común en cualquier carta («Estimado equipo de…»): contarlas como
+    habilidad afirmada descartaba casi todos los borradores. La etiqueta completa
+    («Trabajo en equipo», «Responsabilidad») y todas las habilidades técnicas se siguen
+    verificando.
+    """
+    return skill.group == "transversal" and " " not in key and key != fold(skill.label_es)
+
+
 def foreign_skills(text: str, profile_skill_ids: set[str], index: SkillIndex) -> list[str]:
     """Etiquetas del catálogo que el texto menciona y que el perfil NO tiene."""
     padded = f" {fold(text)} "
     found: dict[str, str] = {}
     for key, skill in index.by_key.items():
-        if skill.id not in profile_skill_ids and f" {key} " in padded:
+        if skill.id in profile_skill_ids or _too_generic(key, skill):
+            continue
+        if f" {key} " in padded:
             found[skill.id] = skill.label_es
     return sorted(found.values())
 
@@ -81,6 +95,25 @@ def fallback_draft(
         explanation=explanation,
         skills_used=[ps.skill.label_es for ps in skills],
     )
+
+
+def slack_notes(youth: models.Youth, checked: dict[str, Any]) -> list[str]:
+    """Holguras del preset que usó el solver, en frases para el orientador."""
+    notes: list[str] = []
+    for slack in checked.get("slacks", []):
+        kind, amount = slack.get("constraint"), slack.get("amount", 0)
+        if kind == C_COMMUTE:
+            notes.append(f"Traslado {amount:.0f} min sobre su máximo ({youth.max_commute_min} min)")
+        elif kind == C_BUDGET:
+            notes.append(
+                f"Costo B/. {amount:.2f} sobre su presupuesto diario "
+                f"(B/. {youth.transport_budget_daily:.2f})"
+            )
+        elif kind == C_REQUIRED:
+            notes.append(f"Le falta {amount:.0f} habilidad(es) obligatoria(s)")
+        elif kind:
+            notes.append(f"Holgura en {kind}: {amount}")
+    return notes
 
 
 def _draft(
@@ -204,6 +237,11 @@ def postulacion_node(state: PuenteState, config: RunnableConfig) -> dict[str, An
                     "displayName": youth.display_name,
                     "score": round(match.score, 4),
                     "explanation": draft.explanation,
+                    # Datos del solver para que el orientador vea quién usa holgura.
+                    "skillCoverage": match.score_breakdown.get("skillCoverage"),
+                    "commuteMin": match.constraints_checked.get("commuteMin"),
+                    "dailyCost": match.constraints_checked.get("dailyCost"),
+                    "slackNotes": slack_notes(youth, match.constraints_checked),
                 }
             )
 

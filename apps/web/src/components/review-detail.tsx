@@ -146,11 +146,20 @@ function CandidateFacts({ c }: { c: Candidate }) {
 		c.commuteMin != null ? `${c.commuteMin} min de viaje` : null,
 		c.dailyCost != null ? `${money(c.dailyCost)}/día` : null,
 	].filter(Boolean);
-	if (facts.length === 0) return null;
+	if (facts.length === 0 && c.slackNotes.length === 0) return null;
 	return (
-		<span className="tabular font-mono text-muted-foreground text-xs">
-			{facts.join(" · ")}
-		</span>
+		<>
+			{facts.length ? (
+				<span className="tabular font-mono text-muted-foreground text-xs">
+					{facts.join(" · ")}
+				</span>
+			) : null}
+			{c.slackNotes.map((note) => (
+				<span key={note} className="font-medium text-danger-fg text-xs">
+					<span className="sr-only">Holgura: </span>⚠ {note}
+				</span>
+			))}
+		</>
 	);
 }
 

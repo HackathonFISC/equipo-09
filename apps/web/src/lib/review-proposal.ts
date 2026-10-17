@@ -27,6 +27,8 @@ export type Candidate = {
 	commuteMin?: number;
 	dailyCost?: number;
 	skillCoverage?: number;
+	/** Holguras del preset que usó el solver (traslado, costo, habilidad obligatoria). */
+	slackNotes: string[];
 	reason?: string;
 };
 
@@ -109,6 +111,9 @@ function parseCandidates(raw: unknown): Candidate[] {
 				commuteMin: num(c.commuteMin),
 				dailyCost: num(c.dailyCost),
 				skillCoverage: num(c.skillCoverage),
+				slackNotes: Array.isArray(c.slackNotes)
+					? c.slackNotes.flatMap((n) => str(n) ?? [])
+					: [],
 				reason: str(c.reason) ?? str(c.explanation),
 			},
 		];
