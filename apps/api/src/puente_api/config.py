@@ -8,7 +8,8 @@ from dotenv import dotenv_values
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 _API_DIR = Path(__file__).resolve().parents[2]
-_REPO_ROOT = _API_DIR.parents[1]
+# En Docker la API vive en /app sin el monorepo encima: entonces no hay raíz aparte.
+_REPO_ROOT = _API_DIR.parents[1] if len(_API_DIR.parents) > 1 else _API_DIR
 ENV_FILES = (_REPO_ROOT / ".env", _API_DIR / ".env")
 
 # Variables estándar de proveedor que LiteLLM lee de `os.environ` (respaldo de otro proveedor
