@@ -193,3 +193,97 @@ class Trace(ApiModel):
     thread_id: str
     status: Literal["en_curso", "esperando_revision", "completado", "error"]
     steps: list[AgentTrace]
+
+
+# --- Matching, revisión humana y postulaciones -------------------------------
+
+MatchStatus = Literal["propuesto", "aprobado", "rechazado"]
+ReviewKind = Literal["bloqueo_oferta", "lista_corta", "alerta_sesgo"]
+ReviewStatus = Literal["pendiente", "aprobada", "editada", "rechazada"]
+
+
+class ScoreBreakdown(ApiModel):
+    skill_coverage: float = Field(ge=0, le=1)
+    commute: float = Field(ge=0, le=1)
+    cost: float = Field(ge=0, le=1)
+    schedule: float = Field(ge=0, le=1)
+    salary: float = Field(ge=0, le=1)
+    missing_skills: list[str] = []
+
+
+class ConstraintsChecked(ApiModel):
+    commute_min: int
+    daily_cost: float
+    schedule_overlap: bool
+    salary_ok: bool
+
+
+class MatchResult(ApiModel):
+    run_id: str
+    youth_id: str
+    posting_id: str
+    score: float
+    score_breakdown: ScoreBreakdown
+    constraints_checked: ConstraintsChecked
+    explanation: str = ""
+    status: MatchStatus
+
+    @field_validator("explanation", mode="before")
+    @classmethod
+    def _no_null_explanation(cls, value: Any) -> str:
+        return value or ""
+
+
+class MatchRun(ApiModel):
+    id: str
+    solver_status: Literal["OPTIMAL", "FEASIBLE", "INFEASIBLE", "TIMEOUT"]
+    solve_ms: int | None = None
+    thread_id: str | None = Field(
+        default=None, validation_alias=AliasChoices("graph_thread_id", "thread_id", "threadId")
+    )
+    results: list[MatchResult]
+    audit: list[AuditCheck]
+
+
+class InterviewSlot(ApiModel):
+    starts_at: datetime
+    ends_at: datetime
+
+
+class Application(ApiModel):
+    id: str
+    match_result: MatchResult
+    tailored_cv: str | None = None
+    cover_letter: str | None = None
+    status: Literal["en_lista_corta", "enviada", "entrevista", "descartada"]
+    interview_slots: list[InterviewSlot] = []
+
+
+class ReviewTask(ApiModel):
+    id: str
+    kind: ReviewKind
+    subject_id: str
+    proposal: dict[str, Any]
+    explanation: str
+    agent: str | None = None
+    status: ReviewStatus
+    reviewer: str | None = None
+    comment: str | None = None
+    thread_id: str = Field(
+        validation_alias=AliasChoices("graph_thread_id", "thread_id", "threadId")
+    )
+    created_at: datetime
+    resolved_at: datetime | None = None
+
+
+class ReviewDecision(ApiModel):
+    decision: Literal["aprobar", "editar", "rechazar"]
+    reviewer: str = Field(min_length=1, max_length=120)
+    comment: str | None = Field(default=None, max_length=2000)
+    edits: dict[str, Any] | None = None
+
+
+class MatchRunRequest(ApiModel):
+    youth_ids: list[str] | None = None
+    posting_ids: list[str] | None = None
+    time_limit_seconds: float = Field(default=5.0, ge=1, le=30)

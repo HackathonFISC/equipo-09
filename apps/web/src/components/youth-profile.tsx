@@ -1,10 +1,12 @@
 "use client";
 
-import { Button } from "@puente/ui/components/button";
+import { Button, buttonVariants } from "@puente/ui/components/button";
 import { Label } from "@puente/ui/components/label";
 import { Skeleton } from "@puente/ui/components/skeleton";
 import { Textarea } from "@puente/ui/components/textarea";
+import { cn } from "@puente/ui/lib/utils";
 import {
+	Briefcase,
 	CircleCheck,
 	FileUp,
 	MessagesSquare,
@@ -12,6 +14,8 @@ import {
 	TriangleAlert,
 	UserRoundSearch,
 } from "lucide-react";
+import type { Route } from "next";
+import Link from "next/link";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 import { AgentWorking, TraceSteps } from "@/components/agents";
@@ -134,6 +138,18 @@ export function YouthProfile({ youthId }: { youthId: string }) {
 					</p>
 					<DataSourceNote source={state.source} reason={state.reason} />
 				</div>
+				{hasSkills ? (
+					<Link
+						href={`/joven/oportunidades?id=${youthId}` as Route}
+						className={cn(
+							buttonVariants({ size: "lg" }),
+							"h-12 w-full text-base",
+						)}
+					>
+						<Briefcase aria-hidden="true" />
+						Ver mis oportunidades
+					</Link>
+				) : null}
 				{hasSkills ? (
 					<ProfileSkills skills={youth.skills} highlight={fresh} />
 				) : (

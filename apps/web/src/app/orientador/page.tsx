@@ -1,13 +1,8 @@
-import {
-	Ban,
-	CircleCheck,
-	ListOrdered,
-	type LucideIcon,
-	Scale,
-} from "lucide-react";
+import { Ban, ListOrdered, type LucideIcon, Scale } from "lucide-react";
 import type { Metadata } from "next";
 
 import { PageShell, RoleHeader } from "@/components/page-shell";
+import { ReviewInbox } from "@/components/review-inbox";
 
 export const metadata: Metadata = { title: "Bandeja de revisión" };
 
@@ -31,8 +26,6 @@ const kinds: { label: string; icon: LucideIcon; trigger: string }[] = [
 	},
 ];
 
-const columns = ["Tipo", "Agente", "Propuesta", "Antigüedad", "Impacto"];
-
 export default function OrientadorPage() {
 	return (
 		<PageShell>
@@ -41,41 +34,7 @@ export default function OrientadorPage() {
 				description="Las decisiones con impacto se detienen aquí hasta que usted las apruebe, edite o rechace. Cada una trae la propuesta del agente, su explicación y la traza."
 			/>
 
-			<section aria-labelledby="pendientes" className="flex flex-col gap-3">
-				<h2 id="pendientes" className="font-medium text-sm">
-					Pendientes
-				</h2>
-				<div className="overflow-x-auto border">
-					<table className="w-full min-w-[40rem] text-sm">
-						<thead className="bg-muted/60 text-left text-muted-foreground">
-							<tr>
-								{columns.map((c) => (
-									<th key={c} scope="col" className="px-3 py-2 font-medium">
-										{c}
-									</th>
-								))}
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td colSpan={columns.length} className="px-3 py-12">
-									<div className="flex flex-col items-center gap-2 text-center">
-										<CircleCheck
-											className="size-6 text-success-fg"
-											aria-hidden="true"
-										/>
-										<p className="font-medium">No hay decisiones pendientes</p>
-										<p className="max-w-md text-muted-foreground">
-											Cuando un agente necesite su visto bueno, la tarea
-											aparecerá aquí y el flujo esperará su decisión.
-										</p>
-									</div>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</section>
+			<ReviewInbox />
 
 			<section aria-labelledby="tipos" className="flex flex-col gap-3">
 				<h2 id="tipos" className="font-medium text-sm">
