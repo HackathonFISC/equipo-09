@@ -1,0 +1,17 @@
+# Contexto de build de la web (raíz del monorepo). Nunca copiar dependencias del host:
+# node_modules de macOS/Windows rompen el contenedor Linux.
+**/node_modules
+**/.next
+**/.turbo
+**/.venv
+**/__pycache__
+**/*.db
+**/*.sqlite*
+**/.llm-cache
+.git
+# Worktrees y ajustes de Claude Code: no son parte de la app.
+.claude
+.env
+.env.*
+!.env.example
+apps/web/src/env.ts
