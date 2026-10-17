@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     )
 
     database_url: str = "sqlite:///./puente.db"
+    # Archivo SQLite de los checkpoints del grafo (pausas HITL). Vacío = junto a la BD SQLite,
+    # o en memoria si la BD es Postgres. En Docker conviene fijarlo en un volumen.
+    checkpoint_path: str | None = None
     cors_origins: list[str] = ["http://localhost:3000", "http://localhost:3001"]
 
     # LLM vía LiteLLM: el prefijo del modelo define el proveedor.

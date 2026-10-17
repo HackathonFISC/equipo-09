@@ -1,9 +1,9 @@
 """Checkpointer del grafo: permite pausar en `interrupt` (HITL) y reanudar tras la decisión.
 
 Con una BD SQLite en archivo, los checkpoints viven en un archivo hermano
-(`<db>-checkpoints.sqlite`) y sobreviven a reinicios de la API. Con SQLite en memoria (tests) o
-cualquier otro motor se usa memoria del proceso; para Postgres basta cambiar esta función por
-`langgraph-checkpoint-postgres` sin tocar el grafo.
+(`<db>-checkpoints.sqlite`) y sobreviven a reinicios de la API. `CHECKPOINT_PATH` fija ese
+archivo de forma explícita (en Docker, con Postgres, va en un volumen). Sin él, con SQLite en
+memoria (tests) o cualquier otro motor se usa memoria del proceso.
 """
 
 import sqlite3
@@ -20,9 +20,14 @@ from puente_api.config import get_settings
 
 @lru_cache
 def get_checkpointer() -> BaseCheckpointSaver:
-    url = make_url(get_settings().database_url)
-    if url.get_backend_name() == "sqlite" and url.database and url.database != ":memory:":
+    settings = get_settings()
+    if settings.checkpoint_path:  # p. ej. Docker con Postgres: /data/checkpoints.sqlite
+        path = Path(settings.checkpoint_path)
+    else:
+        url = make_url(settings.database_url)
+        if url.get_backend_name() != "sqlite" or not url.database or url.database == ":memory:":
+            return InMemorySaver()
         db = Path(url.database)
         path = db.with_name(f"{db.stem}-checkpoints.sqlite")
-        return SqliteSaver(sqlite3.connect(path, check_same_thread=False))
-    return InMemorySaver()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    return SqliteSaver(sqlite3.connect(path, check_same_thread=False))
