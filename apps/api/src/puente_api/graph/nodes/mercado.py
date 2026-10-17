@@ -14,7 +14,8 @@ from sqlalchemy import select
 from puente_api.db import models
 from puente_api.graph.guardrail_port import screen_input
 from puente_api.graph.state import PuenteState, deps
-from puente_api.graph.taxonomy import SkillIndex, evidence_in, match_location
+from puente_api.graph.taxonomy import SkillIndex, evidence_in, fold, match_location
+from puente_api.guardrails import detect_discrimination
 from puente_api.llm.prompts import MERCADO_SYSTEM, MERCADO_USER
 from puente_api.schemas import TimeSlotIn
 from puente_api.tracing import traced
@@ -24,6 +25,7 @@ FlagKind = Literal[
     "genero",
     "apariencia",
     "estado_civil",
+    "embarazo",
     "foto",
     "residencia",
     "religion",
@@ -57,9 +59,44 @@ class PostingExtraction(BaseModel):
     flagged_requirements: list[FlaggedRequirement] = Field(default_factory=list)
 
 
+TITLE_MAX = 80
+
+
 def _fallback_title(text: str) -> str:
+    """Título si el LLM falla: primera línea, cortada en la primera oración o a 80 caracteres."""
     first = next((line.strip() for line in text.splitlines() if line.strip()), "Oferta sin título")
-    return first[:200]
+    if len(first) <= TITLE_MAX:
+        return first
+    sentence = first.split(". ", 1)[0]
+    if len(sentence) <= TITLE_MAX:
+        return sentence
+    return first[: TITLE_MAX - 1].rstrip() + "…"
+
+
+def _rule_flags(text: str) -> list[FlaggedRequirement]:
+    """Hallazgos de las reglas deterministas (guardrails): no dependen del LLM."""
+    return [
+        FlaggedRequirement(kind=span.kind, text=span.text)
+        for span in detect_discrimination(text).findings
+    ]
+
+
+def merge_flags(
+    rules: list[FlaggedRequirement], llm: list[FlaggedRequirement]
+) -> list[FlaggedRequirement]:
+    """Unión de reglas + LLM sin duplicados (mismo tipo y un texto contenido en el otro).
+
+    Las reglas van primero: si el LLM falla o no ve un requisito, la oferta igual se bloquea.
+    """
+    merged: list[FlaggedRequirement] = []
+    for flag in [*rules, *llm]:
+        key = fold(flag.text)
+        duplicate = any(
+            m.kind == flag.kind and (key in fold(m.text) or fold(m.text) in key) for m in merged
+        )
+        if not duplicate:
+            merged.append(flag)
+    return merged
 
 
 def _money(value: float | None) -> Decimal | None:
@@ -118,8 +155,11 @@ def mercado_node(state: PuenteState, config: RunnableConfig) -> dict[str, Any]:
         if salary_min and salary_max and salary_min > salary_max:
             salary_min, salary_max = salary_max, salary_min
 
-        # Solo cuentan los hallazgos que citan texto literal de la oferta.
-        flags = [f for f in extraction.flagged_requirements if evidence_in(f.text, text)]
+        # Del LLM solo cuentan los hallazgos que citan texto literal de la oferta. Las reglas
+        # deterministas se suman siempre: si el LLM cae, la oferta igual se bloquea.
+        llm_flags = [f for f in extraction.flagged_requirements if evidence_in(f.text, text)]
+        rule_flags = _rule_flags(text)
+        flags = merge_flags(rule_flags, llm_flags)
         status = "bloqueada" if flags else "publicada"
 
         posting = models.JobPosting(
@@ -179,7 +219,10 @@ def mercado_node(state: PuenteState, config: RunnableConfig) -> dict[str, Any]:
         if discarded:
             reasons.append(f"fuera de ESCO-lite (descartadas): {', '.join(discarded)}")
         if flags:
-            reasons.append("hallazgos: " + "; ".join(f"{f.kind} «{f.text}»" for f in flags))
+            reasons.append(
+                f"hallazgos ({len(rule_flags)} por reglas, {len(llm_flags)} por LLM): "
+                + "; ".join(f"{f.kind} «{f.text}»" for f in flags)
+            )
         trace.reason = " | ".join(reasons)
         trace.output_summary = (
             f"oferta {posting.id}: {len(requirements)} requisitos, {len(flags)} hallazgo(s)"

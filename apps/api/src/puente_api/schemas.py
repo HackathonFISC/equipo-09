@@ -1,13 +1,23 @@
 """Esquemas de respuesta: reflejan `components/schemas` de packages/api-spec/openapi.yaml."""
 
-from datetime import date, datetime
-from typing import Any, Literal
+from datetime import UTC, date, datetime
+from typing import Annotated, Any, Literal
 
-from pydantic import AliasChoices, BaseModel, ConfigDict, Field, field_validator
+from pydantic import AfterValidator, AliasChoices, BaseModel, ConfigDict, Field, field_validator
 from pydantic.alias_generators import to_camel
 
 Day = Literal["lun", "mar", "mie", "jue", "vie", "sab", "dom"]
 PostingStatus = Literal["borrador", "bloqueada", "publicada", "cerrada"]
+
+
+def _as_utc(value: datetime) -> datetime:
+    """SQLite devuelve fechas sin zona; en Puente todas se guardan en UTC, así que se marcan
+    como UTC. Sin esto el JSON sale sin `Z` y el navegador lo lee como hora local (Panamá = UTC-5),
+    y la bandeja muestra «dentro de 5 horas»."""
+    return value.replace(tzinfo=UTC) if value.tzinfo is None else value.astimezone(UTC)
+
+
+UtcDateTime = Annotated[datetime, AfterValidator(_as_utc)]
 
 
 class ApiModel(BaseModel):
@@ -186,6 +196,16 @@ class CourseSession(ApiModel):
     seats_taken: int | None = Field(default=None, ge=0)
 
 
+class Course(ApiModel):
+    id: str
+    center_id: str
+    title: str
+    hours: int = Field(ge=1)
+    cost: float = Field(ge=0)
+    skill_ids: list[str]
+    sessions: list[CourseSession]
+
+
 class TrainingPlanItem(ApiModel):
     course_title: str
     session: CourseSession
@@ -216,7 +236,7 @@ class AgentTrace(ApiModel):
     reason: str | None = None
     duration_ms: int | None = None
     langfuse_trace_id: str | None = None
-    created_at: datetime
+    created_at: UtcDateTime
 
 
 class Trace(ApiModel):
@@ -233,8 +253,8 @@ class TraceSummary(ApiModel):
     step_count: int
     agents: list[str]
     last_decision: str | None = None
-    started_at: datetime
-    last_activity_at: datetime
+    started_at: UtcDateTime
+    last_activity_at: UtcDateTime
 
 
 # --- Matching, revisión humana y postulaciones -------------------------------
@@ -288,8 +308,8 @@ class MatchRun(ApiModel):
 
 
 class InterviewSlot(ApiModel):
-    starts_at: datetime
-    ends_at: datetime
+    starts_at: UtcDateTime
+    ends_at: UtcDateTime
 
 
 class Application(ApiModel):
@@ -314,8 +334,8 @@ class ReviewTask(ApiModel):
     thread_id: str = Field(
         validation_alias=AliasChoices("graph_thread_id", "thread_id", "threadId")
     )
-    created_at: datetime
-    resolved_at: datetime | None = None
+    created_at: UtcDateTime
+    resolved_at: UtcDateTime | None = None
 
 
 class ReviewDecision(ApiModel):

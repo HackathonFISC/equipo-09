@@ -26,6 +26,12 @@ class Settings(BaseSettings):
     llm_api_key: str | None = None
     llm_max_retries: int = 2
     llm_timeout_s: float = 60.0
+    # Endurecimiento (H5): espera exponencial entre reintentos, circuito por petición,
+    # presupuesto de tiempo por petición y caché opcional de respuestas (demo y evals).
+    llm_backoff_s: float = 0.5
+    llm_circuit_failures: int = 4
+    llm_budget_s: float = 45.0
+    llm_cache_dir: str | None = None
 
     # Langfuse (opcional): solo se activa con ambas claves. Ver `llm.observability`.
     langfuse_public_key: str | None = None
