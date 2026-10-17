@@ -10,6 +10,9 @@ WORKDIR /repo
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json ./
 COPY apps/web/package.json apps/web/.env.schema apps/web/
 COPY apps/api/package.json apps/api/
+# La app de docs (Fumadocs) no va en la imagen, pero es parte del workspace y del lockfile:
+# sin su manifiesto, `--frozen-lockfile` falla.
+COPY apps/docs/package.json apps/docs/
 COPY packages/ui/package.json packages/ui/
 COPY packages/config/package.json packages/config/
 COPY packages/api-spec/package.json packages/api-spec/
