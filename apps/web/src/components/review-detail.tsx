@@ -1,0 +1,925 @@
+"use client";
+
+import { Button } from "@puente/ui/components/button";
+import { Input } from "@puente/ui/components/input";
+import { Label } from "@puente/ui/components/label";
+import { Skeleton } from "@puente/ui/components/skeleton";
+import { Textarea } from "@puente/ui/components/textarea";
+import { cn } from "@puente/ui/lib/utils";
+import {
+	ArrowDown,
+	ArrowUp,
+	Ban,
+	CircleCheck,
+	Clock,
+	Pencil,
+	TriangleAlert,
+	Undo2,
+	X,
+} from "lucide-react";
+import { useEffect, useId, useState } from "react";
+import { toast } from "sonner";
+
+import { AgentBadge, TraceSteps } from "@/components/agents";
+import type {
+	AgentTrace,
+	ReviewDecision,
+	ReviewStatus,
+	ReviewTask,
+} from "@/lib/api/client";
+import { decideReview, loadReviewTrace } from "@/lib/api/reviews";
+import {
+	type BiasPair,
+	type Candidate,
+	kindMeta,
+	type ParsedProposal,
+	parseProposal,
+	timeAgo,
+} from "@/lib/review-proposal";
+
+export const statusMeta: Record<
+	ReviewStatus,
+	{ label: string; icon: typeof Clock; className: string }
+> = {
+	pendiente: { label: "Pendiente", icon: Clock, className: "text-warning-fg" },
+	aprobada: {
+		label: "Aprobada",
+		icon: CircleCheck,
+		className: "text-success-fg",
+	},
+	editada: {
+		label: "Editada y aprobada",
+		icon: Pencil,
+		className: "text-success-fg",
+	},
+	rechazada: { label: "Rechazada", icon: Ban, className: "text-danger-fg" },
+};
+
+export function ReviewStatusBadge({ status }: { status: ReviewStatus }) {
+	const { label, icon: Icon, className } = statusMeta[status];
+	return (
+		<span
+			className={cn(
+				"inline-flex items-center gap-1 font-medium text-sm",
+				className,
+			)}
+		>
+			<Icon className="size-4" aria-hidden="true" />
+			{label}
+		</span>
+	);
+}
+
+const REVIEWER_KEY = "puente:reviewer";
+
+function recallReviewer() {
+	try {
+		return localStorage.getItem(REVIEWER_KEY) ?? "";
+	} catch {
+		return "";
+	}
+}
+
+function rememberReviewer(name: string) {
+	try {
+		localStorage.setItem(REVIEWER_KEY, name);
+	} catch {
+		// Almacenamiento bloqueado: se vuelve a escribir la próxima vez.
+	}
+}
+
+const pct = (v: number) => `${Math.round(v * 100)} %`;
+const money = (v: number) => `B/. ${v.toFixed(2)}`;
+
+// ---------------------------------------------------------------------------
+// Propuesta del agente, por tipo
+// ---------------------------------------------------------------------------
+
+function Block({
+	title,
+	children,
+}: {
+	title: string;
+	children: React.ReactNode;
+}) {
+	return (
+		<section className="flex flex-col gap-2">
+			<h4 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+				{title}
+			</h4>
+			{children}
+		</section>
+	);
+}
+
+function FindingsList({ p }: { p: ParsedProposal }) {
+	if (p.findings.length === 0) return null;
+	return (
+		<ul className="flex flex-col gap-2">
+			{p.findings.map((f) => (
+				<li
+					key={`${f.rule}-${f.quote}`}
+					className="flex flex-col gap-1 border border-danger/30 bg-danger/5 px-3 py-2 text-sm"
+				>
+					{f.rule ? (
+						<span className="font-medium text-danger-fg">
+							Regla activada: {f.rule}
+						</span>
+					) : null}
+					{f.quote ? <span>«{f.quote}»</span> : null}
+					{f.suggestion ? (
+						<span className="text-muted-foreground">
+							Sugerencia: {f.suggestion}
+						</span>
+					) : null}
+				</li>
+			))}
+		</ul>
+	);
+}
+
+function CandidateFacts({ c }: { c: Candidate }) {
+	const facts = [
+		c.skillCoverage != null ? `Habilidades ${pct(c.skillCoverage)}` : null,
+		c.commuteMin != null ? `${c.commuteMin} min de viaje` : null,
+		c.dailyCost != null ? `${money(c.dailyCost)}/día` : null,
+	].filter(Boolean);
+	if (facts.length === 0) return null;
+	return (
+		<span className="tabular font-mono text-muted-foreground text-xs">
+			{facts.join(" · ")}
+		</span>
+	);
+}
+
+function CandidateRow({
+	c,
+	rank,
+	children,
+}: {
+	c: Candidate;
+	rank: number;
+	children?: React.ReactNode;
+}) {
+	return (
+		<li className="grid grid-cols-[1.75rem_1fr_auto] items-start gap-x-3 border-b py-3 last:border-b-0">
+			<span
+				aria-hidden="true"
+				className="tabular flex size-7 items-center justify-center border font-mono text-xs"
+			>
+				{rank}
+			</span>
+			<span className="flex min-w-0 flex-col gap-0.5">
+				<span className="font-medium text-sm">
+					<span className="sr-only">Puesto {rank}: </span>
+					{c.name}
+				</span>
+				<CandidateFacts c={c} />
+				{c.reason ? (
+					<span className="text-pretty text-muted-foreground text-sm">
+						{c.reason}
+					</span>
+				) : null}
+			</span>
+			<span className="flex flex-col items-end gap-1">
+				{c.score != null ? (
+					<span className="tabular font-mono text-sm">
+						<span className="sr-only">Puntaje </span>
+						{c.score.toFixed(2)}
+					</span>
+				) : null}
+				{children}
+			</span>
+		</li>
+	);
+}
+
+type Removal = { key: string; reason: string };
+
+function ShortlistEditor({
+	candidates,
+	onChange,
+}: {
+	candidates: Candidate[];
+	onChange: (edits: Record<string, unknown>) => void;
+}) {
+	const [order, setOrder] = useState(candidates.map((c) => c.key));
+	const [removed, setRemoved] = useState<Removal[]>([]);
+	const byKey = new Map(candidates.map((c) => [c.key, c]));
+	const baseId = useId();
+
+	function emit(nextOrder: string[], nextRemoved: Removal[]) {
+		setOrder(nextOrder);
+		setRemoved(nextRemoved);
+		onChange({
+			order: nextOrder.map((k) => byKey.get(k)?.youthId ?? k),
+			removed: nextRemoved.map((r) => ({
+				youthId: byKey.get(r.key)?.youthId ?? r.key,
+				reason: r.reason,
+			})),
+		});
+	}
+
+	function move(index: number, delta: -1 | 1) {
+		const next = [...order];
+		const target = index + delta;
+		if (target < 0 || target >= next.length) return;
+		[next[index], next[target]] = [
+			next[target] as string,
+			next[index] as string,
+		];
+		emit(next, removed);
+	}
+
+	return (
+		<div className="flex flex-col gap-3">
+			<ol className="flex flex-col border-y">
+				{order.map((key, i) => {
+					const c = byKey.get(key);
+					if (!c) return null;
+					return (
+						<CandidateRow key={key} c={c} rank={i + 1}>
+							<span className="flex gap-1">
+								<Button
+									type="button"
+									variant="outline"
+									size="icon"
+									className="size-9"
+									disabled={i === 0}
+									aria-label={`Subir a ${c.name}`}
+									onClick={() => move(i, -1)}
+								>
+									<ArrowUp aria-hidden="true" />
+								</Button>
+								<Button
+									type="button"
+									variant="outline"
+									size="icon"
+									className="size-9"
+									disabled={i === order.length - 1}
+									aria-label={`Bajar a ${c.name}`}
+									onClick={() => move(i, 1)}
+								>
+									<ArrowDown aria-hidden="true" />
+								</Button>
+								<Button
+									type="button"
+									variant="outline"
+									size="icon"
+									className="size-9"
+									aria-label={`Quitar a ${c.name}`}
+									onClick={() =>
+										emit(
+											order.filter((k) => k !== key),
+											[...removed, { key, reason: "" }],
+										)
+									}
+								>
+									<X aria-hidden="true" />
+								</Button>
+							</span>
+						</CandidateRow>
+					);
+				})}
+			</ol>
+
+			{removed.length > 0 ? (
+				<div className="flex flex-col gap-3 border border-dashed p-3">
+					<p className="font-medium text-sm">Candidatos quitados</p>
+					{removed.map((r) => {
+						const c = byKey.get(r.key);
+						const fieldId = `${baseId}-${r.key}`;
+						return (
+							<div key={r.key} className="flex flex-col gap-1.5">
+								<div className="flex items-center justify-between gap-2">
+									<Label htmlFor={fieldId} className="text-sm">
+										Motivo para quitar a {c?.name}
+									</Label>
+									<Button
+										type="button"
+										variant="ghost"
+										size="sm"
+										className="h-8"
+										onClick={() =>
+											emit(
+												[...order, r.key],
+												removed.filter((x) => x.key !== r.key),
+											)
+										}
+									>
+										<Undo2 aria-hidden="true" />
+										Devolver
+									</Button>
+								</div>
+								<Input
+									id={fieldId}
+									value={r.reason}
+									maxLength={300}
+									className="h-10 text-base md:text-sm"
+									onChange={(e) =>
+										emit(
+											order,
+											removed.map((x) =>
+												x.key === r.key ? { ...x, reason: e.target.value } : x,
+											),
+										)
+									}
+								/>
+							</div>
+						);
+					})}
+				</div>
+			) : null}
+		</div>
+	);
+}
+
+function PairsTable({ pairs }: { pairs: BiasPair[] }) {
+	return (
+		<div className="overflow-x-auto border">
+			<table className="w-full min-w-[26rem] text-sm">
+				<caption className="sr-only">
+					Pares contrafactuales: original y variante con puntajes
+				</caption>
+				<thead className="bg-muted/60 text-left text-muted-foreground">
+					<tr>
+						<th scope="col" className="px-3 py-2 font-medium">
+							Original
+						</th>
+						<th scope="col" className="px-3 py-2 font-medium">
+							Variante
+						</th>
+						<th scope="col" className="px-3 py-2 text-right font-medium">
+							Resultado
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					{pairs.map((p) => (
+						<tr key={`${p.original}-${p.variant}`} className="border-t">
+							<td className="px-3 py-2">
+								{p.original}
+								{p.scoreOriginal != null ? (
+									<span className="tabular ml-1 font-mono text-muted-foreground">
+										{p.scoreOriginal.toFixed(2)}
+									</span>
+								) : null}
+							</td>
+							<td className="px-3 py-2">
+								{p.variant}
+								{p.scoreVariant != null ? (
+									<span className="tabular ml-1 font-mono text-muted-foreground">
+										{p.scoreVariant.toFixed(2)}
+									</span>
+								) : null}
+							</td>
+							<td className="px-3 py-2 text-right">
+								{p.changed == null ? null : p.changed ? (
+									<span className="inline-flex items-center gap-1 font-medium text-danger-fg">
+										<TriangleAlert className="size-4" aria-hidden="true" />
+										Cambió
+									</span>
+								) : (
+									<span className="inline-flex items-center gap-1 text-success-fg">
+										<CircleCheck className="size-4" aria-hidden="true" />
+										Sin cambio
+									</span>
+								)}
+							</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+		</div>
+	);
+}
+
+function ProposalView({
+	task,
+	p,
+	editing,
+	onEdits,
+}: {
+	task: ReviewTask;
+	p: ParsedProposal;
+	editing: boolean;
+	onEdits: (edits: Record<string, unknown> | null) => void;
+}) {
+	const textId = useId();
+	const [text, setText] = useState(p.suggestedText ?? p.originalText ?? "");
+
+	// Solo al entrar en modo edición; luego `text` se emite al teclear.
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ver arriba
+	useEffect(() => {
+		if (editing && task.kind === "bloqueo_oferta") {
+			onEdits({ correctedText: text });
+		}
+	}, [editing]);
+
+	return (
+		<div className="flex flex-col gap-5">
+			{p.subject ? (
+				<p className="text-sm">
+					<span className="text-muted-foreground">Sobre: </span>
+					<strong className="font-medium">{p.subject}</strong>
+					{p.company ? (
+						<span className="text-muted-foreground"> · {p.company}</span>
+					) : null}
+				</p>
+			) : null}
+
+			{task.kind === "bloqueo_oferta" ? (
+				<>
+					<Block title="Por qué se bloqueó">
+						<FindingsList p={p} />
+					</Block>
+					{p.originalText ? (
+						<Block title="Texto original de la empresa">
+							<p className="text-pretty border bg-muted/40 px-3 py-2 text-sm">
+								{p.originalText}
+							</p>
+						</Block>
+					) : null}
+					{editing ? (
+						<Block title="Texto corregido que se publicará">
+							<Label htmlFor={textId} className="sr-only">
+								Texto corregido de la oferta
+							</Label>
+							<Textarea
+								id={textId}
+								value={text}
+								maxLength={4000}
+								className="min-h-32 text-base md:text-sm"
+								onChange={(e) => {
+									setText(e.target.value);
+									onEdits({ correctedText: e.target.value });
+								}}
+							/>
+						</Block>
+					) : p.suggestedText ? (
+						<Block title="Redacción sugerida por el agente">
+							<p className="text-pretty border border-success/30 bg-success/5 px-3 py-2 text-sm">
+								{p.suggestedText}
+							</p>
+						</Block>
+					) : null}
+				</>
+			) : null}
+
+			{task.kind === "lista_corta" ? (
+				<Block title="Candidatos propuestos, en orden">
+					{editing ? (
+						<ShortlistEditor
+							candidates={p.candidates}
+							onChange={(e) => onEdits(e)}
+						/>
+					) : (
+						<ol className="flex flex-col border-y">
+							{p.candidates.map((c, i) => (
+								<CandidateRow key={c.key} c={c} rank={i + 1} />
+							))}
+						</ol>
+					)}
+				</Block>
+			) : null}
+
+			{task.kind === "alerta_sesgo" ? (
+				<>
+					<Block title="Prueba contrafactual">
+						<p className="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-sm">
+							{p.variable ? (
+								<span>
+									Variable cambiada: <strong>{p.variable}</strong>
+								</span>
+							) : null}
+							{p.parity != null ? (
+								<span className="font-medium text-danger-fg">
+									Paridad{" "}
+									<span className="tabular font-mono">
+										{p.parity.toFixed(2)}
+									</span>
+									{p.threshold != null ? (
+										<span className="font-normal text-muted-foreground">
+											{" "}
+											(umbral{" "}
+											<span className="tabular font-mono">
+												{p.threshold.toFixed(2)}
+											</span>
+											)
+										</span>
+									) : null}
+								</span>
+							) : null}
+						</p>
+					</Block>
+					{p.pairs.length > 0 ? <PairsTable pairs={p.pairs} /> : null}
+					<FindingsPlain findings={p.findings.map((f) => f.quote ?? "")} />
+				</>
+			) : null}
+
+			{p.extra.length > 0 ? (
+				<Block title="Otros datos de la propuesta">
+					<dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+						{p.extra.map(([k, v]) => (
+							<div key={k} className="contents">
+								<dt className="font-mono text-muted-foreground">{k}</dt>
+								<dd className="break-words">{v}</dd>
+							</div>
+						))}
+					</dl>
+				</Block>
+			) : null}
+		</div>
+	);
+}
+
+function FindingsPlain({ findings }: { findings: string[] }) {
+	const items = findings.filter(Boolean);
+	if (items.length === 0) return null;
+	return (
+		<ul className="flex list-disc flex-col gap-1 pl-5 text-sm">
+			{items.map((f) => (
+				<li key={f}>{f}</li>
+			))}
+		</ul>
+	);
+}
+
+// ---------------------------------------------------------------------------
+// Decisión
+// ---------------------------------------------------------------------------
+
+const DECISION_HELP: Record<ReviewTask["kind"], string> = {
+	bloqueo_oferta:
+		"Aprobar publica el texto sugerido. Editar publica su versión corregida. Rechazar mantiene la oferta bloqueada.",
+	lista_corta:
+		"Aprobar envía la lista a la empresa tal cual. Editar permite reordenar o quitar candidatos con motivo. Rechazar la devuelve a Postulación.",
+	alerta_sesgo:
+		"Aprobar libera la corrida a pesar de la alerta. Rechazar la descarta para que Matching la repita.",
+};
+
+function DecisionForm({
+	task,
+	simulated,
+	edits,
+	editing,
+	setEditing,
+	onDecided,
+}: {
+	task: ReviewTask;
+	simulated: boolean;
+	edits: Record<string, unknown> | null;
+	editing: boolean;
+	setEditing: (v: boolean) => void;
+	onDecided: (resolved: ReviewTask) => void;
+}) {
+	const ids = { reviewer: useId(), comment: useId(), help: useId() };
+	const [reviewer, setReviewer] = useState("");
+	const [comment, setComment] = useState("");
+	const [pending, setPending] = useState<ReviewDecision["decision"] | null>(
+		null,
+	);
+	const [error, setError] = useState<string | null>(null);
+	const canEdit = task.kind !== "alerta_sesgo";
+
+	useEffect(() => {
+		setReviewer(recallReviewer());
+	}, []);
+
+	async function submit(decision: ReviewDecision["decision"]) {
+		setError(null);
+		if (!reviewer.trim()) {
+			setError("Escriba su nombre: queda registrado junto a la decisión.");
+			document.getElementById(ids.reviewer)?.focus();
+			return;
+		}
+		if (decision === "rechazar" && !comment.trim()) {
+			setError("Para rechazar, explique el motivo en el comentario.");
+			document.getElementById(ids.comment)?.focus();
+			return;
+		}
+		if (decision === "editar" && !edits) {
+			setError("Haga al menos un cambio antes de guardar la edición.");
+			return;
+		}
+		if (
+			decision === "editar" &&
+			Array.isArray((edits as { removed?: Removal[] } | null)?.removed) &&
+			(edits as { removed: { reason: string }[] }).removed.some(
+				(r) => !r.reason.trim(),
+			)
+		) {
+			setError("Indique el motivo de cada candidato que quitó.");
+			return;
+		}
+
+		setPending(decision);
+		rememberReviewer(reviewer.trim());
+		const body: ReviewDecision = {
+			decision,
+			reviewer: reviewer.trim(),
+			comment: comment.trim() || undefined,
+			edits: decision === "editar" ? (edits ?? undefined) : undefined,
+		};
+		const r = await decideReview(task.id, body, { simulated });
+		setPending(null);
+		if (!r.ok) {
+			setError(r.message);
+			return;
+		}
+		const status: ReviewStatus =
+			decision === "aprobar"
+				? "aprobada"
+				: decision === "editar"
+					? "editada"
+					: "rechazada";
+		toast.success(
+			decision === "rechazar"
+				? "Decisión registrada: rechazada."
+				: "Decisión registrada. El flujo continúa.",
+			{
+				description: simulated
+					? "Datos de ejemplo: no se reanudó ningún flujo real."
+					: undefined,
+			},
+		);
+		onDecided({
+			...task,
+			status,
+			reviewer: body.reviewer,
+			comment: body.comment,
+			resolvedAt: new Date().toISOString(),
+		});
+	}
+
+	const busy = pending != null;
+
+	return (
+		<form
+			onSubmit={(e) => e.preventDefault()}
+			className="flex flex-col gap-4 border-t pt-5"
+			aria-labelledby={`${ids.help}-t`}
+		>
+			<div className="flex flex-col gap-1">
+				<h3 id={`${ids.help}-t`} className="font-semibold text-base">
+					Su decisión
+				</h3>
+				<p id={ids.help} className="text-muted-foreground text-sm">
+					{DECISION_HELP[task.kind]}
+				</p>
+			</div>
+
+			<div className="grid gap-4 sm:grid-cols-[14rem_1fr]">
+				<div className="flex flex-col gap-1.5">
+					<Label htmlFor={ids.reviewer} className="font-medium text-sm">
+						Su nombre
+					</Label>
+					<Input
+						id={ids.reviewer}
+						value={reviewer}
+						autoComplete="name"
+						maxLength={120}
+						disabled={busy}
+						onChange={(e) => setReviewer(e.target.value)}
+						className="h-10 text-base md:text-sm"
+					/>
+				</div>
+				<div className="flex flex-col gap-1.5">
+					<Label htmlFor={ids.comment} className="font-medium text-sm">
+						Comentario{" "}
+						<span className="font-normal text-muted-foreground">
+							(obligatorio para rechazar)
+						</span>
+					</Label>
+					<Textarea
+						id={ids.comment}
+						value={comment}
+						maxLength={2000}
+						disabled={busy}
+						onChange={(e) => setComment(e.target.value)}
+						className="min-h-20 text-base md:text-sm"
+					/>
+				</div>
+			</div>
+
+			{error ? (
+				<p
+					role="alert"
+					className="flex items-start gap-1.5 text-danger-fg text-sm"
+				>
+					<TriangleAlert
+						className="mt-0.5 size-4 shrink-0"
+						aria-hidden="true"
+					/>
+					{error}
+				</p>
+			) : null}
+
+			<div className="flex flex-wrap gap-2">
+				<Button
+					type="button"
+					size="lg"
+					className="h-11 px-5 text-sm"
+					disabled={busy || editing}
+					onClick={() => submit("aprobar")}
+				>
+					<CircleCheck aria-hidden="true" />
+					{pending === "aprobar" ? "Registrando…" : "Aprobar"}
+				</Button>
+				{canEdit ? (
+					editing ? (
+						<>
+							<Button
+								type="button"
+								size="lg"
+								className="h-11 px-5 text-sm"
+								disabled={busy}
+								onClick={() => submit("editar")}
+							>
+								<Pencil aria-hidden="true" />
+								{pending === "editar" ? "Registrando…" : "Guardar edición"}
+							</Button>
+							<Button
+								type="button"
+								variant="outline"
+								size="lg"
+								className="h-11 px-5 text-sm"
+								disabled={busy}
+								onClick={() => setEditing(false)}
+							>
+								Cancelar edición
+							</Button>
+						</>
+					) : (
+						<Button
+							type="button"
+							variant="outline"
+							size="lg"
+							className="h-11 px-5 text-sm"
+							disabled={busy}
+							onClick={() => setEditing(true)}
+						>
+							<Pencil aria-hidden="true" />
+							Editar
+						</Button>
+					)
+				) : null}
+				<Button
+					type="button"
+					variant="outline"
+					size="lg"
+					className="h-11 border-danger/50 px-5 text-danger-fg text-sm hover:bg-danger/10"
+					disabled={busy || editing}
+					onClick={() => submit("rechazar")}
+				>
+					<Ban aria-hidden="true" />
+					{pending === "rechazar" ? "Registrando…" : "Rechazar"}
+				</Button>
+			</div>
+		</form>
+	);
+}
+
+// ---------------------------------------------------------------------------
+// Panel de detalle
+// ---------------------------------------------------------------------------
+
+export function ReviewDetail({
+	task,
+	simulated,
+	onDecided,
+	headingRef,
+}: {
+	task: ReviewTask;
+	simulated: boolean;
+	onDecided: (resolved: ReviewTask) => void;
+	headingRef: React.Ref<HTMLHeadingElement>;
+}) {
+	const proposal = parseProposal(task);
+	const [editing, setEditing] = useState(false);
+	const [edits, setEdits] = useState<Record<string, unknown> | null>(null);
+	const [trace, setTrace] = useState<
+		{ status: "loading" } | { status: "ready"; steps: AgentTrace[] | null }
+	>({ status: "loading" });
+
+	useEffect(() => {
+		let live = true;
+		setTrace({ status: "loading" });
+		loadReviewTrace(task.threadId, simulated).then((steps) => {
+			if (live) setTrace({ status: "ready", steps });
+		});
+		return () => {
+			live = false;
+		};
+	}, [task.threadId, simulated]);
+
+	const agent = task.agent as AgentTrace["agent"] | undefined;
+	const pending = task.status === "pendiente";
+
+	return (
+		<article
+			aria-labelledby="detalle-titulo"
+			className="flex flex-col gap-6 border p-4 sm:p-5"
+		>
+			<header className="flex flex-col gap-2">
+				<div className="flex flex-wrap items-center justify-between gap-2">
+					<p className="flex flex-wrap items-center gap-2 text-sm">
+						{agent ? <AgentBadge agent={agent} /> : null}
+						<span className="text-muted-foreground">
+							{agent ? "propone" : "Propuesta del sistema"} ·{" "}
+							{timeAgo(task.createdAt)}
+						</span>
+					</p>
+					<ReviewStatusBadge status={task.status} />
+				</div>
+				<h2
+					id="detalle-titulo"
+					ref={headingRef}
+					tabIndex={-1}
+					className="text-balance font-semibold text-xl outline-none"
+				>
+					{kindMeta[task.kind].label}
+					{proposal.subject ? `: ${proposal.subject}` : ""}
+				</h2>
+			</header>
+
+			<section
+				aria-labelledby="explicacion"
+				className="flex flex-col gap-1.5 border-primary border-l-2 bg-muted/40 px-4 py-3"
+			>
+				<h3
+					id="explicacion"
+					className="font-medium text-muted-foreground text-xs uppercase tracking-wide"
+				>
+					Por qué lo propone
+				</h3>
+				<p className="text-pretty text-sm leading-relaxed">
+					{task.explanation}
+				</p>
+			</section>
+
+			<ProposalView
+				key={task.id}
+				task={task}
+				p={proposal}
+				editing={editing}
+				onEdits={setEdits}
+			/>
+
+			{trace.status === "loading" ? (
+				<div className="flex flex-col gap-2">
+					<output aria-live="polite" className="sr-only">
+						Cargando la traza…
+					</output>
+					<Skeleton className="h-5 w-1/3" />
+					<Skeleton className="h-14 w-full" />
+				</div>
+			) : trace.steps && trace.steps.length > 0 ? (
+				<TraceSteps steps={trace.steps} title="Traza del flujo" />
+			) : (
+				<p className="text-muted-foreground text-sm">
+					La traza de este flujo aún no está disponible. Hilo:{" "}
+					<span className="font-mono">{task.threadId}</span>
+				</p>
+			)}
+
+			{pending ? (
+				<DecisionForm
+					task={task}
+					simulated={simulated}
+					edits={edits}
+					editing={editing}
+					setEditing={(v) => {
+						setEditing(v);
+						if (!v) setEdits(null);
+					}}
+					onDecided={onDecided}
+				/>
+			) : (
+				<section
+					aria-labelledby="resolucion"
+					className="flex flex-col gap-1.5 border-t pt-5 text-sm"
+				>
+					<h3 id="resolucion" className="font-semibold text-base">
+						Decisión registrada
+					</h3>
+					<p>
+						<ReviewStatusBadge status={task.status} />
+						{task.reviewer ? <span> por {task.reviewer}</span> : null}
+						{task.resolvedAt ? (
+							<span className="text-muted-foreground">
+								{" "}
+								· {timeAgo(task.resolvedAt)}
+							</span>
+						) : null}
+					</p>
+					{task.comment ? (
+						<p className="text-pretty text-muted-foreground">
+							«{task.comment}»
+						</p>
+					) : null}
+				</section>
+			)}
+		</article>
+	);
+}
