@@ -18,7 +18,11 @@ export function RoleHeader({
 				</h1>
 				<p className="text-pretty text-muted-foreground">{description}</p>
 			</div>
-			{actions ? <div className="flex shrink-0 gap-2">{actions}</div> : null}
+			{actions ? (
+				<div className="flex shrink-0 flex-wrap items-start gap-2">
+					{actions}
+				</div>
+			) : null}
 		</div>
 	);
 }

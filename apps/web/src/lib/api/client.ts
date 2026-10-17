@@ -23,6 +23,7 @@ export type MatchResult = Schemas["MatchResult"];
 export type MatchStatus = Schemas["MatchStatus"];
 export type ScoreBreakdown = Schemas["ScoreBreakdown"];
 export type ReviewTask = Schemas["ReviewTask"];
+export type Application = Schemas["Application"];
 export type ReviewKind = Schemas["ReviewKind"];
 export type ReviewStatus = Schemas["ReviewStatus"];
 export type ReviewDecision = Schemas["ReviewDecision"];
