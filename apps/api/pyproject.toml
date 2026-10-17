@@ -15,6 +15,7 @@ dependencies = [
   "pypdf>=6.21.0",
   "python-multipart>=0.0.32",
   "langgraph-checkpoint-sqlite>=3.1.2",
+  "psycopg[binary]>=3.2",
 ]
 
 [project.optional-dependencies]

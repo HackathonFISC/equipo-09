@@ -32,6 +32,10 @@ Completion = Callable[..., Any]
 # Mapa de modelos incluido en LiteLLM: sin esto, el primer `import litellm` intenta bajarlo de
 # GitHub y, con la red lenta o caída (wifi del evento), tarda segundos en reintentos.
 os.environ.setdefault("LITELLM_LOCAL_MODEL_COST_MAP", "True")
+# En modo DEV (el de fábrica) `import litellm` carga por su cuenta el primer `.env` que encuentra
+# subiendo desde su carpeta de instalación, y mete en el entorno TODO lo que tenga (incluido
+# LLM_CACHE_DIR, que contamina los tests). La configuración la leemos nosotros en `config.py`.
+os.environ.setdefault("LITELLM_MODE", "PRODUCTION")
 
 _FENCE = re.compile(r"^```(?:json)?\s*|\s*```$", re.IGNORECASE)
 # Códigos HTTP que no mejoran reintentando con el mismo modelo.

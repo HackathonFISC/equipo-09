@@ -46,8 +46,19 @@ const PUBLIC_API_URL: string =
 	process.env.NEXT_PUBLIC_API_URL ??
 	"http://localhost:8000";
 
+/*
+ * En el servidor (Server Components) la API puede vivir en otra dirección que
+ * en el navegador: en Docker Compose el contenedor `web` la alcanza como
+ * http://api:8000, mientras el navegador usa http://localhost:8000.
+ * `API_INTERNAL_URL` solo se lee en el servidor; vacío = la URL pública.
+ */
+const SERVER_API_URL: string | undefined =
+	typeof window === "undefined"
+		? process.env.API_INTERNAL_URL || undefined
+		: undefined;
+
 /** Base del contrato: `servers[0].url` en packages/api-spec/openapi.yaml. */
-export const API_BASE_URL = `${PUBLIC_API_URL.replace(/\/+$/, "")}/api/v1`;
+export const API_BASE_URL = `${(SERVER_API_URL ?? PUBLIC_API_URL).replace(/\/+$/, "")}/api/v1`;
 
 /** auto: mocks solo si la API falla · siempre: nunca llama a la API · nunca: muestra el error. */
 export const MOCK_MODE: typeof ENV.NEXT_PUBLIC_API_MOCKS =
