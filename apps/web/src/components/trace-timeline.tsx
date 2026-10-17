@@ -7,8 +7,10 @@ import {
 	CircleCheck,
 	Hammer,
 	Hourglass,
+	OctagonX,
 	RotateCw,
 	SearchX,
+	ShieldAlert,
 	TriangleAlert,
 	UserCheck,
 } from "lucide-react";
@@ -20,6 +22,7 @@ import { DataSourceNote } from "@/components/data-states";
 import type {
 	AgentName,
 	AgentTrace,
+	AgentTraceKind,
 	Trace,
 	TraceStatus,
 } from "@/lib/api/client";
@@ -27,8 +30,8 @@ import { loadTrace } from "@/lib/api/traces";
 import { plural } from "@/lib/format";
 
 /**
- * El contrato de `AgentTrace` aún no dice qué herramienta usó cada agente;
- * mientras tanto se muestra la herramienta que corresponde a su rol en el grafo.
+ * Respaldo: la API informa `tool` en cada paso. Si falta, se muestra la
+ * herramienta que corresponde al rol del agente en el grafo.
  */
 export const agentTool: Record<AgentName, string> = {
 	supervisor: "Enrutador del grafo (LangGraph)",
@@ -46,6 +49,8 @@ const statusMeta: Record<
 	TraceStatus,
 	{ label: string; icon: typeof CircleCheck; tone: string }
 > = {
+	// La API no emite este estado (los agentes corren dentro de la petición);
+	// se conserva solo porque el enum del contrato aún lo lista.
 	en_curso: {
 		label: "En curso",
 		icon: Hammer,
@@ -89,7 +94,7 @@ const time = new Intl.DateTimeFormat("es-PA", {
 	second: "2-digit",
 });
 
-function seconds(ms: number) {
+export function seconds(ms: number) {
 	return ms < 1000 ? `${ms} ms` : `${(ms / 1000).toFixed(1)} s`;
 }
 
@@ -110,6 +115,72 @@ function Field({
 	);
 }
 
+type KindMeta = {
+	icon: typeof UserCheck;
+	/** Etiqueta junto al agente; null si el paso es corriente. */
+	label: (waiting: boolean) => string | null;
+	card: string;
+	marker: string;
+	labelTone: string;
+	/** Rótulos de los campos, según qué significa la fila. */
+	input: string;
+	output: string;
+	reason: (waiting: boolean) => string;
+};
+
+const kindMeta: Record<AgentTraceKind, KindMeta> = {
+	paso: {
+		icon: CircleCheck,
+		label: () => null,
+		card: "",
+		marker: "",
+		labelTone: "",
+		input: "Qué recibió",
+		output: "Qué entregó",
+		reason: () => "Por qué",
+	},
+	pausa_hitl: {
+		icon: Hourglass,
+		label: (w) => (w ? "Pausa: decide una persona" : "Pausa para revisión"),
+		card: "border-2 border-warning bg-warning/10",
+		marker: "border-warning text-warning-fg",
+		labelTone: "text-warning-fg",
+		input: "Qué se envió a revisión",
+		output: "Qué queda en espera",
+		reason: (w) => (w ? "Por qué se detiene" : "Por qué se detuvo"),
+	},
+	decision_humana: {
+		icon: UserCheck,
+		label: () => "Decisión humana",
+		card: "border-2 border-success/60 bg-success/5",
+		marker: "border-success text-success-fg",
+		labelTone: "text-success-fg",
+		input: "Qué se revisó",
+		output: "Resultado",
+		reason: () => "Qué se decidió y por qué",
+	},
+	guardrail: {
+		icon: ShieldAlert,
+		label: () => "Guardrail: se bloqueó contenido",
+		card: "border-2 border-dashed border-warning bg-warning/10",
+		marker: "border-dashed border-warning text-warning-fg",
+		labelTone: "text-warning-fg",
+		input: "Qué se detectó",
+		output: "Qué pasó con el contenido",
+		reason: () => "Por qué se bloquea",
+	},
+	error: {
+		icon: OctagonX,
+		label: () => "El paso falló",
+		card: "border-2 border-danger/60 bg-danger/5",
+		marker: "border-danger text-danger-fg",
+		labelTone: "text-danger-fg",
+		input: "Qué recibió",
+		output: "Qué quedó sin cambios",
+		reason: () => "Qué falló",
+	},
+};
+
 function StepCard({
 	step,
 	index,
@@ -120,7 +191,9 @@ function StepCard({
 	/** Esta es la pausa HITL de un flujo que sigue detenido. */
 	waiting: boolean;
 }) {
-	const human = step.agent === "orientador";
+	const meta = kindMeta[step.kind] ?? kindMeta.paso;
+	const KindIcon = meta.icon;
+	const kindLabel = meta.label(waiting);
 	const { icon: Icon, text, border } = agentMeta[step.agent];
 
 	return (
@@ -133,26 +206,28 @@ function StepCard({
 				aria-hidden="true"
 				className={cn(
 					"tabular z-10 flex size-8 items-center justify-center border bg-background font-mono text-sm",
-					human ? "border-warning text-warning-fg" : border,
+					meta.marker || border,
 				)}
 			>
 				{index + 1}
 			</span>
 
 			<article
-				aria-label={`Paso ${index + 1}: ${agentMeta[step.agent].label}`}
-				className={cn(
-					"flex min-w-0 flex-col gap-3 border p-4",
-					human && "border-2 border-warning bg-warning/10",
-				)}
+				aria-label={`Paso ${index + 1}: ${agentMeta[step.agent].label}${kindLabel ? `, ${kindLabel.toLowerCase()}` : ""}`}
+				className={cn("flex min-w-0 flex-col gap-3 border p-4", meta.card)}
 			>
 				<header className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
 					<span className="flex flex-wrap items-center gap-2">
 						<AgentBadge agent={step.agent} />
-						{human ? (
-							<span className="inline-flex items-center gap-1.5 font-semibold text-sm text-warning-fg">
-								<UserCheck className="size-4" aria-hidden="true" />
-								{waiting ? "Pausa: decide una persona" : "Decisión humana"}
+						{kindLabel ? (
+							<span
+								className={cn(
+									"inline-flex items-center gap-1.5 font-semibold text-sm",
+									meta.labelTone,
+								)}
+							>
+								<KindIcon className="size-4 shrink-0" aria-hidden="true" />
+								{kindLabel}
 							</span>
 						) : null}
 					</span>
@@ -170,29 +245,22 @@ function StepCard({
 
 				<dl className="flex flex-col gap-3">
 					{step.inputSummary ? (
-						<Field label="Qué recibió">{step.inputSummary}</Field>
+						<Field label={meta.input}>{step.inputSummary}</Field>
 					) : null}
 					<Field label="Herramienta">
-						<span className="inline-flex items-center gap-1.5">
+						<span className="inline-flex items-start gap-1.5">
 							<Icon
-								className={cn("size-4 shrink-0", text)}
+								className={cn("mt-0.5 size-4 shrink-0", text)}
 								aria-hidden="true"
 							/>
-							{agentTool[step.agent]}
+							{step.tool ?? agentTool[step.agent]}
 						</span>
 					</Field>
+					{step.outputSummary ? (
+						<Field label={meta.output}>{step.outputSummary}</Field>
+					) : null}
 					{step.reason ? (
-						<Field
-							label={
-								human
-									? waiting
-										? "Por qué se detiene"
-										: "Qué se decidió y por qué"
-									: "Por qué"
-							}
-						>
-							{step.reason}
-						</Field>
+						<Field label={meta.reason(waiting)}>{step.reason}</Field>
 					) : null}
 				</dl>
 			</article>
@@ -205,40 +273,27 @@ type State =
 	| { status: "error"; message: string }
 	| { status: "ready"; trace: Trace; source: "api" | "mock"; reason?: string };
 
-const POLL_MS = 2500;
-
 export function TraceView({ threadId }: { threadId: string }) {
 	const [state, setState] = useState<State>({ status: "loading" });
 
-	const load = useCallback(
-		async (silent = false) => {
-			if (!silent) setState({ status: "loading" });
-			const r = await loadTrace(threadId);
-			if (r.ok) {
-				setState({
-					status: "ready",
-					trace: r.data,
-					source: r.source,
-					reason: r.reason,
-				});
-			} else if (!silent) {
-				setState({ status: "error", message: r.message });
-			}
-		},
-		[threadId],
-	);
+	const load = useCallback(async () => {
+		setState({ status: "loading" });
+		const r = await loadTrace(threadId);
+		if (r.ok) {
+			setState({
+				status: "ready",
+				trace: r.data,
+				source: r.source,
+				reason: r.reason,
+			});
+		} else {
+			setState({ status: "error", message: r.message });
+		}
+	}, [threadId]);
 
 	useEffect(() => {
 		void load();
 	}, [load]);
-
-	// Mientras el grafo corre, la traza crece: se vuelve a leer sola.
-	const running = state.status === "ready" && state.trace.status === "en_curso";
-	useEffect(() => {
-		if (!running) return;
-		const t = setInterval(() => void load(true), POLL_MS);
-		return () => clearInterval(t);
-	}, [running, load]);
 
 	if (state.status === "loading") {
 		return (
@@ -273,18 +328,26 @@ export function TraceView({ threadId }: { threadId: string }) {
 					</p>
 					<p>{state.message}</p>
 					<p className="text-muted-foreground">
-						Hilo: <span className="font-mono">{threadId}</span>
+						Hilo: <span className="break-all font-mono">{threadId}</span>
 					</p>
 				</div>
-				<Button
-					variant="outline"
-					size="lg"
-					className="h-11"
-					onClick={() => void load()}
-				>
-					<RotateCw aria-hidden="true" />
-					Reintentar
-				</Button>
+				<div className="flex flex-wrap items-center gap-3">
+					<Button
+						variant="outline"
+						size="lg"
+						className="h-11"
+						onClick={() => void load()}
+					>
+						<RotateCw aria-hidden="true" />
+						Reintentar
+					</Button>
+					<Link
+						href="/traza"
+						className="min-h-11 content-center text-primary text-sm underline underline-offset-4"
+					>
+						Ver las corridas recientes
+					</Link>
+				</div>
 			</div>
 		);
 	}
@@ -304,9 +367,13 @@ export function TraceView({ threadId }: { threadId: string }) {
 		);
 	}
 
-	const total = steps.reduce((sum, s) => sum + (s.durationMs ?? 0), 0);
+	const total =
+		trace.totalDurationMs ??
+		steps.reduce((sum, s) => sum + (s.durationMs ?? 0), 0);
 	const waiting = trace.status === "esperando_revision";
-	const lastHuman = steps.findLastIndex((s) => s.agent === "orientador");
+	const lastPause = steps.findLastIndex((s) => s.kind === "pausa_hitl");
+	const pending = trace.pendingReviewIds?.length ?? 0;
+	const blocked = steps.filter((s) => s.kind === "guardrail").length;
 	const agentCount = new Set(steps.map((s) => s.agent)).size;
 
 	return (
@@ -335,29 +402,21 @@ export function TraceView({ threadId }: { threadId: string }) {
 							href="/orientador"
 							className="min-h-11 content-center text-primary underline underline-offset-4"
 						>
-							Ir a la bandeja del orientador
+							{pending > 0
+								? `Ir a la bandeja: ${plural(pending, "revisión pendiente", "revisiones pendientes")} de este flujo`
+								: "Ir a la bandeja del orientador"}
 						</Link>
 					</div>
 				</div>
-			) : null}
-
-			{trace.status === "en_curso" ? (
-				<output
-					aria-live="polite"
-					className="flex items-center gap-3 border border-dashed px-4 py-3 text-sm"
-				>
-					<Hammer
-						className="size-5 shrink-0 animate-pulse"
-						aria-hidden="true"
-					/>
-					Los agentes siguen trabajando; esta página se actualiza sola.
-				</output>
 			) : null}
 
 			<p className="text-muted-foreground text-sm">
 				{plural(steps.length, "paso", "pasos")} ·{" "}
 				{plural(agentCount, "agente", "agentes")}
 				{total > 0 ? ` · ${seconds(total)} de trabajo` : ""}
+				{blocked > 0
+					? ` · ${plural(blocked, "bloqueo de guardrail", "bloqueos de guardrail")}`
+					: ""}
 			</p>
 
 			<ol className="flex flex-col">
@@ -366,7 +425,7 @@ export function TraceView({ threadId }: { threadId: string }) {
 						key={`${s.step}-${s.agent}`}
 						step={s}
 						index={i}
-						waiting={waiting && i === lastHuman}
+						waiting={waiting && i === lastPause}
 					/>
 				))}
 			</ol>
