@@ -27,6 +27,12 @@ class Settings(BaseSettings):
     llm_max_retries: int = 2
     llm_timeout_s: float = 60.0
 
+    # Langfuse (opcional): solo se activa con ambas claves. Ver `llm.observability`.
+    langfuse_public_key: str | None = None
+    langfuse_secret_key: str | None = None
+    langfuse_host: str | None = None
+    langfuse_log_content: bool = False
+
 
 @lru_cache
 def get_settings() -> Settings:

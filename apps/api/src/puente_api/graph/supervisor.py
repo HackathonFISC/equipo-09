@@ -41,6 +41,7 @@ def supervisor_node(state: PuenteState, config: RunnableConfig) -> dict[str, Any
     session, _llm, thread_id = deps(config)
     event = state["event"]
     with traced(session, thread_id, "supervisor") as trace:
+        trace.tool = "reglas fijas"
         trace.input_summary = f"evento {event}"
         route = ROUTES.get(event)
         if route is None:

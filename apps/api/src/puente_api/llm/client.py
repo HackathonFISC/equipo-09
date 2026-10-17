@@ -9,12 +9,15 @@ import base64
 import json
 import logging
 import re
+import time
 from collections.abc import Callable
+from dataclasses import dataclass
 from typing import Any, TypeVar
 
 from pydantic import BaseModel, ValidationError
 
 from puente_api.config import Settings, get_settings
+from puente_api.llm import observability
 
 log = logging.getLogger(__name__)
 
@@ -26,6 +29,17 @@ _FENCE = re.compile(r"^```(?:json)?\s*|\s*```$", re.IGNORECASE)
 
 class LLMError(RuntimeError):
     """Ningún modelo devolvió una salida válida."""
+
+
+@dataclass(frozen=True)
+class LLMCall:
+    """Una llamada al proveedor (o el uso del valor por defecto), para `agent_trace`."""
+
+    model: str
+    ok: bool
+    duration_ms: int
+    tokens: int | None = None
+    note: str | None = None
 
 
 def _default_completion(**kwargs: Any) -> Any:
@@ -46,6 +60,11 @@ class LLMClient:
     ) -> None:
         self.settings = settings or get_settings()
         self._completion = completion or _default_completion
+        self.call_log: list[LLMCall] = []
+        self._last_ms = 0
+        self._last_tokens: int | None = None
+        if completion is None:  # con un LLM simulado (tests) nunca se toca la red
+            observability.ensure_configured(self.settings)
 
     # --- API pública ---------------------------------------------------------
 
@@ -115,12 +134,24 @@ class LLMClient:
                 try:
                     content = self._call(model_name, convo)
                 except Exception as exc:  # errores de red/proveedor: reintento y luego respaldo
+                    self.call_log.append(
+                        LLMCall(model_name, False, self._last_ms, note=type(exc).__name__)
+                    )
                     errors.append(f"{model_name}#{attempt}: {type(exc).__name__}: {exc}")
                     log.warning("LLM %s falló (intento %d): %s", model_name, attempt, exc)
                     continue
                 try:
-                    return schema.model_validate_json(_extract_json(content))
+                    parsed = schema.model_validate_json(_extract_json(content))
+                    self.call_log.append(
+                        LLMCall(model_name, True, self._last_ms, self._last_tokens)
+                    )
+                    return parsed
                 except ValidationError as exc:
+                    self.call_log.append(
+                        LLMCall(
+                            model_name, False, self._last_ms, self._last_tokens, "salida inválida"
+                        )
+                    )
                     errors.append(f"{model_name}#{attempt}: salida inválida")
                     log.warning("LLM %s salida inválida (intento %d)", model_name, attempt)
                     convo += [
@@ -132,6 +163,7 @@ class LLMClient:
                         },
                     ]
         if default is not None:
+            self.call_log.append(LLMCall("(valor por defecto)", False, 0, note="sin salida válida"))
             log.error("LLM sin salida válida; se usa el valor por defecto. %s", errors)
             return default
         raise LLMError("; ".join(errors))
@@ -149,7 +181,18 @@ class LLMClient:
         same_provider = model_name.split("/")[0] == self.settings.llm_model.split("/")[0]
         if key and key != "changeme" and same_provider:
             kwargs["api_key"] = key
-        response = self._completion(**kwargs)
+        metadata = observability.langfuse_metadata()
+        if metadata:
+            kwargs["metadata"] = metadata
+        start = time.perf_counter()
+        self._last_tokens = None
+        try:
+            response = self._completion(**kwargs)
+        finally:
+            self._last_ms = int((time.perf_counter() - start) * 1000)
+        usage = getattr(response, "usage", None)
+        total = getattr(usage, "total_tokens", None)
+        self._last_tokens = total if isinstance(total, int) else None
         content = response.choices[0].message.content
         if not content:
             raise LLMError("respuesta vacía")

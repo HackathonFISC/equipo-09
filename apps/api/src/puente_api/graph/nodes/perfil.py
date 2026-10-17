@@ -233,7 +233,8 @@ def perfil_node(state: PuenteState, config: RunnableConfig) -> dict[str, Any]:
     if youth is None:
         raise ValueError(f"Joven {payload['youth_id']} no existe")
 
-    with traced(session, thread_id, "perfil") as trace:
+    with traced(session, thread_id, "perfil", llm) as trace:
+        trace.tool = "ESCO-lite + evidencia literal"
         if state["event"] == "profile.cv":
             result = _run_cv(session, llm, youth, payload["text"], trace)
         else:

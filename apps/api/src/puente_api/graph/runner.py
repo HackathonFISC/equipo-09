@@ -28,6 +28,7 @@ def _fail(session: Session, thread_id: str, agent: str, summary: str, exc: Excep
         thread_id,
         agent,
         input_summary=summary,
+        kind="error",
         decision="error",
         reason=f"{type(exc).__name__}: {exc}",
     )

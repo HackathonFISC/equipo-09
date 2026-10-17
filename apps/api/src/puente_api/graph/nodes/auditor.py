@@ -43,6 +43,7 @@ def auditor_node(state: PuenteState, config: RunnableConfig) -> dict[str, Any]:
     youth_ids, posting_ids = state["youth_ids"], state["posting_ids"]
 
     with traced(session, thread_id, "auditor") as trace:
+        trace.tool = "auditor contrafactual" + (" (STUB)" if is_stub() else "")
         trace.input_summary = (
             f"corrida {run_id}: {len(youth_ids)} jóvenes, {len(posting_ids)} ofertas"
         )
@@ -99,5 +100,6 @@ def auditor_node(state: PuenteState, config: RunnableConfig) -> dict[str, Any]:
         if is_stub():
             reasons.append("auditor STUB: sin verificación real")
         trace.reason = " | ".join(reasons)
+        trace.output_summary = f"{len(findings)} verificación(es), {len(failed)} alerta(s)"
 
     return {"review_ids": review_ids}

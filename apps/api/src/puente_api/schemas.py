@@ -178,10 +178,17 @@ AgentName = Literal[
 ]
 
 
+TraceStatus = Literal["en_curso", "esperando_revision", "completado", "error"]
+TraceKind = Literal["paso", "pausa_hitl", "decision_humana", "guardrail", "error"]
+
+
 class AgentTrace(ApiModel):
     agent: AgentName
     step: int
+    kind: TraceKind = "paso"
     input_summary: str | None = None
+    output_summary: str | None = None
+    tool: str | None = None
     decision: str
     reason: str | None = None
     duration_ms: int | None = None
@@ -191,8 +198,20 @@ class AgentTrace(ApiModel):
 
 class Trace(ApiModel):
     thread_id: str
-    status: Literal["en_curso", "esperando_revision", "completado", "error"]
+    status: TraceStatus
+    total_duration_ms: int = 0
+    pending_review_ids: list[str] = Field(default_factory=list)
     steps: list[AgentTrace]
+
+
+class TraceSummary(ApiModel):
+    thread_id: str
+    status: TraceStatus
+    step_count: int
+    agents: list[str]
+    last_decision: str | None = None
+    started_at: datetime
+    last_activity_at: datetime
 
 
 # --- Matching, revisión humana y postulaciones -------------------------------

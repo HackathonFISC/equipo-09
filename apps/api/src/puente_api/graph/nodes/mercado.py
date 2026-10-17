@@ -75,7 +75,8 @@ def mercado_node(state: PuenteState, config: RunnableConfig) -> dict[str, Any]:
     if company is None:
         raise ValueError(f"Empresa {payload['company_id']} no existe")
 
-    with traced(session, thread_id, "mercado") as trace:
+    with traced(session, thread_id, "mercado", llm) as trace:
+        trace.tool = "ESCO-lite + reglas de oferta"
         trace.input_summary = f"{payload['input_type']}: {text}"
         index = SkillIndex.load(session)
         corregimientos = sorted(session.scalars(select(models.Location.corregimiento)))
@@ -178,6 +179,9 @@ def mercado_node(state: PuenteState, config: RunnableConfig) -> dict[str, Any]:
         if flags:
             reasons.append("hallazgos: " + "; ".join(f"{f.kind} «{f.text}»" for f in flags))
         trace.reason = " | ".join(reasons)
+        trace.output_summary = (
+            f"oferta {posting.id}: {len(requirements)} requisitos, {len(flags)} hallazgo(s)"
+        )
 
     return {
         "result": {"posting_id": posting.id, "status": status},
