@@ -393,6 +393,10 @@ class AgentTrace(Base):
     agent: Mapped[str] = mapped_column(String(40))
     step: Mapped[str] = mapped_column(String(80))
     input_summary: Mapped[str | None] = mapped_column(Text)
+    output_summary: Mapped[str | None] = mapped_column(Text)
+    tool: Mapped[str | None] = mapped_column(String(120))
+    # paso | pausa_hitl | decision_humana | guardrail | error: la web pinta cada tipo distinto.
+    kind: Mapped[str] = mapped_column(String(20), default="paso", server_default="paso")
     decision: Mapped[str | None] = mapped_column(Text)
     reason: Mapped[str | None] = mapped_column(Text)
     duration_ms: Mapped[int | None] = mapped_column(Integer)

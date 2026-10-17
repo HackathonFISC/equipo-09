@@ -1,5 +1,12 @@
-import { Ban, ListOrdered, type LucideIcon, Scale } from "lucide-react";
+import {
+	Ban,
+	ListOrdered,
+	type LucideIcon,
+	Scale,
+	Waypoints,
+} from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { PageShell, RoleHeader } from "@/components/page-shell";
 import { ReviewInbox } from "@/components/review-inbox";
@@ -32,6 +39,15 @@ export default function OrientadorPage() {
 			<RoleHeader
 				title="Bandeja de revisión"
 				description="Las decisiones con impacto se detienen aquí hasta que usted las apruebe, edite o rechace. Cada una trae la propuesta del agente, su explicación y la traza."
+				actions={
+					<Link
+						href="/traza"
+						className="inline-flex min-h-11 items-center gap-2 border px-4 font-medium text-sm outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/50"
+					>
+						<Waypoints className="size-4" aria-hidden="true" />
+						Corridas recientes
+					</Link>
+				}
 			/>
 
 			<ReviewInbox />

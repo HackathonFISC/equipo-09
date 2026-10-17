@@ -17,10 +17,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from puente_api.db import models
-from puente_api.graph.hitl import KIND_ORDER, clean_posting_edits
+from puente_api.graph.hitl import KIND_ORDER, REVIEW_STATUS, clean_posting_edits
 from puente_api.graph.scheduling import assign_interview_slots, next_business_day
 from puente_api.graph.state import PuenteState, deps
-from puente_api.tracing import traced
+from puente_api.tracing import record_trace, summarize, traced
 
 DecisionMap = dict[str, dict[str, Any]]
 
@@ -119,6 +119,8 @@ def apply_reviews(
     for review in sorted(reviews, key=lambda r: (KIND_ORDER.get(r.kind, 9), r.created_at)):
         d = decisions[review.id]
         with traced(session, thread_id, "orientador") as trace:
+            trace.kind = "decision_humana"
+            trace.tool = "revisión humana (HITL)"
             trace.input_summary = f"{review.kind}: {review.explanation}"
             if review.kind == "bloqueo_oferta":
                 outcome, detail = _apply_bloqueo(session, review, d)
@@ -134,8 +136,39 @@ def apply_reviews(
             trace.decision = f"{d['decision']} por {who}: {outcome}"
             comment = f" | comentario: {d['comment']}" if d.get("comment") else ""
             trace.reason = detail + comment
+            trace.output_summary = f"revisión {review.id}: {REVIEW_STATUS[d['decision']]}"
         result["decisions"][review.id] = d["decision"]
     return result
+
+
+def _trace_pause(session: Session, thread_id: str, reviews: list[models.ReviewTask]) -> None:
+    """Deja en la línea de tiempo que el grafo espera a un humano (una vez por conjunto).
+
+    Al reanudar, LangGraph vuelve a ejecutar el nodo desde el principio: la marca de las ids de
+    revisión evita duplicar la fila.
+    """
+    marker = "revisiones: " + ", ".join(sorted(r.id for r in reviews))
+    already = session.scalar(
+        select(models.AgentTrace.id).where(
+            models.AgentTrace.thread_id == thread_id,
+            models.AgentTrace.kind == "pausa_hitl",
+            models.AgentTrace.reason == summarize(marker, 2000),
+        )
+    )
+    if already:
+        return
+    kinds = ", ".join(sorted({r.kind for r in reviews}))
+    record_trace(
+        session,
+        thread_id,
+        "orientador",
+        kind="pausa_hitl",
+        tool="interrupt (LangGraph)",
+        input_summary=f"{len(reviews)} revisión(es) pendiente(s): {kinds}",
+        decision="pausa: esperando la decisión del orientador",
+        reason=marker,
+        duration_ms=0,
+    )
 
 
 def orientador_node(state: PuenteState, config: RunnableConfig) -> dict[str, Any]:
@@ -144,6 +177,7 @@ def orientador_node(state: PuenteState, config: RunnableConfig) -> dict[str, Any
     reviews = [session.get(models.ReviewTask, rid) for rid in review_ids]
     reviews = [r for r in reviews if r is not None]
 
+    _trace_pause(session, thread_id, reviews)
     decisions: DecisionMap = interrupt(
         {
             "type": "revision_humana",

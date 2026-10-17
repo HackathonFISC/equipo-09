@@ -261,6 +261,8 @@ export function trace(threadId: string): AgentTrace[] {
 			{
 				agent: "supervisor",
 				step: 1,
+				kind: "paso",
+				tool: "Enrutador del grafo (LangGraph)",
 				decision: "Enruta la oferta a Mercado",
 				reason: "Entrada de texto de una empresa; sin señales de inyección.",
 				durationMs: 400,
@@ -269,6 +271,8 @@ export function trace(threadId: string): AgentTrace[] {
 			{
 				agent: "mercado",
 				step: 2,
+				kind: "paso",
+				tool: "LLM con taxonomía ESCO-lite",
 				decision: "Extrae 2 habilidades y las normaliza",
 				reason: "Atención al cliente ← «trato con visitantes» · Excel básico",
 				durationMs: 1800,
@@ -277,6 +281,8 @@ export function trace(threadId: string): AgentTrace[] {
 			{
 				agent: "auditor",
 				step: 3,
+				kind: "paso",
+				tool: "Prueba contrafactual y reglas fijas",
 				decision: "Bloquea la oferta: 2 requisitos discriminatorios",
 				reason:
 					"Reglas activadas: apariencia (buena presencia) y edad (18–25).",
@@ -286,6 +292,8 @@ export function trace(threadId: string): AgentTrace[] {
 			{
 				agent: "orientador",
 				step: 4,
+				kind: "pausa_hitl",
+				tool: "Pausa del grafo (interrupt)",
 				decision: "Espera revisión humana",
 				reason: "La oferta no se publica hasta que decida el orientador.",
 				createdAt: at(4),
@@ -295,6 +303,8 @@ export function trace(threadId: string): AgentTrace[] {
 			{
 				agent: "matching",
 				step: 1,
+				kind: "paso",
+				tool: "Solver OR-Tools CP-SAT",
 				decision: "Asigna 3 candidatas a la vacante",
 				reason:
 					"Solver CP-SAT OPTIMAL en 0.4 s; restricciones de traslado, horario y salario satisfechas.",
@@ -304,6 +314,8 @@ export function trace(threadId: string): AgentTrace[] {
 			{
 				agent: "auditor",
 				step: 2,
+				kind: "paso",
+				tool: "Prueba contrafactual y reglas fijas",
 				decision: "Paridad contrafactual 1.00",
 				reason:
 					"Cambiar nombre, género o corregimiento no altera el orden de la lista.",
@@ -313,6 +325,8 @@ export function trace(threadId: string): AgentTrace[] {
 			{
 				agent: "postulacion",
 				step: 3,
+				kind: "paso",
+				tool: "LLM de redacción",
 				decision: "Redacta CV y carta por candidata",
 				reason: "Cada carta cita solo habilidades con evidencia en el perfil.",
 				durationMs: 3200,
@@ -321,6 +335,8 @@ export function trace(threadId: string): AgentTrace[] {
 			{
 				agent: "orientador",
 				step: 4,
+				kind: "pausa_hitl",
+				tool: "Pausa del grafo (interrupt)",
 				decision: "Espera revisión humana",
 				reason: "Ninguna lista corta sale a la empresa sin visto bueno.",
 				createdAt: at(4),
@@ -330,6 +346,8 @@ export function trace(threadId: string): AgentTrace[] {
 			{
 				agent: "matching",
 				step: 1,
+				kind: "paso",
+				tool: "Solver OR-Tools CP-SAT",
 				decision: "Ejecuta la corrida con 12 candidatas",
 				reason: "Solver FEASIBLE en 5.0 s.",
 				durationMs: 5000,
@@ -338,6 +356,8 @@ export function trace(threadId: string): AgentTrace[] {
 			{
 				agent: "auditor",
 				step: 2,
+				kind: "paso",
+				tool: "Prueba contrafactual y reglas fijas",
 				decision: "Alerta: paridad 0.83 en corregimiento",
 				reason:
 					"Umbral 0.90. 2 de 12 candidatas cambian de resultado solo al variar el corregimiento.",
@@ -347,6 +367,8 @@ export function trace(threadId: string): AgentTrace[] {
 			{
 				agent: "orientador",
 				step: 3,
+				kind: "pausa_hitl",
+				tool: "Pausa del grafo (interrupt)",
 				decision: "Espera revisión humana",
 				reason:
 					"La corrida queda retenida mientras la paridad esté bajo el umbral.",

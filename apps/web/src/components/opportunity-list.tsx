@@ -2,13 +2,15 @@
 
 import { Button } from "@puente/ui/components/button";
 import { Skeleton } from "@puente/ui/components/skeleton";
-import { RotateCw, SearchX, TriangleAlert } from "lucide-react";
+import { GraduationCap, RotateCw, SearchX, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 import { DataSourceNote } from "@/components/data-states";
 import { OpportunityCard } from "@/components/opportunity-card";
+import { TraceLink } from "@/components/trace-link";
 import { loadOpportunities, type Opportunity } from "@/lib/api/reviews";
+import { loadRunThread } from "@/lib/api/traces";
 import { plural } from "@/lib/format";
 import { rememberYouth } from "@/lib/youth-session";
 
@@ -20,6 +22,8 @@ type State =
 			items: Opportunity[];
 			source: "api" | "mock";
 			reason?: string;
+			/** Hilo del grafo que produjo estas ofertas, para enlazar su traza. */
+			threadId: string | null;
 	  };
 
 /** Motivo humano por el que una oferta no se le muestra al joven. */
@@ -39,12 +43,22 @@ export function OpportunityList({ youthId }: { youthId: string }) {
 	const load = useCallback(async () => {
 		setState({ status: "loading" });
 		const r = await loadOpportunities(youthId);
-		if (r.ok) rememberYouth(youthId);
-		setState(
-			r.ok
-				? { status: "ready", items: r.data, source: r.source, reason: r.reason }
-				: { status: "error", message: r.message },
-		);
+		if (!r.ok) {
+			setState({ status: "error", message: r.message });
+			return;
+		}
+		rememberYouth(youthId);
+		const runId = r.data[0]?.match.runId;
+		const threadId = runId
+			? await loadRunThread(runId, r.source === "mock")
+			: null;
+		setState({
+			status: "ready",
+			items: r.data,
+			source: r.source,
+			reason: r.reason,
+			threadId,
+		});
 	}, [youthId]);
 
 	useEffect(() => {
@@ -133,6 +147,24 @@ export function OpportunityList({ youthId }: { youthId: string }) {
 					</ul>
 				</section>
 			)}
+
+			<nav
+				aria-label="Más sobre tus resultados"
+				className="flex flex-col border-y sm:flex-row sm:gap-6"
+			>
+				<Link
+					href={`/joven/formacion?id=${youthId}` as never}
+					className="inline-flex min-h-11 items-center gap-2 text-primary text-sm underline underline-offset-4 outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+				>
+					<GraduationCap className="size-4 shrink-0" aria-hidden="true" />
+					Ver mi ruta de formación
+				</Link>
+				{state.threadId ? (
+					<TraceLink threadId={state.threadId}>
+						Ver cómo decidieron los agentes
+					</TraceLink>
+				) : null}
+			</nav>
 
 			{discarded.length > 0 ? (
 				<details className="border p-4">

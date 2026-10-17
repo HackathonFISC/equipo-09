@@ -129,7 +129,8 @@ def postulacion_node(state: PuenteState, config: RunnableConfig) -> dict[str, An
     run_id = state["run_id"]
     review_ids = list(state.get("review_ids", []))
 
-    with traced(session, thread_id, "postulacion") as trace:
+    with traced(session, thread_id, "postulacion", llm) as trace:
+        trace.tool = "verificador de habilidades"
         matches = list(
             session.scalars(
                 select(models.MatchResult)
@@ -237,6 +238,7 @@ def postulacion_node(state: PuenteState, config: RunnableConfig) -> dict[str, An
             f"{len(matches)} postulaciones redactadas en {len(by_posting)} lista(s) corta(s); "
             "pausa para revisión del orientador"
         )
+        trace.output_summary = f"{len(by_posting)} lista(s) corta(s) pendientes de revisión"
         trace.reason = "verificador: CV y carta solo con habilidades del perfil" + (
             f" | plantilla segura en {len(fell_back)}: {' / '.join(fell_back)}" if fell_back else ""
         )

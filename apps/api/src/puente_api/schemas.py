@@ -1,6 +1,6 @@
 """Esquemas de respuesta: reflejan `components/schemas` de packages/api-spec/openapi.yaml."""
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any, Literal
 
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field, field_validator
@@ -178,10 +178,40 @@ AgentName = Literal[
 ]
 
 
+class CourseSession(ApiModel):
+    id: str | None = None
+    schedule: list[TimeSlot]
+    start_date: date
+    seats_total: int = Field(ge=1)
+    seats_taken: int | None = Field(default=None, ge=0)
+
+
+class TrainingPlanItem(ApiModel):
+    course_title: str
+    session: CourseSession
+    commute_min: int | None = None
+
+
+class TrainingPlan(ApiModel):
+    id: str
+    youth_id: str
+    items: list[TrainingPlanItem]
+    total_cost: float
+    unlocked_postings: int
+    explanation: str
+
+
+TraceStatus = Literal["en_curso", "esperando_revision", "completado", "error"]
+TraceKind = Literal["paso", "pausa_hitl", "decision_humana", "guardrail", "error"]
+
+
 class AgentTrace(ApiModel):
     agent: AgentName
     step: int
+    kind: TraceKind = "paso"
     input_summary: str | None = None
+    output_summary: str | None = None
+    tool: str | None = None
     decision: str
     reason: str | None = None
     duration_ms: int | None = None
@@ -191,8 +221,20 @@ class AgentTrace(ApiModel):
 
 class Trace(ApiModel):
     thread_id: str
-    status: Literal["en_curso", "esperando_revision", "completado", "error"]
+    status: TraceStatus
+    total_duration_ms: int = 0
+    pending_review_ids: list[str] = Field(default_factory=list)
     steps: list[AgentTrace]
+
+
+class TraceSummary(ApiModel):
+    thread_id: str
+    status: TraceStatus
+    step_count: int
+    agents: list[str]
+    last_decision: str | None = None
+    started_at: datetime
+    last_activity_at: datetime
 
 
 # --- Matching, revisión humana y postulaciones -------------------------------

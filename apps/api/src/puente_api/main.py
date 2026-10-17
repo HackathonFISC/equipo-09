@@ -12,6 +12,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from puente_api.config import get_settings
 from puente_api.db.session import init_db
+from puente_api.graph.guardrail_port import GuardrailBlocked
 from puente_api.problems import ProblemError
 from puente_api.routers import catalogs, matching, postings, reviews, traces, youth
 
@@ -55,6 +56,12 @@ async def validation_problem(_request: Request, exc: RequestValidationError) -> 
         f"{'.'.join(str(p) for p in err['loc'])}: {err['msg']}" for err in exc.errors()
     )
     return _problem(422, detail)
+
+
+@app.exception_handler(GuardrailBlocked)
+async def guardrail_problem(_request: Request, exc: GuardrailBlocked) -> JSONResponse:
+    detail = f"Entrada bloqueada por seguridad ({exc.label}): {'; '.join(exc.reasons)}"
+    return _problem(422, detail, exc.code)
 
 
 api = APIRouter(prefix=API_PREFIX)

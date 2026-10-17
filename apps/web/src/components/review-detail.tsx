@@ -21,6 +21,7 @@ import { useEffect, useId, useState } from "react";
 import { toast } from "sonner";
 
 import { AgentBadge, TraceSteps } from "@/components/agents";
+import { TraceLink } from "@/components/trace-link";
 import type {
 	AgentTrace,
 	ReviewDecision,
@@ -912,7 +913,12 @@ export function ReviewDetail({
 					<Skeleton className="h-14 w-full" />
 				</div>
 			) : trace.steps && trace.steps.length > 0 ? (
-				<TraceSteps steps={trace.steps} title="Traza del flujo" />
+				<div className="flex flex-col gap-1">
+					<TraceSteps steps={trace.steps} title="Traza del flujo" />
+					<TraceLink threadId={task.threadId} className="self-start">
+						Ver la traza completa con herramientas y tiempos
+					</TraceLink>
+				</div>
 			) : (
 				<p className="text-muted-foreground text-sm">
 					La traza de este flujo aún no está disponible. Hilo:{" "}

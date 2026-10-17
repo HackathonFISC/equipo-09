@@ -1,0 +1,439 @@
+[
+  {
+    "id": "audit-01-ciego-nombre-genero-corregimiento",
+    "category": "auditor",
+    "type": "audit_matching",
+    "description": "Solver ciego: cambiar nombre, género y corregimiento no cambia ningún resultado",
+    "metric": "Paridad contrafactual por variable (jóvenes que conservan resultado / total) y veredicto passed",
+    "input": {
+      "commute": "base",
+      "solver": "blind",
+      "youths": [
+        {
+          "id": "y1",
+          "location_id": "A",
+          "max_commute_min": 45,
+          "transport_budget_daily": 3.0,
+          "availability": [
+            "lun,mar,mie 07:00-17:00"
+          ],
+          "min_salary": 500.0,
+          "skills": {
+            "sk-caja": 3
+          }
+        },
+        {
+          "id": "y2",
+          "location_id": "B",
+          "max_commute_min": 45,
+          "transport_budget_daily": 3.0,
+          "availability": [
+            "lun,mar,mie 07:00-17:00"
+          ],
+          "min_salary": 500.0,
+          "skills": {
+            "sk-caja": 3
+          }
+        },
+        {
+          "id": "y3",
+          "location_id": "A",
+          "max_commute_min": 45,
+          "transport_budget_daily": 3.0,
+          "availability": [
+            "lun,mar,mie 07:00-17:00"
+          ],
+          "min_salary": 500.0,
+          "skills": {
+            "sk-caja": 3
+          }
+        },
+        {
+          "id": "y4",
+          "location_id": "B",
+          "max_commute_min": 45,
+          "transport_budget_daily": 3.0,
+          "availability": [
+            "lun,mar,mie 07:00-17:00"
+          ],
+          "min_salary": 500.0,
+          "skills": {
+            "sk-caja": 3
+          }
+        }
+      ],
+      "postings": [
+        {
+          "id": "p1",
+          "location_id": "A",
+          "schedule": [
+            "lun,mar,mie 08:00-16:00"
+          ],
+          "salary_min": 600.0,
+          "salary_max": 600.0,
+          "vacancies": 2,
+          "requirements": [
+            {
+              "skill_id": "sk-caja",
+              "weight": 3,
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "p2",
+          "location_id": "B",
+          "schedule": [
+            "lun,mar,mie 08:00-16:00"
+          ],
+          "salary_min": 600.0,
+          "salary_max": 600.0,
+          "vacancies": 2,
+          "requirements": [
+            {
+              "skill_id": "sk-caja",
+              "weight": 3,
+              "required": true
+            }
+          ]
+        }
+      ],
+      "protected": {
+        "y1": {
+          "display_name": "Ana",
+          "gender": "femenino",
+          "birth_year": 2003
+        },
+        "y2": {
+          "display_name": "Luis",
+          "gender": "masculino",
+          "birth_year": 2001
+        },
+        "y3": {
+          "display_name": "Rosa",
+          "gender": "femenino",
+          "birth_year": 1999
+        },
+        "y4": {
+          "display_name": "Zoila",
+          "gender": "femenino",
+          "birth_year": 2004
+        }
+      },
+      "parity_threshold": 0.95
+    },
+    "expected": {
+      "parity": {
+        "nombre": 1.0,
+        "genero": 1.0,
+        "corregimiento": 1.0
+      },
+      "passed": {
+        "nombre": true,
+        "genero": true,
+        "corregimiento": true
+      }
+    }
+  },
+  {
+    "id": "audit-02-sesgo-genero-detectado",
+    "category": "auditor",
+    "type": "audit_matching",
+    "description": "Un solver que excluye mujeres es detectado por el contrafactual de género",
+    "metric": "Paridad contrafactual por variable (jóvenes que conservan resultado / total) y veredicto passed",
+    "input": {
+      "commute": "base",
+      "solver": "biased_gender",
+      "youths": [
+        {
+          "id": "y1",
+          "location_id": "A",
+          "max_commute_min": 45,
+          "transport_budget_daily": 3.0,
+          "availability": [
+            "lun,mar,mie 07:00-17:00"
+          ],
+          "min_salary": 500.0,
+          "skills": {
+            "sk-caja": 3
+          }
+        },
+        {
+          "id": "y2",
+          "location_id": "B",
+          "max_commute_min": 45,
+          "transport_budget_daily": 3.0,
+          "availability": [
+            "lun,mar,mie 07:00-17:00"
+          ],
+          "min_salary": 500.0,
+          "skills": {
+            "sk-caja": 3
+          }
+        },
+        {
+          "id": "y3",
+          "location_id": "A",
+          "max_commute_min": 45,
+          "transport_budget_daily": 3.0,
+          "availability": [
+            "lun,mar,mie 07:00-17:00"
+          ],
+          "min_salary": 500.0,
+          "skills": {
+            "sk-caja": 3
+          }
+        },
+        {
+          "id": "y4",
+          "location_id": "B",
+          "max_commute_min": 45,
+          "transport_budget_daily": 3.0,
+          "availability": [
+            "lun,mar,mie 07:00-17:00"
+          ],
+          "min_salary": 500.0,
+          "skills": {
+            "sk-caja": 3
+          }
+        }
+      ],
+      "postings": [
+        {
+          "id": "p1",
+          "location_id": "A",
+          "schedule": [
+            "lun,mar,mie 08:00-16:00"
+          ],
+          "salary_min": 600.0,
+          "salary_max": 600.0,
+          "vacancies": 2,
+          "requirements": [
+            {
+              "skill_id": "sk-caja",
+              "weight": 3,
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "p2",
+          "location_id": "B",
+          "schedule": [
+            "lun,mar,mie 08:00-16:00"
+          ],
+          "salary_min": 600.0,
+          "salary_max": 600.0,
+          "vacancies": 2,
+          "requirements": [
+            {
+              "skill_id": "sk-caja",
+              "weight": 3,
+              "required": true
+            }
+          ]
+        }
+      ],
+      "protected": {
+        "y1": {
+          "display_name": "Ana",
+          "gender": "femenino",
+          "birth_year": 2003
+        },
+        "y2": {
+          "display_name": "Luis",
+          "gender": "masculino",
+          "birth_year": 2001
+        },
+        "y3": {
+          "display_name": "Rosa",
+          "gender": "femenino",
+          "birth_year": 1999
+        },
+        "y4": {
+          "display_name": "Zoila",
+          "gender": "femenino",
+          "birth_year": 2004
+        }
+      },
+      "parity_threshold": 0.95
+    },
+    "expected": {
+      "passed": {
+        "nombre": true,
+        "genero": false,
+        "corregimiento": true
+      },
+      "parity_below": {
+        "genero": 0.95
+      }
+    }
+  },
+  {
+    "id": "audit-03-sesgo-nombre-detectado",
+    "category": "auditor",
+    "type": "audit_matching",
+    "description": "Un solver que excluye el nombre «Zoila» es detectado por el contrafactual de nombre",
+    "metric": "Paridad contrafactual por variable (jóvenes que conservan resultado / total) y veredicto passed",
+    "input": {
+      "commute": "base",
+      "solver": "biased_name",
+      "youths": [
+        {
+          "id": "y1",
+          "location_id": "A",
+          "max_commute_min": 45,
+          "transport_budget_daily": 3.0,
+          "availability": [
+            "lun,mar,mie 07:00-17:00"
+          ],
+          "min_salary": 500.0,
+          "skills": {
+            "sk-caja": 3
+          }
+        },
+        {
+          "id": "y2",
+          "location_id": "B",
+          "max_commute_min": 45,
+          "transport_budget_daily": 3.0,
+          "availability": [
+            "lun,mar,mie 07:00-17:00"
+          ],
+          "min_salary": 500.0,
+          "skills": {
+            "sk-caja": 3
+          }
+        },
+        {
+          "id": "y3",
+          "location_id": "A",
+          "max_commute_min": 45,
+          "transport_budget_daily": 3.0,
+          "availability": [
+            "lun,mar,mie 07:00-17:00"
+          ],
+          "min_salary": 500.0,
+          "skills": {
+            "sk-caja": 3
+          }
+        },
+        {
+          "id": "y4",
+          "location_id": "B",
+          "max_commute_min": 45,
+          "transport_budget_daily": 3.0,
+          "availability": [
+            "lun,mar,mie 07:00-17:00"
+          ],
+          "min_salary": 500.0,
+          "skills": {
+            "sk-caja": 3
+          }
+        }
+      ],
+      "postings": [
+        {
+          "id": "p1",
+          "location_id": "A",
+          "schedule": [
+            "lun,mar,mie 08:00-16:00"
+          ],
+          "salary_min": 600.0,
+          "salary_max": 600.0,
+          "vacancies": 2,
+          "requirements": [
+            {
+              "skill_id": "sk-caja",
+              "weight": 3,
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "p2",
+          "location_id": "B",
+          "schedule": [
+            "lun,mar,mie 08:00-16:00"
+          ],
+          "salary_min": 600.0,
+          "salary_max": 600.0,
+          "vacancies": 2,
+          "requirements": [
+            {
+              "skill_id": "sk-caja",
+              "weight": 3,
+              "required": true
+            }
+          ]
+        }
+      ],
+      "protected": {
+        "y1": {
+          "display_name": "Ana",
+          "gender": "femenino",
+          "birth_year": 2003
+        },
+        "y2": {
+          "display_name": "Luis",
+          "gender": "masculino",
+          "birth_year": 2001
+        },
+        "y3": {
+          "display_name": "Rosa",
+          "gender": "femenino",
+          "birth_year": 1999
+        },
+        "y4": {
+          "display_name": "Zoila",
+          "gender": "femenino",
+          "birth_year": 2004
+        }
+      },
+      "parity_threshold": 0.95
+    },
+    "expected": {
+      "passed": {
+        "nombre": false,
+        "genero": true,
+        "corregimiento": true
+      },
+      "parity_below": {
+        "nombre": 0.95
+      }
+    }
+  },
+  {
+    "id": "audit-04-oferta-discriminatoria",
+    "category": "auditor",
+    "type": "audit_posting",
+    "description": "Oferta con edad, género y apariencia: el check de discriminación falla",
+    "metric": "passed == False y tipos de hallazgo esperados presentes",
+    "input": {
+      "text": "Se necesita cajera, solo mujeres de 20 a 30 años, buena presencia. Enviar foto."
+    },
+    "expected": {
+      "passed": false,
+      "kinds": [
+        "edad",
+        "genero",
+        "apariencia",
+        "foto"
+      ]
+    }
+  },
+  {
+    "id": "audit-05-oferta-limpia",
+    "category": "auditor",
+    "type": "audit_posting",
+    "description": "Oferta sin criterios prohibidos (mayores de 18, licencia): el check pasa",
+    "metric": "passed == True y 0 hallazgos",
+    "input": {
+      "text": "Cajero/a para supermercado. Mayores de 18 años. Licencia de conducir tipo B. Salario B/. 650."
+    },
+    "expected": {
+      "passed": true,
+      "kinds": []
+    }
+  }
+]

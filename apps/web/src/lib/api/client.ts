@@ -18,6 +18,7 @@ export type ProfileSkill = Schemas["ProfileSkill"];
 export type InterviewStep = Schemas["InterviewStep"];
 export type AgentTrace = Schemas["AgentTrace"];
 export type AgentName = AgentTrace["agent"];
+export type AgentTraceKind = AgentTrace["kind"];
 export type MatchResult = Schemas["MatchResult"];
 export type MatchStatus = Schemas["MatchStatus"];
 export type ScoreBreakdown = Schemas["ScoreBreakdown"];
@@ -25,10 +26,14 @@ export type ReviewTask = Schemas["ReviewTask"];
 export type ReviewKind = Schemas["ReviewKind"];
 export type ReviewStatus = Schemas["ReviewStatus"];
 export type ReviewDecision = Schemas["ReviewDecision"];
+export type Course = Schemas["Course"];
+export type CourseSession = Schemas["CourseSession"];
+export type TrainingPlan = Schemas["TrainingPlan"];
 export type Problem = Schemas["Problem"];
 export type Trace =
 	paths["/traces/{threadId}"]["get"]["responses"][200]["content"]["application/json"];
 export type TraceStatus = Trace["status"];
+export type TraceSummary = Schemas["TraceSummary"];
 
 /*
  * Este módulo también corre en el navegador (ingesta, perfil). En `next dev`,

@@ -42,6 +42,7 @@ def matching_node(state: PuenteState, config: RunnableConfig) -> dict[str, Any]:
     payload = state["payload"]
 
     with traced(session, thread_id, "matching") as trace:
+        trace.tool = "OR-Tools CP-SAT"
         inp = load_matching_input(
             session,
             youth_ids=payload.get("youth_ids") or None,
@@ -75,6 +76,7 @@ def matching_node(state: PuenteState, config: RunnableConfig) -> dict[str, Any]:
             f"en {result.solve_ms} ms"
         )
         unfilled = sum(result.unfilled.values())
+        trace.output_summary = f"corrida {run.id}: estado {result.status}"
         trace.reason = (
             f"pares elegibles: {result.eligible_pairs} | jóvenes sin asignar: "
             f"{len(result.unassigned)} | cupos vacíos: {unfilled} | restricciones: "

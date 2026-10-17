@@ -15,6 +15,7 @@ from puente_api.graph import runner
 from puente_api.graph.nodes.perfil import InterviewStateError
 from puente_api.llm import LLMClient, get_llm
 from puente_api.problems import ProblemError
+from puente_api.routers.serializers import training_plan_out
 from puente_api.routers.uploads import read_input
 
 router = APIRouter(prefix="/youth", tags=["jovenes"])
@@ -131,3 +132,40 @@ async def answer_interview(
         index=result.get("index"),
         discovered_skills=[schemas.ProfileSkill.model_validate(ps) for ps in skills],
     )
+
+
+@router.post(
+    "/{youth_id}/training-plan",
+    operation_id="createTrainingPlan",
+    status_code=202,
+    response_model=schemas.Accepted,
+    response_model_exclude_none=True,
+)
+async def create_training_plan(youth_id: str, db: DB, llm: LLM) -> schemas.Accepted:
+    """Agente de Ruta de formación: el solver MIP elige cursos; el LLM explica la ruta."""
+    _load_youth(db, youth_id)
+    thread_id, result = await run_in_threadpool(
+        runner.run, db, llm, "training.requested", {"youth_id": youth_id}
+    )
+    return schemas.Accepted(thread_id=thread_id, resource_id=result.get("plan_id"))
+
+
+@router.get(
+    "/{youth_id}/training-plan",
+    operation_id="getTrainingPlan",
+    response_model=schemas.TrainingPlan,
+    response_model_exclude_none=True,
+)
+def get_training_plan(youth_id: str, db: DB) -> schemas.TrainingPlan:
+    """Última ruta de formación calculada para el joven."""
+    _load_youth(db, youth_id)
+    plan = db.scalar(
+        select(models.TrainingPlan)
+        .where(models.TrainingPlan.youth_id == youth_id)
+        .options(selectinload(models.TrainingPlan.items))
+        .order_by(models.TrainingPlan.created_at.desc())
+        .limit(1)
+    )
+    if plan is None:
+        raise ProblemError(404, f"El joven {youth_id} aún no tiene una ruta de formación")
+    return training_plan_out(db, plan)

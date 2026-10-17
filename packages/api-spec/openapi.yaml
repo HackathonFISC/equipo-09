@@ -407,6 +407,28 @@ paths:
         "409": { $ref: "#/components/responses/Problem" }
         "422": { $ref: "#/components/responses/ValidationError" }
 
+  /traces:
+    get:
+      tags: [trazas]
+      operationId: listTraces
+      summary: Hilos recientes con su estado
+      description: Hilos del grafo ordenados del más reciente al más antiguo, para navegar a su línea de tiempo.
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+        - name: status
+          in: query
+          schema: { $ref: "#/components/schemas/TraceStatus" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/TraceSummary" }
+
   /traces/{threadId}:
     parameters:
       - name: threadId
@@ -427,7 +449,12 @@ paths:
                 required: [threadId, status, steps]
                 properties:
                   threadId: { type: string }
-                  status: { type: string, enum: [en_curso, esperando_revision, completado, error] }
+                  status: { $ref: "#/components/schemas/TraceStatus" }
+                  totalDurationMs: { type: integer, description: Suma de la duración de los pasos }
+                  pendingReviewIds:
+                    type: array
+                    description: Revisiones humanas que mantienen el hilo en pausa
+                    items: { type: string, format: uuid }
                   steps:
                     type: array
                     items: { $ref: "#/components/schemas/AgentTrace" }
@@ -848,9 +875,38 @@ components:
           type: string
           enum: [supervisor, mercado, perfil, matching, formacion, postulacion, entrevista, auditor, orientador]
         step: { type: integer }
+        kind:
+          type: string
+          description: |
+            Tipo de fila para pintar la línea de tiempo: `paso` (nodo del grafo), `pausa_hitl` (el grafo
+            espera a una persona), `decision_humana` (decisión del orientador), `guardrail` (texto
+            bloqueado o saneado antes del LLM) y `error`.
+          enum: [paso, pausa_hitl, decision_humana, guardrail, error]
+          default: paso
         inputSummary: { type: string }
+        outputSummary: { type: string }
+        tool: { type: string, description: "Herramienta usada: solver, modelo LLM, reglas, HITL..." }
         decision: { type: string }
         reason: { type: string }
         durationMs: { type: integer }
         langfuseTraceId: { type: string }
         createdAt: { type: string, format: date-time }
+
+    TraceStatus:
+      type: string
+      enum: [en_curso, esperando_revision, completado, error]
+
+    TraceSummary:
+      type: object
+      required: [threadId, status, stepCount, agents, startedAt, lastActivityAt]
+      properties:
+        threadId: { type: string }
+        status: { $ref: "#/components/schemas/TraceStatus" }
+        stepCount: { type: integer }
+        agents:
+          type: array
+          description: Agentes que participaron, en orden de aparición
+          items: { type: string }
+        lastDecision: { type: string }
+        startedAt: { type: string, format: date-time }
+        lastActivityAt: { type: string, format: date-time }
