@@ -323,7 +323,15 @@ export interface paths {
         put?: never;
         /**
          * Aprobar, editar o rechazar una decisión
-         * @description Reanuda el grafo LangGraph detenido en `interrupt`.
+         * @description Registra la decisión y reanuda el grafo LangGraph detenido en `interrupt` cuando el hilo
+         *     ya no tiene revisiones pendientes (un hilo puede tener alerta de sesgo + lista corta).
+         *     Reglas por tipo: `alerta_sesgo` solo admite `aprobar` (acepta el hallazgo y retiene la
+         *     lista corta) o `rechazar` (exige `comment`). `bloqueo_oferta`: `aprobar` confirma el
+         *     bloqueo, `rechazar` libera la oferta, `editar` exige `edits` con `title`, `salaryMin`,
+         *     `salaryMax` o `vacancies` y publica. `lista_corta`: `aprobar` envía todo, `rechazar`
+         *     descarta todo, `editar` usa `edits.remove` (matchResultId a quitar) y/o `edits.order`
+         *     (matchResultId en el orden deseado). Responde 422 si la decisión no aplica y 409 si ya
+         *     fue resuelta.
          */
         post: operations["decideReview"];
         delete?: never;
@@ -608,6 +616,12 @@ export interface components {
             kind: components["schemas"]["ReviewKind"];
             /** Format: uuid */
             subjectId: string;
+            /**
+             * @description Propuesta del agente; su forma depende de `kind`:
+             *     - `bloqueo_oferta`: `{action: "bloquear", postingTitle, vacancies, salaryMin, salaryMax, originalText, findings: [{kind, text}]}`
+             *     - `lista_corta`: `{action: "enviar_lista_corta", runId, postings: [{postingId, title, vacancies, candidates: [{rank, matchResultId, applicationId, youthId, displayName, score, explanation}]}]}`
+             *     - `alerta_sesgo`: `{action: "rerun_sin_variable", runId, variable, parity, findings: string[]}`
+             */
             proposal: {
                 [key: string]: unknown;
             };
@@ -627,7 +641,12 @@ export interface components {
             decision: "aprobar" | "editar" | "rechazar";
             reviewer: string;
             comment?: string;
-            /** @description Cambios del orientador (p. ej. orden de la lista corta o texto corregido de la oferta) */
+            /**
+             * @description Cambios del orientador cuando `decision` es `editar`:
+             *     - `bloqueo_oferta`: cualquiera de `{title, salaryMin, salaryMax, vacancies}`.
+             *     - `lista_corta`: `{order?: matchResultId[], remove?: matchResultId[], removals?: [{matchResultId, youthId, reason}]}`.
+             *     - `alerta_sesgo`: no admite edición (422).
+             */
             edits?: {
                 [key: string]: unknown;
             };
@@ -1096,6 +1115,7 @@ export interface operations {
         };
         responses: {
             202: components["responses"]["Accepted"];
+            422: components["responses"]["ValidationError"];
         };
     };
     getMatchRun: {
@@ -1162,6 +1182,7 @@ export interface operations {
             202: components["responses"]["Accepted"];
             404: components["responses"]["NotFound"];
             409: components["responses"]["Problem"];
+            422: components["responses"]["ValidationError"];
         };
     };
     getTrace: {

@@ -40,6 +40,8 @@ export type ParsedProposal = {
 	subject?: string;
 	company?: string;
 	vacancies?: number;
+	salaryMin?: number;
+	salaryMax?: number;
 	findings: Finding[];
 	originalText?: string;
 	suggestedText?: string;
@@ -57,6 +59,11 @@ const KNOWN = new Set([
 	"title",
 	"company",
 	"vacancies",
+	"salaryMin",
+	"salaryMax",
+	"postings",
+	"action",
+	"runId",
 	"findings",
 	"originalText",
 	"suggestedText",
@@ -74,7 +81,7 @@ function parseFindings(raw: unknown): Finding[] {
 		if (isRec(f)) {
 			return [
 				{
-					rule: str(f.rule),
+					rule: str(f.rule) ?? str(f.kind),
 					quote: str(f.quote) ?? str(f.text),
 					suggestion: str(f.suggestion),
 				},
@@ -91,7 +98,8 @@ function parseCandidates(raw: unknown): Candidate[] {
 		const youthId = str(c.youthId);
 		return [
 			{
-				key: youthId ?? `c${i}`,
+				// La API valida `edits.order` / `edits.remove` contra `matchResultId`.
+				key: str(c.matchResultId) ?? youthId ?? `c${i}`,
 				youthId,
 				name: str(c.displayName) ?? str(c.name) ?? `Candidato ${i + 1}`,
 				score: num(c.score),
@@ -132,16 +140,35 @@ function stringify(v: unknown) {
 	}
 }
 
+/** La lista corta llega agrupada por oferta: `postings[].candidates[]`. */
+function shortlistBlocks(p: Rec) {
+	const blocks = Array.isArray(p.postings) ? p.postings.filter(isRec) : [];
+	return {
+		titles: blocks.flatMap((b) => str(b.title) ?? []),
+		candidates: blocks.flatMap((b) =>
+			Array.isArray(b.candidates) ? b.candidates : [],
+		),
+	};
+}
+
 export function parseProposal(task: ReviewTask): ParsedProposal {
 	const p: Rec = isRec(task.proposal) ? task.proposal : {};
+	const shortlist = shortlistBlocks(p);
 	return {
-		subject: str(p.postingTitle) ?? str(p.title),
+		subject:
+			str(p.postingTitle) ??
+			str(p.title) ??
+			(shortlist.titles.length ? shortlist.titles.join(" · ") : undefined),
 		company: str(p.company),
 		vacancies: num(p.vacancies),
+		salaryMin: num(p.salaryMin),
+		salaryMax: num(p.salaryMax),
 		findings: parseFindings(p.findings),
 		originalText: str(p.originalText),
 		suggestedText: str(p.suggestedText),
-		candidates: parseCandidates(p.candidates),
+		candidates: parseCandidates(
+			Array.isArray(p.candidates) ? p.candidates : shortlist.candidates,
+		),
 		variable: str(p.variable),
 		parity: num(p.parity),
 		threshold: num(p.threshold),

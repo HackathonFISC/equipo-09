@@ -151,7 +151,15 @@ def mercado_node(state: PuenteState, config: RunnableConfig) -> dict[str, Any]:
             task = models.ReviewTask(
                 kind="bloqueo_oferta",
                 subject_id=posting.id,
-                proposal={"action": "bloquear", "findings": [f.model_dump() for f in flags]},
+                proposal={
+                    "action": "bloquear",
+                    "postingTitle": posting.title,
+                    "vacancies": posting.vacancies,
+                    "salaryMin": float(posting.salary_min) if posting.salary_min else None,
+                    "salaryMax": float(posting.salary_max) if posting.salary_max else None,
+                    "originalText": posting.raw_input,
+                    "findings": [f.model_dump() for f in flags],
+                },
                 explanation="La oferta contiene requisitos posiblemente discriminatorios: "
                 + "; ".join(f"«{f.text}» ({f.kind})" for f in flags),
                 graph_thread_id=thread_id,

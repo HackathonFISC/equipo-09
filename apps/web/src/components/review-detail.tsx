@@ -211,10 +211,13 @@ function ShortlistEditor({
 	function emit(nextOrder: string[], nextRemoved: Removal[]) {
 		setOrder(nextOrder);
 		setRemoved(nextRemoved);
+		// `order` y `remove` llevan `matchResultId`; los motivos viajan aparte.
 		onChange({
-			order: nextOrder.map((k) => byKey.get(k)?.youthId ?? k),
-			removed: nextRemoved.map((r) => ({
-				youthId: byKey.get(r.key)?.youthId ?? r.key,
+			order: nextOrder,
+			remove: nextRemoved.map((r) => r.key),
+			removals: nextRemoved.map((r) => ({
+				matchResultId: r.key,
+				youthId: byKey.get(r.key)?.youthId,
 				reason: r.reason,
 			})),
 		});
@@ -394,6 +397,63 @@ function PairsTable({ pairs }: { pairs: BiasPair[] }) {
 	);
 }
 
+const POSTING_FIELDS = [
+	{ key: "title", label: "Título del puesto", type: "text" },
+	{ key: "salaryMin", label: "Salario mínimo (B/.)", type: "number" },
+	{ key: "salaryMax", label: "Salario máximo (B/.)", type: "number" },
+	{ key: "vacancies", label: "Vacantes", type: "number" },
+] as const;
+
+type PostingField = (typeof POSTING_FIELDS)[number]["key"];
+
+/** La API solo acepta corregir título, salario y vacantes (`edits` de `bloqueo_oferta`). */
+function PostingEditor({
+	p,
+	onChange,
+}: {
+	p: ParsedProposal;
+	onChange: (edits: Record<string, unknown> | null) => void;
+}) {
+	const baseId = useId();
+	const [values, setValues] = useState<Record<PostingField, string>>({
+		title: p.subject ?? "",
+		salaryMin: p.salaryMin?.toString() ?? "",
+		salaryMax: p.salaryMax?.toString() ?? "",
+		vacancies: p.vacancies?.toString() ?? "",
+	});
+
+	function update(key: PostingField, value: string) {
+		const next = { ...values, [key]: value };
+		setValues(next);
+		const edits: Record<string, unknown> = {};
+		for (const f of POSTING_FIELDS) {
+			const raw = next[f.key].trim();
+			if (!raw) continue;
+			edits[f.key] = f.type === "number" ? Number(raw) : raw;
+		}
+		onChange(Object.keys(edits).length ? edits : null);
+	}
+
+	return (
+		<div className="grid gap-3 sm:grid-cols-2">
+			{POSTING_FIELDS.map((f) => (
+				<div key={f.key} className="flex flex-col gap-1.5">
+					<Label htmlFor={`${baseId}-${f.key}`}>{f.label}</Label>
+					<Input
+						id={`${baseId}-${f.key}`}
+						type={f.type}
+						inputMode={f.type === "number" ? "decimal" : undefined}
+						min={f.type === "number" ? 0 : undefined}
+						value={values[f.key]}
+						className="h-11 text-base md:text-sm"
+						onChange={(e) => update(f.key, e.target.value)}
+					/>
+				</div>
+			))}
+		</div>
+	);
+}
+
 function ProposalView({
 	task,
 	p,
@@ -405,17 +465,6 @@ function ProposalView({
 	editing: boolean;
 	onEdits: (edits: Record<string, unknown> | null) => void;
 }) {
-	const textId = useId();
-	const [text, setText] = useState(p.suggestedText ?? p.originalText ?? "");
-
-	// Solo al entrar en modo edición; luego `text` se emite al teclear.
-	// biome-ignore lint/correctness/useExhaustiveDependencies: ver arriba
-	useEffect(() => {
-		if (editing && task.kind === "bloqueo_oferta") {
-			onEdits({ correctedText: text });
-		}
-	}, [editing]);
-
 	return (
 		<div className="flex flex-col gap-5">
 			{p.subject ? (
@@ -441,20 +490,8 @@ function ProposalView({
 						</Block>
 					) : null}
 					{editing ? (
-						<Block title="Texto corregido que se publicará">
-							<Label htmlFor={textId} className="sr-only">
-								Texto corregido de la oferta
-							</Label>
-							<Textarea
-								id={textId}
-								value={text}
-								maxLength={4000}
-								className="min-h-32 text-base md:text-sm"
-								onChange={(e) => {
-									setText(e.target.value);
-									onEdits({ correctedText: e.target.value });
-								}}
-							/>
+						<Block title="Corrección que se publicará">
+							<PostingEditor p={p} onChange={onEdits} />
 						</Block>
 					) : p.suggestedText ? (
 						<Block title="Redacción sugerida por el agente">
@@ -604,8 +641,8 @@ function DecisionForm({
 		}
 		if (
 			decision === "editar" &&
-			Array.isArray((edits as { removed?: Removal[] } | null)?.removed) &&
-			(edits as { removed: { reason: string }[] }).removed.some(
+			Array.isArray((edits as { removals?: Removal[] } | null)?.removals) &&
+			(edits as { removals: { reason: string }[] }).removals.some(
 				(r) => !r.reason.trim(),
 			)
 		) {

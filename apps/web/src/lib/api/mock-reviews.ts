@@ -6,7 +6,8 @@
  * archivo y las ramas `mock.*` de `reviews.ts`.
  *
  * El campo `proposal` es libre en el contrato (`additionalProperties`); las
- * formas de abajo son las que la web espera leer (ver `lib/review-proposal.ts`).
+ * formas de abajo siguen las que arma la API (Mercado, Auditor y Postulación),
+ * con algunos campos extra de presentación (ver `lib/review-proposal.ts`).
  */
 import type {
 	AgentTrace,
@@ -46,18 +47,19 @@ function seedReviews(): ReviewTask[] {
 			explanation:
 				"El Auditor detuvo la oferta antes de publicarla: dos requisitos describen a la persona y no la tarea. «Buena presencia» no mide ninguna habilidad y el rango de edad excluye a personas aptas. No bloqueó nada más: salario, horario y habilidades pasaron las reglas.",
 			proposal: {
+				action: "bloquear",
 				postingTitle: blocked.title,
 				company: "Supermercados del Istmo",
 				vacancies: blocked.vacancies,
 				findings: [
 					{
-						rule: "Apariencia",
-						quote: "Se busca recepcionista con buena presencia",
+						kind: "apariencia",
+						text: "Se busca recepcionista con buena presencia",
 						suggestion: "Trato amable con visitantes",
 					},
 					{
-						rule: "Edad",
-						quote: "Entre 18 y 25 años",
+						kind: "edad",
+						text: "Entre 18 y 25 años",
 						suggestion: "Eliminar el rango de edad",
 					},
 				],
@@ -78,39 +80,47 @@ function seedReviews(): ReviewTask[] {
 			explanation:
 				"Matching eligió 3 candidatas con el solver (CP-SAT) y ninguna incumple traslado, horario ni salario. El orden sale del puntaje; Postulación redactó el CV y la carta de cada una. El Auditor repitió la corrida cambiando nombre, género y corregimiento y el orden se mantuvo (paridad 1.00).",
 			proposal: {
-				postingTitle: cashier.title,
-				company: "Supermercados del Istmo",
-				vacancies: cashier.vacancies,
-				candidates: [
+				action: "enviar_lista_corta",
+				postings: [
 					{
-						youthId: id("9", 1),
-						displayName: "Ana R.",
-						score: 0.91,
-						commuteMin: 35,
-						dailyCost: 1.25,
-						skillCoverage: 1,
-						reason:
-							"Cubre manejo de caja y atención al cliente con experiencia en un minisúper; llega en 35 min.",
-					},
-					{
-						youthId: id("9", 2),
-						displayName: "Camila V.",
-						score: 0.84,
-						commuteMin: 48,
-						dailyCost: 1.5,
-						skillCoverage: 0.8,
-						reason:
-							"Cubre atención al cliente y caja; le falta experiencia en inventario, que es deseable.",
-					},
-					{
-						youthId: id("9", 3),
-						displayName: "Luis M.",
-						score: 0.77,
-						commuteMin: 62,
-						dailyCost: 2.1,
-						skillCoverage: 0.8,
-						reason:
-							"Cubre las habilidades obligatorias; es la opción con mayor tiempo de viaje.",
+						postingId: cashier.id,
+						title: cashier.title,
+						vacancies: cashier.vacancies,
+						candidates: [
+							{
+								matchResultId: id("8", 1),
+								youthId: id("9", 1),
+								displayName: "Ana R.",
+								score: 0.91,
+								commuteMin: 35,
+								dailyCost: 1.25,
+								skillCoverage: 1,
+								reason:
+									"Cubre manejo de caja y atención al cliente con experiencia en un minisúper; llega en 35 min.",
+							},
+							{
+								matchResultId: id("8", 2),
+								youthId: id("9", 2),
+								displayName: "Camila V.",
+								score: 0.84,
+								commuteMin: 48,
+								dailyCost: 1.5,
+								skillCoverage: 0.8,
+								reason:
+									"Cubre atención al cliente y caja; le falta experiencia en inventario, que es deseable.",
+							},
+							{
+								matchResultId: id("8", 3),
+								youthId: id("9", 3),
+								displayName: "Luis M.",
+								score: 0.77,
+								commuteMin: 62,
+								dailyCost: 2.1,
+								skillCoverage: 0.8,
+								reason:
+									"Cubre las habilidades obligatorias; es la opción con mayor tiempo de viaje.",
+							},
+						],
 					},
 				],
 			},
@@ -164,17 +174,24 @@ function seedReviews(): ReviewTask[] {
 			explanation:
 				"Dos candidatas cumplen el inglés conversacional exigido; Postulación las ordenó por cobertura de habilidades.",
 			proposal: {
-				postingTitle: mockPostings[2].title,
-				company: "Supermercados del Istmo",
-				candidates: [
+				action: "enviar_lista_corta",
+				postings: [
 					{
-						youthId: id("9", 1),
-						displayName: "Ana R.",
-						score: 0.88,
-						commuteMin: 41,
-						dailyCost: 1.25,
-						skillCoverage: 0.9,
-						reason: "Cubre inglés conversacional y atención al cliente.",
+						postingId: mockPostings[2].id,
+						title: mockPostings[2].title,
+
+						candidates: [
+							{
+								matchResultId: id("8", 4),
+								youthId: id("9", 1),
+								displayName: "Ana R.",
+								score: 0.88,
+								commuteMin: 41,
+								dailyCost: 1.25,
+								skillCoverage: 0.9,
+								reason: "Cubre inglés conversacional y atención al cliente.",
+							},
+						],
 					},
 				],
 			},

@@ -807,7 +807,14 @@ components:
         id: { type: string, format: uuid }
         kind: { $ref: "#/components/schemas/ReviewKind" }
         subjectId: { type: string, format: uuid }
-        proposal: { type: object, additionalProperties: true }
+        proposal:
+          type: object
+          additionalProperties: true
+          description: |
+            Propuesta del agente; su forma depende de `kind`:
+            - `bloqueo_oferta`: `{action: "bloquear", postingTitle, vacancies, salaryMin, salaryMax, originalText, findings: [{kind, text}]}`
+            - `lista_corta`: `{action: "enviar_lista_corta", runId, postings: [{postingId, title, vacancies, candidates: [{rank, matchResultId, applicationId, youthId, displayName, score, explanation}]}]}`
+            - `alerta_sesgo`: `{action: "rerun_sin_variable", runId, variable, parity, findings: string[]}`
         explanation: { type: string }
         agent: { type: string }
         status: { $ref: "#/components/schemas/ReviewStatus" }
@@ -827,7 +834,11 @@ components:
         edits:
           type: object
           additionalProperties: true
-          description: Cambios del orientador (p. ej. orden de la lista corta o texto corregido de la oferta)
+          description: |
+            Cambios del orientador cuando `decision` es `editar`:
+            - `bloqueo_oferta`: cualquiera de `{title, salaryMin, salaryMax, vacancies}`.
+            - `lista_corta`: `{order?: matchResultId[], remove?: matchResultId[], removals?: [{matchResultId, youthId, reason}]}`.
+            - `alerta_sesgo`: no admite edición (422).
 
     AgentTrace:
       type: object
