@@ -31,6 +31,7 @@ def _attributes(session, youth_ids: list[str]) -> dict[str, YouthAttributes]:
             gender=y.gender,
             corregimiento=y.location.corregimiento if y.location else None,
             location_id=y.location_id,
+            birth_year=y.birth_year,
         )
         for y in youths
     }

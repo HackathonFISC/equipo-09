@@ -12,7 +12,8 @@ Cada hallazgo debe exponer `variable` ("nombre" | "genero" | "corregimiento"), `
 (0..1 o None), `passed` (bool) y `findings` (lista de textos), el mismo contenido que el schema
 `AuditCheck` del contrato. Se acepta un objeto con esos atributos o un dict.
 
-Mientras `puente_api.solvers.auditor` no exista se usa un STUB que NO audita nada: devuelve
+La implementación real (`solvers.auditor.audit_matching`) tiene otra firma; `_real` la adapta.
+Si `puente_api.solvers.auditor` no se puede importar se usa un STUB que NO audita nada: devuelve
 una verificación aprobada con un aviso explícito para que la traza y la UI no lo confundan con
 un resultado real.
 """
@@ -35,6 +36,7 @@ class YouthAttributes(TypedDict):
     gender: str | None
     corregimiento: str | None
     location_id: str
+    birth_year: int | None
 
 
 class AuditFinding(BaseModel):
@@ -74,9 +76,25 @@ def _stub(
 
 def _load_impl():
     try:
-        return import_module("puente_api.solvers.auditor").audit_matching
-    except (ImportError, AttributeError):
+        auditor = import_module("puente_api.solvers.auditor")
+    except ImportError:
         return None
+
+    def _real(
+        inp: MatchingInput, result: MatchingResult, attrs: Mapping[str, YouthAttributes]
+    ) -> list[Any]:
+        protected = {
+            youth_id: auditor.ProtectedAttrs(
+                display_name=a["display_name"], gender=a["gender"], birth_year=a["birth_year"]
+            )
+            for youth_id, a in attrs.items()
+        }
+        report = auditor.audit_matching(
+            inp.youths, inp.postings, inp.commute, result, protected=protected, variables=VARIABLES
+        )
+        return list(report.checks)
+
+    return _real
 
 
 def is_stub() -> bool:

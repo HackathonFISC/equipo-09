@@ -312,7 +312,18 @@ def test_interview_slots_never_overlap():
     assert slots["c8"][0] - start >= timedelta(hours=20)
 
 
-def test_auditor_stub_is_flagged_in_trace(client, use_llm, seeded):
+def test_real_auditor_checks_each_protected_variable(client, use_llm, seeded):
+    use_llm(PostulacionLLM())
+    body = _start(client)
+    auditor = client.get(f"{API}/traces/{body['threadId']}").json()["steps"][2]
+    assert auditor["agent"] == "auditor"
+    assert "STUB" not in auditor["reason"]
+    for variable in ("nombre", "genero", "corregimiento"):
+        assert variable in auditor["reason"]
+
+
+def test_auditor_stub_is_flagged_in_trace(client, use_llm, seeded, monkeypatch):
+    monkeypatch.setattr(audit_port, "_load_impl", lambda: None)
     use_llm(PostulacionLLM())
     body = _start(client)
     auditor = client.get(f"{API}/traces/{body['threadId']}").json()["steps"][2]
