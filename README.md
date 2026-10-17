@@ -73,6 +73,7 @@ Qué partes se hicieron con IA, con qué herramienta y qué se modificó a mano.
 - **Agentes H3 (Postulación, HITL, /reviews, /match-runs):** Claude Code (agente `jose-agentes`) escribió los nodos matching, auditor (puerto), postulación y orientador con `interrupt`, el checkpointer y los endpoints, con tests. Pendiente de revisión manual de José.
 - **Agentes H4 (trazas, Langfuse, guardrails, ruta de formación):** Claude Code (agente `jose-agentes`) enriqueció `agent_trace` (herramienta, salida, tipo de fila, pausa HITL), añadió `GET /traces`, el callback opcional de Langfuse sobre LiteLLM, el puerto `graph/guardrail_port.py` y el agente de Formación con `GET/POST /youth/{id}/training-plan`, con tests. Pendiente de revisión manual de José.
 - **Datos H4 (guardrails de entrada y evals):** Claude Code (agente `sebastian-datos`) escribió `screen_text` (inyección de prompt, redacción de PII y bloqueo de discriminación, reglas en código), sus tests unitarios y 28 casos de eval deterministas con `results.md`. Pendiente de revisión manual de Sebastian.
+- **Web H4 (traza y ruta de formación):** Claude Code (agente `kenneth-web`) generó la pantalla `/traza/[threadId]` (línea de tiempo por agente con herramienta, decisión, explicación y pausa HITL), la ruta `/joven/formacion`, los cursos en `/centro`, el cliente `traces.ts` y los mocks `mock-traces.ts` derivados del contrato. Pendiente de revisión manual de Kenneth.
 
 ---
 

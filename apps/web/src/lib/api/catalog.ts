@@ -5,12 +5,14 @@
 import {
 	API_BASE_URL,
 	api,
+	type Course,
 	type JobPosting,
 	type Location,
 	MOCK_MODE,
 	type PostingStatus,
 	type Skill,
 } from "./client";
+import { mockCourses } from "./mock-traces";
 import { mockLocations, mockPostings, mockSkills } from "./mocks";
 
 const TIMEOUT_MS = 2500;
@@ -75,5 +77,12 @@ export function loadSkills(q?: string) {
 				? mockSkills.filter((s) => s.labelEs.toLowerCase().includes(needle))
 				: mockSkills;
 		},
+	);
+}
+
+export function loadCourses() {
+	return withFallback<Course[]>(
+		(signal) => api.GET("/courses", { signal }),
+		() => mockCourses,
 	);
 }

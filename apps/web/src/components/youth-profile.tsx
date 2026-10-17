@@ -9,6 +9,7 @@ import {
 	Briefcase,
 	CircleCheck,
 	FileUp,
+	GraduationCap,
 	MessagesSquare,
 	RotateCw,
 	TriangleAlert,
@@ -148,6 +149,18 @@ export function YouthProfile({ youthId }: { youthId: string }) {
 					>
 						<Briefcase aria-hidden="true" />
 						Ver mis oportunidades
+					</Link>
+				) : null}
+				{hasSkills ? (
+					<Link
+						href={`/joven/formacion?id=${youthId}` as Route}
+						className={cn(
+							buttonVariants({ variant: "outline", size: "lg" }),
+							"h-12 w-full text-base",
+						)}
+					>
+						<GraduationCap aria-hidden="true" />
+						Ver mi ruta de formación
 					</Link>
 				) : null}
 				{hasSkills ? (
