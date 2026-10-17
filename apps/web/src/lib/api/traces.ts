@@ -3,17 +3,26 @@
  * con el cliente tipado. Si la API no implementa el endpoint (sin respuesta,
  * 404, 405 o 501) y NEXT_PUBLIC_API_MOCKS lo permite, caen a `mock-traces.ts`.
  */
-import { attempt, MOCK_ALWAYS, type Result, runMock, withMock } from "./agents";
 import {
+	attempt,
+	describeProblem,
+	MOCK_ALWAYS,
+	type Result,
+	runMock,
+	withMock,
+} from "./agents";
+import {
+	API_BASE_URL,
 	api,
 	type Course,
 	MOCK_MODE,
+	type Problem,
 	type Skill,
 	type Trace,
 	type TraceSummary,
 	type TrainingPlan,
 } from "./client";
-import { MockProblem } from "./mock-agents";
+import * as mockAgents from "./mock-agents";
 import * as mock from "./mock-traces";
 import { mockSkills } from "./mocks";
 
@@ -29,7 +38,7 @@ export function loadTrace(threadId: string): Promise<Result<Trace>> {
 		async () => {
 			const t = await mock.traceFor(threadId);
 			if (!t) {
-				throw new MockProblem({
+				throw new mockAgents.MockProblem({
 					title: "Hilo no encontrado",
 					status: 404,
 					detail:
@@ -80,39 +89,67 @@ export const MOCK_PLAN_THREAD = mock.MOCK_THREAD_PLAN;
  * Ruta de formación junto con los cursos y habilidades necesarios para
  * explicarla (centro, horas, costo, habilidad que cierra). El contrato del
  * plan solo trae título y sesión; el resto se cruza por título de curso.
+ *
+ * `data: null` = el joven todavía no tiene ruta (la API responde 404). No es
+ * un error ni un motivo para mostrar datos de ejemplo: la pantalla ofrece
+ * calcularla.
  */
 export async function loadTrainingPlan(
 	youthId: string,
-): Promise<Result<PlanView>> {
-	const plan = await withMock(
-		(signal) =>
-			api.GET("/youth/{youthId}/training-plan", {
-				params: { path: { youthId } },
-				signal,
-			}),
-		() => mock.trainingPlanFor(youthId),
-	);
-	if (!plan.ok) return plan;
-
-	if (plan.source === "mock") {
-		return {
-			...plan,
-			data: {
-				plan: plan.data,
+): Promise<Result<PlanView | null>> {
+	if (MOCK_MODE === "siempre" || mockAgents.isMockYouth(youthId)) {
+		return runMock(
+			async () => ({
+				plan: await mock.trainingPlanFor(youthId),
 				courses: mock.mockCourses,
 				skills: mockSkills,
 				centers: mock.mockCenters,
-			},
-		};
+			}),
+			MOCK_MODE === "siempre" ? MOCK_ALWAYS : "Perfil de ejemplo.",
+		);
 	}
+
+	let plan: TrainingPlan;
+	try {
+		const { data, error, response } = await api.GET(
+			"/youth/{youthId}/training-plan",
+			{ params: { path: { youthId } }, signal: AbortSignal.timeout(10_000) },
+		);
+		if (response.status === 404) {
+			return { ok: true, data: null, source: "api" };
+		}
+		if (!response.ok || data === undefined) {
+			const problem = error as Problem | undefined;
+			return {
+				ok: false,
+				message: describeProblem(problem, response.status),
+				problem,
+			};
+		}
+		plan = data;
+	} catch {
+		const reason = `La API no responde en ${API_BASE_URL}.`;
+		if (MOCK_MODE === "nunca") return { ok: false, message: reason };
+		return runMock(
+			async () => ({
+				plan: await mock.trainingPlanFor(youthId),
+				courses: mock.mockCourses,
+				skills: mockSkills,
+				centers: mock.mockCenters,
+			}),
+			reason,
+		);
+	}
+
 	const [courses, skills] = await Promise.all([
 		attempt((signal) => api.GET("/courses", { signal }), 10_000),
 		attempt((signal) => api.GET("/skills", { signal }), 10_000),
 	]);
 	return {
-		...plan,
+		ok: true,
+		source: "api",
 		data: {
-			plan: plan.data,
+			plan,
 			courses: courses.kind === "ok" ? courses.data : [],
 			skills: skills.kind === "ok" ? skills.data : [],
 			centers: {},
@@ -136,7 +173,7 @@ export async function requestTrainingPlan(
 				params: { path: { youthId } },
 				signal,
 			}),
-		20_000,
+		60_000,
 	);
 	if (r.kind === "ok") {
 		return { ok: true, data: { threadId: r.data.threadId }, source: "api" };
