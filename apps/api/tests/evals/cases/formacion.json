@@ -1,0 +1,532 @@
+[
+  {
+    "id": "train-01-curso-desbloquea-oferta",
+    "category": "formacion",
+    "type": "training",
+    "description": "Un curso cierra la brecha y desbloquea la oferta",
+    "metric": "Sesiones elegidas y ofertas desbloqueadas idénticas a las esperadas",
+    "input": {
+      "youth": {
+        "id": "y",
+        "location_id": "HOME",
+        "max_commute_min": 45,
+        "transport_budget_daily": 3.0,
+        "availability": [
+          "lun,mar,mie,vie,sab 06:00-22:00"
+        ],
+        "min_salary": 500.0,
+        "skills": {}
+      },
+      "postings": [
+        {
+          "id": "p1",
+          "location_id": "WORK",
+          "schedule": [
+            "vie 08:00-16:00"
+          ],
+          "salary_min": 600.0,
+          "salary_max": 600.0,
+          "vacancies": 1,
+          "requirements": [
+            {
+              "skill_id": "S1",
+              "weight": 2,
+              "required": true
+            }
+          ]
+        }
+      ],
+      "courses": [
+        {
+          "id": "a",
+          "title": "Curso a",
+          "center_id": "c-a",
+          "center_location_id": "CENTER",
+          "hours": 30,
+          "cost": 0.0,
+          "skill_ids": [
+            "S1"
+          ],
+          "sessions": [
+            {
+              "id": "a1",
+              "start_date": "2026-11-02",
+              "schedule": [
+                "lun 18:00-21:00"
+              ],
+              "seats_total": 10,
+              "seats_taken": 0
+            }
+          ]
+        }
+      ],
+      "commute": [
+        [
+          "HOME",
+          "CENTER",
+          20,
+          1.0
+        ],
+        [
+          "HOME",
+          "FAR",
+          90,
+          5.0
+        ],
+        [
+          "HOME",
+          "WORK",
+          15,
+          0.5
+        ]
+      ],
+      "params": {}
+    },
+    "expected": {
+      "session_ids": [
+        "a1"
+      ],
+      "unlocked": [
+        "p1"
+      ]
+    }
+  },
+  {
+    "id": "train-02-sesion-llena",
+    "category": "formacion",
+    "type": "training",
+    "description": "Si la única sesión está llena no hay ruta",
+    "metric": "Sesiones elegidas y ofertas desbloqueadas idénticas a las esperadas",
+    "input": {
+      "youth": {
+        "id": "y",
+        "location_id": "HOME",
+        "max_commute_min": 45,
+        "transport_budget_daily": 3.0,
+        "availability": [
+          "lun,mar,mie,vie,sab 06:00-22:00"
+        ],
+        "min_salary": 500.0,
+        "skills": {}
+      },
+      "postings": [
+        {
+          "id": "p1",
+          "location_id": "WORK",
+          "schedule": [
+            "vie 08:00-16:00"
+          ],
+          "salary_min": 600.0,
+          "salary_max": 600.0,
+          "vacancies": 1,
+          "requirements": [
+            {
+              "skill_id": "S1",
+              "weight": 2,
+              "required": true
+            }
+          ]
+        }
+      ],
+      "courses": [
+        {
+          "id": "a",
+          "title": "Curso a",
+          "center_id": "c-a",
+          "center_location_id": "CENTER",
+          "hours": 30,
+          "cost": 0.0,
+          "skill_ids": [
+            "S1"
+          ],
+          "sessions": [
+            {
+              "id": "full",
+              "start_date": "2026-11-02",
+              "schedule": [
+                "lun 18:00-21:00"
+              ],
+              "seats_total": 5,
+              "seats_taken": 5
+            }
+          ]
+        }
+      ],
+      "commute": [
+        [
+          "HOME",
+          "CENTER",
+          20,
+          1.0
+        ],
+        [
+          "HOME",
+          "FAR",
+          90,
+          5.0
+        ],
+        [
+          "HOME",
+          "WORK",
+          15,
+          0.5
+        ]
+      ],
+      "params": {}
+    },
+    "expected": {
+      "session_ids": [],
+      "unlocked": []
+    }
+  },
+  {
+    "id": "train-03-sin-solape",
+    "category": "formacion",
+    "type": "training",
+    "description": "Dos cursos en el mismo horario: elige la sesión que no solapa",
+    "metric": "Sesiones elegidas y ofertas desbloqueadas idénticas a las esperadas",
+    "input": {
+      "youth": {
+        "id": "y",
+        "location_id": "HOME",
+        "max_commute_min": 45,
+        "transport_budget_daily": 3.0,
+        "availability": [
+          "lun,mar,mie,vie,sab 06:00-22:00"
+        ],
+        "min_salary": 500.0,
+        "skills": {}
+      },
+      "postings": [
+        {
+          "id": "p1",
+          "location_id": "WORK",
+          "schedule": [
+            "vie 08:00-16:00"
+          ],
+          "salary_min": 600.0,
+          "salary_max": 600.0,
+          "vacancies": 1,
+          "requirements": [
+            {
+              "skill_id": "S1",
+              "weight": 2,
+              "required": true
+            },
+            {
+              "skill_id": "S2",
+              "weight": 2,
+              "required": true
+            }
+          ]
+        }
+      ],
+      "courses": [
+        {
+          "id": "a",
+          "title": "Curso a",
+          "center_id": "c-a",
+          "center_location_id": "CENTER",
+          "hours": 30,
+          "cost": 0.0,
+          "skill_ids": [
+            "S1"
+          ],
+          "sessions": [
+            {
+              "id": "a1",
+              "start_date": "2026-11-02",
+              "schedule": [
+                "lun 18:00-21:00"
+              ],
+              "seats_total": 10,
+              "seats_taken": 0
+            }
+          ]
+        },
+        {
+          "id": "b",
+          "title": "Curso b",
+          "center_id": "c-b",
+          "center_location_id": "CENTER",
+          "hours": 30,
+          "cost": 0.0,
+          "skill_ids": [
+            "S2"
+          ],
+          "sessions": [
+            {
+              "id": "b1",
+              "start_date": "2026-11-02",
+              "schedule": [
+                "lun 18:00-21:00"
+              ],
+              "seats_total": 10,
+              "seats_taken": 0
+            },
+            {
+              "id": "b2",
+              "start_date": "2026-11-02",
+              "schedule": [
+                "mar 18:00-21:00"
+              ],
+              "seats_total": 10,
+              "seats_taken": 0
+            }
+          ]
+        }
+      ],
+      "commute": [
+        [
+          "HOME",
+          "CENTER",
+          20,
+          1.0
+        ],
+        [
+          "HOME",
+          "FAR",
+          90,
+          5.0
+        ],
+        [
+          "HOME",
+          "WORK",
+          15,
+          0.5
+        ]
+      ],
+      "params": {}
+    },
+    "expected": {
+      "session_ids": [
+        "a1",
+        "b2"
+      ],
+      "unlocked": [
+        "p1"
+      ]
+    }
+  },
+  {
+    "id": "train-04-presupuesto",
+    "category": "formacion",
+    "type": "training",
+    "description": "Tope de costo: elige el curso que desbloquea más vacantes dentro del presupuesto",
+    "metric": "Sesiones elegidas y ofertas desbloqueadas idénticas a las esperadas",
+    "input": {
+      "youth": {
+        "id": "y",
+        "location_id": "HOME",
+        "max_commute_min": 45,
+        "transport_budget_daily": 3.0,
+        "availability": [
+          "lun,mar,mie,vie,sab 06:00-22:00"
+        ],
+        "min_salary": 500.0,
+        "skills": {}
+      },
+      "postings": [
+        {
+          "id": "p1",
+          "location_id": "WORK",
+          "schedule": [
+            "vie 08:00-16:00"
+          ],
+          "salary_min": 600.0,
+          "salary_max": 600.0,
+          "vacancies": 1,
+          "requirements": [
+            {
+              "skill_id": "S1",
+              "weight": 2,
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "p2",
+          "location_id": "WORK",
+          "schedule": [
+            "vie 08:00-16:00"
+          ],
+          "salary_min": 600.0,
+          "salary_max": 600.0,
+          "vacancies": 3,
+          "requirements": [
+            {
+              "skill_id": "S2",
+              "weight": 2,
+              "required": true
+            }
+          ]
+        }
+      ],
+      "courses": [
+        {
+          "id": "a",
+          "title": "Curso a",
+          "center_id": "c-a",
+          "center_location_id": "CENTER",
+          "hours": 30,
+          "cost": 60.0,
+          "skill_ids": [
+            "S1"
+          ],
+          "sessions": [
+            {
+              "id": "a1",
+              "start_date": "2026-11-02",
+              "schedule": [
+                "lun 18:00-21:00"
+              ],
+              "seats_total": 10,
+              "seats_taken": 0
+            }
+          ]
+        },
+        {
+          "id": "b",
+          "title": "Curso b",
+          "center_id": "c-b",
+          "center_location_id": "CENTER",
+          "hours": 30,
+          "cost": 60.0,
+          "skill_ids": [
+            "S2"
+          ],
+          "sessions": [
+            {
+              "id": "b1",
+              "start_date": "2026-11-02",
+              "schedule": [
+                "mar 18:00-21:00"
+              ],
+              "seats_total": 10,
+              "seats_taken": 0
+            }
+          ]
+        }
+      ],
+      "commute": [
+        [
+          "HOME",
+          "CENTER",
+          20,
+          1.0
+        ],
+        [
+          "HOME",
+          "FAR",
+          90,
+          5.0
+        ],
+        [
+          "HOME",
+          "WORK",
+          15,
+          0.5
+        ]
+      ],
+      "params": {
+        "max_total_cost": 70.0
+      }
+    },
+    "expected": {
+      "session_ids": [
+        "b1"
+      ],
+      "unlocked": [
+        "p2"
+      ]
+    }
+  },
+  {
+    "id": "train-05-traslado-centro-lejano",
+    "category": "formacion",
+    "type": "training",
+    "description": "Centro a 90 min (> máximo de 45): el curso no es factible",
+    "metric": "Sesiones elegidas y ofertas desbloqueadas idénticas a las esperadas",
+    "input": {
+      "youth": {
+        "id": "y",
+        "location_id": "HOME",
+        "max_commute_min": 45,
+        "transport_budget_daily": 3.0,
+        "availability": [
+          "lun,mar,mie,vie,sab 06:00-22:00"
+        ],
+        "min_salary": 500.0,
+        "skills": {}
+      },
+      "postings": [
+        {
+          "id": "p1",
+          "location_id": "WORK",
+          "schedule": [
+            "vie 08:00-16:00"
+          ],
+          "salary_min": 600.0,
+          "salary_max": 600.0,
+          "vacancies": 1,
+          "requirements": [
+            {
+              "skill_id": "S1",
+              "weight": 2,
+              "required": true
+            }
+          ]
+        }
+      ],
+      "courses": [
+        {
+          "id": "a",
+          "title": "Curso a",
+          "center_id": "c-a",
+          "center_location_id": "FAR",
+          "hours": 30,
+          "cost": 0.0,
+          "skill_ids": [
+            "S1"
+          ],
+          "sessions": [
+            {
+              "id": "a1",
+              "start_date": "2026-11-02",
+              "schedule": [
+                "lun 18:00-21:00"
+              ],
+              "seats_total": 10,
+              "seats_taken": 0
+            }
+          ]
+        }
+      ],
+      "commute": [
+        [
+          "HOME",
+          "CENTER",
+          20,
+          1.0
+        ],
+        [
+          "HOME",
+          "FAR",
+          90,
+          5.0
+        ],
+        [
+          "HOME",
+          "WORK",
+          15,
+          0.5
+        ]
+      ],
+      "params": {}
+    },
+    "expected": {
+      "session_ids": [],
+      "unlocked": []
+    }
+  }
+]
