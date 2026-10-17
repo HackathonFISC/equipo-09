@@ -6,6 +6,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+from tests.evals.prd_metrics import Metric, all_metrics
 from tests.evals.runner import CaseResult, run_all
 
 OUT = Path(__file__).parent / "results.md"
@@ -25,7 +26,36 @@ def _ok(rs: list[CaseResult]) -> int:
     return sum(r.passed for r in rs)
 
 
-def build(results: list[CaseResult]) -> str:
+def _state(m: Metric) -> str:
+    return "—" if m.passed is None else ("CUMPLE" if m.passed else "NO CUMPLE")
+
+
+def prd_section(results: list[CaseResult], metrics: list[Metric]) -> list[str]:
+    """Tabla de las métricas de éxito del PRD §8, con meta, resultado y cómo se midió."""
+    guards = [r for r in results if r.category == "guardrails"]
+    attacks = [r for r in guards if r.case["expected"]["reasons_prefix"]]
+    blocked = Metric(
+        "Entradas maliciosas bloqueadas o neutralizadas",
+        "100 %",
+        _rate(_ok(attacks), len(attacks)),
+        _ok(attacks) == len(attacks),
+        "Casos `guard-*` con ataque o PII (inyección, instrucciones ocultas, cédula, correo).",
+    )
+    lines = [
+        "## Métricas de éxito del PRD (§8)",
+        "",
+        "Medidas sobre los datos semilla completos (40 jóvenes, 25 ofertas, 25 etiquetas), "
+        "además de los casos controlados de abajo.",
+        "",
+        "| Métrica | Meta | Resultado | Estado | Cómo se mide |",
+        "|---|---|---|---|---|",
+    ]
+    for m in [*metrics, blocked]:
+        lines.append(f"| {m.name} | {m.target} | {m.value} | {_state(m)} | {m.how} |")
+    return [*lines, ""]
+
+
+def build(results: list[CaseResult], metrics: list[Metric] | None = None) -> str:
     by_cat: dict[str, list[CaseResult]] = defaultdict(list)
     for r in results:
         by_cat[r.category].append(r)
@@ -37,7 +67,8 @@ def build(results: list[CaseResult]) -> str:
         "Los evals son deterministas: usan los solvers OR-Tools y los guardrails directamente, "
         "sin LLM, sin red y sin base de datos.",
         "",
-        "## Métrica",
+        *prd_section(results, all_metrics() if metrics is None else metrics),
+        "## Métrica de los casos",
         "",
         "Un caso **pasa** cuando su salida coincide con `expected` (métrica de la columna "
         "«Métrica» de cada caso) y se cumplen las invariantes transversales: "

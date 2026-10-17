@@ -2,7 +2,24 @@
 
 Generado con `uv run python -m tests.evals.report` (no editar a mano). Los evals son deterministas: usan los solvers OR-Tools y los guardrails directamente, sin LLM, sin red y sin base de datos.
 
-## Métrica
+## Métricas de éxito del PRD (§8)
+
+Medidas sobre los datos semilla completos (40 jóvenes, 25 ofertas, 25 etiquetas), además de los casos controlados de abajo.
+
+| Métrica | Meta | Resultado | Estado | Cómo se mide |
+|---|---|---|---|---|
+| Matches que violan restricciones duras (preset estricto) | 0 | 0 de 1 asignaciones | CUMPLE | Seed completo con `MatchingParams()`; cada asignación se re-verifica con `check_pair` estricto, independiente del solver. |
+| Asignaciones con holgura en el preset del demo (`relaxed`) | informativa | 2 de 3 asignaciones | — | El nodo Matching usa `MatchingParams.relaxed()`: tolera 15 min, B/. 1.00 y 1 habilidad obligatoria, penalizados. Casos: Abdiel Cedeño → Ayudante general de obra: habilidades_obligatorias, traslado_max; Edilma De León → Dependiente de farmacia: habilidades_obligatorias, traslado_max |
+| Paridad contrafactual: nombre | ≥ 95 % | 100 % (40 jóvenes, 3 con asignación) | CUMPLE | Se re-ejecuta el solver del demo cambiando la variable y se cuenta qué fracción de jóvenes conserva su resultado. Con pocas asignaciones la paridad es poco exigente: los no asignados siguen sin asignar. |
+| Paridad contrafactual: genero | ≥ 95 % | 100 % (40 jóvenes, 3 con asignación) | CUMPLE | Se re-ejecuta el solver del demo cambiando la variable y se cuenta qué fracción de jóvenes conserva su resultado. Con pocas asignaciones la paridad es poco exigente: los no asignados siguen sin asignar. |
+| Paridad contrafactual: corregimiento | ≥ 95 % | 100 % (40 jóvenes, 3 con asignación) | CUMPLE | Se re-ejecuta el solver del demo cambiando la variable y se cuenta qué fracción de jóvenes conserva su resultado. Con pocas asignaciones la paridad es poco exigente: los no asignados siguen sin asignar. |
+| Detección de ofertas discriminatorias (recall) | ≥ 90 % | 6/6 (100 %) | CUMPLE | Reglas deterministas sobre las 25 ofertas etiquetadas a mano. Sin errores. |
+| Detección de ofertas discriminatorias (precisión) | informativa | 6/6 (100 %) | — | Incluye 19 ofertas limpias y los controles de precisión del seed. |
+| Tipos de requisito discriminatorio detectados | informativa | 16/16 (100 %) | — | Por oferta: tipos esperados (edad, género, apariencia…) que las reglas encontraron. |
+| Extracción de habilidades de ofertas (F1) | ≥ 0.80 | no medido | — | Requiere un proveedor LLM: `uv run python -m tests.evals.llm_extraction`. |
+| Entradas maliciosas bloqueadas o neutralizadas | 100 % | 8/8 (100 %) | CUMPLE | Casos `guard-*` con ataque o PII (inyección, instrucciones ocultas, cédula, correo). |
+
+## Métrica de los casos
 
 Un caso **pasa** cuando su salida coincide con `expected` (métrica de la columna «Métrica» de cada caso) y se cumplen las invariantes transversales: 0 restricciones duras violadas en las asignaciones y 0 fugas de PII o instrucciones embebidas en `sanitized`. La puntuación por categoría es casos pasados / casos totales.
 
