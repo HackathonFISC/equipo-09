@@ -416,7 +416,7 @@ export function TrainingRoute({ youthId }: { youthId: string }) {
 					</dd>
 				</div>
 				<div className="flex flex-col gap-0.5 p-3">
-					<dt className="text-muted-foreground text-xs">Vacantes que abre</dt>
+					<dt className="text-muted-foreground text-xs">Ofertas que abre</dt>
 					<dd className="tabular font-mono font-semibold text-success-fg text-xl">
 						{plan.unlockedPostings}
 					</dd>

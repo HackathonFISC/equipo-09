@@ -176,6 +176,11 @@ function CandidateRow({
 					<span className="sr-only">Puesto {rank}: </span>
 					{c.name}
 				</span>
+				{c.posting ? (
+					<span className="text-muted-foreground text-sm">
+						<span className="sr-only">Oferta: </span>→ {c.posting}
+					</span>
+				) : null}
 				<CandidateFacts c={c} />
 				{c.reason ? (
 					<span className="text-pretty text-muted-foreground text-sm">

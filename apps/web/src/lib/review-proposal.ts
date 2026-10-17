@@ -21,6 +21,8 @@ export type Candidate = {
 	key: string;
 	youthId?: string;
 	name: string;
+	/** Oferta a la que va, cuando la lista corta agrupa varias ofertas. */
+	posting?: string;
 	score?: number;
 	commuteMin?: number;
 	dailyCost?: number;
@@ -102,6 +104,7 @@ function parseCandidates(raw: unknown): Candidate[] {
 				key: str(c.matchResultId) ?? youthId ?? `c${i}`,
 				youthId,
 				name: str(c.displayName) ?? str(c.name) ?? `Candidato ${i + 1}`,
+				posting: str(c.postingTitle),
 				score: num(c.score),
 				commuteMin: num(c.commuteMin),
 				dailyCost: num(c.dailyCost),
@@ -145,8 +148,14 @@ function shortlistBlocks(p: Rec) {
 	const blocks = Array.isArray(p.postings) ? p.postings.filter(isRec) : [];
 	return {
 		titles: blocks.flatMap((b) => str(b.title) ?? []),
+		// Cada candidato lleva el título de su oferta: con varias ofertas (y dos
+		// jóvenes con el mismo nombre) el orientador necesita saber quién va a dónde.
 		candidates: blocks.flatMap((b) =>
-			Array.isArray(b.candidates) ? b.candidates : [],
+			Array.isArray(b.candidates)
+				? b.candidates.map((c) =>
+						isRec(c) ? { postingTitle: str(b.title), ...c } : c,
+					)
+				: [],
 		),
 	};
 }

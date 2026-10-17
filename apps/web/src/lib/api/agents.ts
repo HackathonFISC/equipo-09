@@ -63,9 +63,16 @@ export function describeProblem(problem: Problem | undefined, status: number) {
 	return `La API respondió ${status}.`;
 }
 
+/**
+ * Los agentes corren dentro de la petición HTTP con un presupuesto de LLM de
+ * 45 s (LLM_BUDGET_S) más el solver y la BD: esperar menos aborta peticiones
+ * que la API sí completa (la oferta queda creada y la web muestra un error).
+ */
+const AGENT_TIMEOUT_MS = 90_000;
+
 export async function attempt<T>(
 	call: ApiCall<T>,
-	timeoutMs = 30_000,
+	timeoutMs = AGENT_TIMEOUT_MS,
 ): Promise<Attempt<T>> {
 	try {
 		const { data, error, response } = await call(
