@@ -17,7 +17,7 @@ description: Síntoma, causa probable y qué hacer, para la puesta en marcha, lo
 | SQLite «database is locked» | Dos procesos de la API sobre el mismo `puente.db` | Deja uno: `pnpm dev` o `uvicorn`, no ambos |
 | «Address already in use» en 8000, 3001 o 3002 | Un proceso viejo, o `pnpm dev` y Docker a la vez | `lsof -i :8000` (Windows: `netstat -ano \| findstr :8000`) y detén el proceso |
 | `next build`: «Failed to fetch Inter from Google Fonts» | Sin internet durante el build | Compila donde haya internet, antes del evento |
-| Windows: `Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)` en `pnpm install`, `next dev` o `next build` | La telemetría de varlock revienta al cerrar el proceso (Node 24). Como pnpm 11 verifica dependencias antes de cada script, falla todo `pnpm --filter …` | Exporta `VARLOCK_TELEMETRY_DISABLED=true` (o `DO_NOT_TRACK=1`) en la terminal y repite `pnpm install` |
+| Windows: `Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)` en `pnpm install`, `next dev` o `next build` | La telemetría de varlock revienta al cerrar el proceso (Node 24). Como pnpm 11 verifica dependencias antes de cada script, falla todo `pnpm --filter …` | Ya resuelto en el repo: `.varlock/config.json` apaga la telemetría del proyecto. Si aún pasa (versión vieja del repo), exporta `VARLOCK_TELEMETRY_DISABLED=true` y repite `pnpm install` |
 
 ## Durante los ensayos
 

@@ -30,6 +30,8 @@ Puente conecta a jóvenes, empresas y centros de formación con agentes que norm
 | [05 · Esquema del backend](docs/05-esquema-backend.md) | Modelo de datos y API |
 | [06 · Plan de implementación](docs/06-plan-implementacion.md) | Bloques de 24 h, responsables, riesgos |
 | [07 · Metodología](docs/07-metodologia.md) | Despliegue, funcionamiento, arquitectura y límites conocidos |
+| [08 · Ensayos](docs/08-ensayos.md) | Bitácora de ensayos del demo y checklist de grabación |
+| [Docs internas](apps/docs/content/docs) | Guía del equipo con Fumadocs: agentes, LLM, solvers, runbooks (`pnpm docs:dev` → :3002) |
 | [OpenAPI](packages/api-spec/openapi.yaml) | Contrato de la API (Scalar: `pnpm api:docs`) |
 
 ## Arquitectura de agentes

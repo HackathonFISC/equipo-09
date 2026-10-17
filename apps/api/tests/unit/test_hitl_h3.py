@@ -144,6 +144,10 @@ def test_full_run_pauses_and_resumes_after_approval(client, use_llm, seeded, mon
     assert review["threadId"] == thread
     cands = review["proposal"]["postings"][0]["candidates"]
     assert len(cands) == 2
+    # H7: cada candidato trae los datos del solver para que el orientador vea las holguras.
+    assert all(
+        {"commuteMin", "dailyCost", "skillCoverage", "slackNotes"} <= c.keys() for c in cands
+    )
     assert client.get(f"{API}/postings/{POST_OK}/shortlist").json() == []
 
     # El orientador quita a una candidata y el grafo se reanuda.
