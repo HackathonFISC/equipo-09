@@ -209,7 +209,7 @@ export function ReviewInbox() {
 
 			<DataSourceNote source={state.source} reason={state.reason} />
 
-			<div className="grid items-start gap-6 xl:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+			<div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
 				<section aria-labelledby="lista-titulo" className="flex flex-col gap-2">
 					<h2 id="lista-titulo" className="font-medium text-sm">
 						{tab === "pendientes"
@@ -225,7 +225,7 @@ export function ReviewInbox() {
 						<EmptyList tab={tab} filtered={kind !== "todas"} />
 					) : (
 						<div className="overflow-x-auto border">
-							<table className="w-full min-w-[34rem] text-sm">
+							<table className="w-full min-w-[28rem] text-sm">
 								<thead className="bg-muted/60 text-left text-muted-foreground">
 									<tr>
 										<th scope="col" className="px-3 py-2 font-medium">
@@ -289,7 +289,7 @@ export function ReviewInbox() {
 												<td className="px-3 py-2.5">{impactOf(t, p)}</td>
 												<td className="px-3 py-2.5">
 													{tab === "pendientes" ? (
-														<span className="tabular whitespace-nowrap font-mono">
+														<span className="tabular whitespace-nowrap font-mono text-xs">
 															{timeAgo(t.createdAt)}
 														</span>
 													) : (
