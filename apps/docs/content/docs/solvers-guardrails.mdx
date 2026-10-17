@@ -1,0 +1,106 @@
+---
+title: Solvers y guardrails
+description: Matching CP-SAT con presets estricto y relajado, auditor contrafactual, ruta de formación MIP y guardrails en código.
+---
+
+Los solvers viven en `apps/api/src/puente_api/solvers/` (área de Sebastian). Son **deterministas**: ordenan por id, usan un solo worker y semilla fija, tienen límite de tiempo, usan holguras penalizadas en vez de devolver INFEASIBLE y tienen un tamaño acotado. Cada restricción tiene un test unitario en `apps/api/tests/unit/`.
+
+## Matching CP-SAT
+
+**Fuente:** [`solvers/matching.py`](https://github.com/HackathonFISC/equipo-09/blob/main/apps/api/src/puente_api/solvers/matching.py) (interfaz pura con Pydantic) y `solvers/matching_adapter.py` (BD → modelos).
+
+Variables `x[y,p] ∈ {0,1}` solo para pares elegibles, como máximo 15 por joven (`max_pairs_per_youth`).
+
+**Restricciones duras** (filtran pares en `check_pair`):
+
+| Clave | Regla |
+|---|---|
+| `habilidades_obligatorias` | El joven tiene cada habilidad `required` (se toleran `max_missing_required` faltantes, con penalización) |
+| `traslado_max` | Minutos de traslado ≤ `max_commute_min` del joven (+ tolerancia penalizada) |
+| `presupuesto_transporte` | Costo diario ≤ `transport_budget_daily` (+ tolerancia penalizada) |
+| `horario` | La disponibilidad cubre al menos `min_schedule_coverage` del horario de la oferta (por defecto, 100 %) |
+| `salario_minimo` | `salary_max` de la oferta ≥ `min_salary` del joven |
+| `puntaje_minimo` | Puntaje ≥ `min_score` |
+| `dato_traslado` | Existe el par origen-destino en la matriz |
+
+**Restricciones del modelo** (con holguras penalizadas): `una_asignacion_por_joven` (Σ x + sin_asignar = 1) y `cupos_oferta` (Σ x + cupos_vacios = vacantes · `shortlist_factor`).
+
+**Objetivo:** maximizar Σ x·(puntaje·1000 − penalización del par) − Σ holguras·penalización.
+
+**Puntaje (0..1):** suma ponderada de cobertura de habilidades (0,5), traslado (0,15), horario (0,15), costo (0,1) y salario (0,1). El nivel de la habilidad pondera la cobertura (1 → 0,6 · 2 → 0,8 · 3 → 1,0). `display_name` y `gender` nunca entran al solver: `YouthIn` no los tiene.
+
+### Presets estricto y relajado
+
+| Parámetro | `MatchingParams()` (estricto) | `MatchingParams.relaxed()` (demo) |
+|---|---|---|
+| `max_missing_required` | 0 | 1 (penaliza 300) |
+| `commute_tolerance_min` | 0 | 15 min (penaliza 10 por minuto) |
+| `budget_tolerance` | B/. 0 | B/. 1.00 (penaliza 200 por balboa) |
+| `time_limit_s` | 5 | 5 (o `time_limit_seconds` de la petición) |
+
+El nodo Matching usa **`relaxed`**. Cada holgura usada queda en `SlackUsed` y en las `ConstraintCheck` de la asignación, a la vista del orientador. Los evals verifican con el preset **estricto** que el solver nunca viola restricciones duras y muestran, a título informativo, cuántas asignaciones del demo usan holgura (ver [Evals](/docs/evals)).
+
+Estados: `OPTIMAL`, `FEASIBLE`, `TIMEOUT` (`UNKNOWN` de CP-SAT) e `INFEASIBLE` solo si el modelo es inválido.
+
+## Auditor contrafactual
+
+**Fuente:** [`solvers/auditor.py`](https://github.com/HackathonFISC/equipo-09/blob/main/apps/api/src/puente_api/solvers/auditor.py). El solver es ciego a los atributos protegidos por construcción; el auditor lo **demuestra con datos**: re-ejecuta el solver sobre entradas contrafactuales y mide
+
+```txt
+paridad(variable) = jóvenes con el mismo resultado / jóvenes auditados
+passed = paridad ≥ 0,95
+```
+
+«Mismo resultado» quiere decir la misma oferta (o seguir sin asignar). Si cambia la oferta pero el puntaje es igual dentro de `score_tol`, cuenta como empate del solver y no como sesgo.
+
+| Variable | Contrafactual |
+|---|---|
+| `nombre` | Se rotan los nombres entre jóvenes |
+| `genero` | Cada joven con género declarado pasa a otro valor |
+| `corregimiento` | Gemelo con otra etiqueta y la misma fila de la matriz de traslado |
+| `edad` (opcional, fuera del contrato) | Se desplaza el año de nacimiento |
+
+También calcula el impacto dispar (regla de los 4/5) por género y banda de edad. Es **informativo**: no cambia `passed` salvo `enforce_disparate_impact=True`. `audit_posting` / `audit_postings` reutilizan `detect_discrimination` para los `audit_check` de tipo `discriminacion`.
+
+Con pocas asignaciones la paridad es poco exigente: los no asignados siguen sin asignar. `results.md` lo advierte.
+
+## Ruta de formación (MIP)
+
+**Fuente:** [`solvers/training.py`](https://github.com/HackathonFISC/equipo-09/blob/main/apps/api/src/puente_api/solvers/training.py). Elige sesiones para **maximizar las vacantes desbloqueadas**: ofertas que el joven hoy no cubre solo por habilidades obligatorias faltantes y que, tras la formación, cumplen todas las restricciones duras del matching.
+
+| Restricción | Regla |
+|---|---|
+| `una_sesion_por_curso` | Σ sesiones elegidas ≤ 1 por curso |
+| `cupo_sesion` | Solo sesiones con cupo libre (filtro previo) |
+| `horario_joven` | La sesión cae dentro de la disponibilidad del joven |
+| `sin_solape` | Dos sesiones elegidas no se pisan |
+| `traslado_max` / `presupuesto_transporte` | Del hogar al centro, con tolerancias penalizadas |
+| `dato_traslado` | Existe el par hogar-centro |
+| `presupuesto_total` | Matrículas + transporte ≤ `max_total_cost` (B/. 100) |
+| `max_cursos` / `max_horas` | ≤ 3 cursos y ≤ 240 h |
+
+Objetivo: Σ ofertas desbloqueadas·vacantes·1000 + progreso parcial (40 por habilidad de brecha cubierta) − costo − horas − holguras. El plan vacío siempre es factible.
+
+**Respaldo:** `method="auto"` intenta el MIP y, si no hay solución en el límite de tiempo, corre el greedy (mayor ganancia marginal por costo, desempate por id). `explanation_facts()` produce el texto determinista que el LLM solo puede reformular.
+
+## Guardrails
+
+**Fuente:** [`guardrails/`](https://github.com/HackathonFISC/equipo-09/tree/main/apps/api/src/puente_api/guardrails). Las reglas viven en **código**, no en el prompt: ningún LLM decide si un texto es una inyección o una oferta discriminatoria.
+
+`screen_text(text, source="posting" | "cv" | "interview")` (`guardrails/screen.py`) aplica, en orden:
+
+1. **Caracteres invisibles** (cero ancho, bidi): se quitan.
+2. **Longitud**: más de 20 000 caracteres bloquea (`texto_demasiado_largo`).
+3. **Inyección de prompt** (cualquier fuente, `guardrails/injection.py`): reglas `ignorar_instrucciones`, `nuevas_instrucciones`, `cambio_de_rol`, `extraccion_prompt`, `tokens_de_plantilla`, `jailbreak`, `manipular_resultado` y `saltar_controles`. Bloquea y reemplaza el fragmento por `[instrucción bloqueada]`.
+4. **PII** (`guardrails/pii.py`): cédula panameña, correo y teléfono se redactan como `[CÉDULA]`, `[CORREO]` y `[TELÉFONO]`. No bloquea.
+5. **Discriminación** (solo `posting`, `guardrails/discrimination_rules.py`): `edad`, `genero`, `apariencia`, `foto`, `estado_civil`, `embarazo`, `residencia` y `nacionalidad`. Controles de precisión que **no** se marcan: «mayores de 18 años», licencia de conducir, carné de manipulador de alimentos, certificaciones técnicas.
+
+### Cómo los usa el grafo
+
+`graph/guardrail_port.py` (`screen_input`) es el puerto:
+
+- **Bloqueado** → `GuardrailBlocked`. El runner deja una traza `guardrail` y la API responde **422** problem+json con `guardrail` (`inyeccion`, `fuera_de_alcance`, `dato_absurdo`, `archivo_invalido` o `pii`, deducido del prefijo o de palabras clave de la razón).
+- **Saneado o con advertencias** → traza `guardrail` y el agente usa el texto saneado.
+- En **ofertas** la discriminación no bloquea en el puerto: Mercado la detecta, cita el texto literal y abre la revisión humana.
+- **Falla cerrado:** si la implementación lanza una excepción, el texto se bloquea. Un guardrail roto nunca deja pasar texto sin revisar.
+- Si `puente_api.guardrails` no se puede importar, se usa un STUB que deja pasar todo y lo dice en las razones.

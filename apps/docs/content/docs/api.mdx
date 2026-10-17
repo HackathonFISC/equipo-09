@@ -1,0 +1,78 @@
+---
+title: API
+description: Contrato OpenAPI, Scalar, convención problem+json y lista de endpoints.
+---
+
+El contrato [`packages/api-spec/openapi.yaml`](https://github.com/HackathonFISC/equipo-09/blob/main/packages/api-spec/openapi.yaml) (OpenAPI 3.1) es la **fuente de verdad** para `apps/api` y `apps/web`. La web genera sus tipos desde ahí (`pnpm api:generate`, `openapi-typescript`); no se escriben tipos de la API a mano.
+
+## Ver el contrato
+
+```bash
+pnpm api:docs   # Scalar sobre openapi.yaml en http://localhost:4010
+pnpm api:lint   # redocly lint openapi.yaml
+```
+
+Con la API corriendo, FastAPI sirve su propio Scalar en `http://localhost:8000/docs` (generado desde el código). Base local: `http://localhost:8000/api/v1`.
+
+## Convenciones
+
+- Las operaciones que disparan agentes responden **`202 Accepted`** con `{threadId, resourceId}`. El progreso se consulta en `/traces/{threadId}` y las decisiones humanas en `/reviews`.
+- Los errores son **`application/problem+json`** (`main.py`):
+
+```json
+{
+  "title": "Unprocessable Entity",
+  "status": 422,
+  "detail": "Entrada bloqueada por seguridad (CV): inyeccion_prompt:...",
+  "guardrail": "inyeccion"
+}
+```
+
+`title` y `status` son obligatorios; `detail` y `guardrail` (`inyeccion` | `fuera_de_alcance` | `dato_absurdo` | `archivo_invalido` | `pii`) son opcionales. Cómo se generan:
+
+| Origen | Status | Notas |
+|---|---|---|
+| `ProblemError(status, detail, guardrail)` | el que se pase | Error de negocio con guardrail opcional |
+| `HTTPException` de Starlette | el suyo | 404, 405… |
+| `RequestValidationError` | 422 | `detail` = `campo.subcampo: mensaje; ...` |
+| `GuardrailBlocked` | 422 | Con `guardrail` |
+| Excepción no controlada | 500 | Middleware registrado **antes** que CORS, para que el 500 lleve cabeceras CORS y la web muestre el error en español en vez de «error de red» |
+
+## Endpoints
+
+Prefijo `/api/v1`. «Agente» indica qué nodo del grafo se ejecuta.
+
+| Método | Ruta | operationId | Qué hace | Agente |
+|---|---|---|---|---|
+| GET | `/health` | `getHealth` | Estado del servicio | — |
+| POST | `/youth` | `createYouth` | Registrar joven | — |
+| GET | `/youth/{youthId}` | `getYouth` | Perfil del joven con habilidades | — |
+| POST | `/youth/{youthId}/cv` | `uploadCv` | Subir CV (PDF o texto) y extraer habilidades | Perfil |
+| POST | `/youth/{youthId}/interview` | `answerInterview` | Responder la entrevista de perfil | Perfil |
+| GET | `/youth/{youthId}/matches` | `listYouthMatches` | Vacantes recomendadas al joven | — |
+| POST | `/youth/{youthId}/training-plan` | `createTrainingPlan` | Calcular ruta de formación óptima | Formación |
+| GET | `/youth/{youthId}/training-plan` | `getTrainingPlan` | Última ruta de formación | — |
+| POST | `/companies` | `createCompany` | Registrar empresa | *no implementado* |
+| GET | `/postings` | `listPostings` | Listar ofertas | — |
+| POST | `/postings` | `ingestPosting` | Ingerir oferta (texto o PDF) | Mercado |
+| GET | `/postings/{postingId}` | `getPosting` | Detalle con requisitos y hallazgos | — |
+| GET | `/postings/{postingId}/shortlist` | `getShortlist` | Lista corta aprobada por el orientador | — |
+| POST | `/training-centers` | `createTrainingCenter` | Registrar centro de formación | *no implementado* |
+| GET | `/courses` | `listCourses` | Listar cursos con sesiones | — |
+| POST | `/courses` | `createCourse` | Crear curso con sesiones | *no implementado* |
+| POST | `/match-runs` | `createMatchRun` | Ejecutar matching | Matching → Auditor → Postulación |
+| GET | `/match-runs/{runId}` | `getMatchRun` | Resultado de una corrida y su auditoría | — |
+| GET | `/reviews` | `listReviews` | Bandeja de revisión del orientador | — |
+| POST | `/reviews/{reviewId}/decision` | `decideReview` | Aprobar, editar o rechazar (reanuda el grafo) | Orientador |
+| GET | `/traces` | `listTraces` | Hilos recientes con su estado | — |
+| GET | `/traces/{threadId}` | `getTrace` | Línea de tiempo de decisiones por agente | — |
+| GET | `/locations` | `listLocations` | Corregimientos | — |
+| GET | `/skills` | `listSkills` | Taxonomía ESCO-lite | — |
+
+Las tres operaciones *no implementadas* (alta de catálogos) quedaron congeladas en H5. `tests/unit/test_contract_h5.py` (`NOT_IMPLEMENTED`) comprueba que todas las demás operaciones del contrato existen en FastAPI.
+
+## Cambiar un endpoint
+
+1. Edita primero `openapi.yaml` y pasa `pnpm api:lint`.
+2. Avisa al dueño de la otra punta (José para la API, Kenneth para la web).
+3. Implementa en `routers/` con el mismo `operation_id` y regenera el cliente web (`pnpm api:generate`).

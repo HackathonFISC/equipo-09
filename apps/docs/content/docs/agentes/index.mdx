@@ -1,0 +1,25 @@
+---
+title: Resumen de agentes
+description: Qué hace cada nodo del grafo, qué parte es LLM y qué parte es código.
+---
+
+| Agente | Nodo | LLM | Herramienta en la traza | Fuente |
+|---|---|---|---|---|
+| [Mercado](/docs/agentes/mercado) | `mercado` | Extrae título, habilidades, horario, salario y hallazgos | `ESCO-lite + reglas de oferta` | `graph/nodes/mercado.py` |
+| [Perfil](/docs/agentes/perfil) | `perfil` | Propone habilidades con evidencia y redacta preguntas | `ESCO-lite + evidencia literal` | `graph/nodes/perfil.py` |
+| [Matching](/docs/agentes/matching) | `matching` | No | `OR-Tools CP-SAT` | `graph/nodes/matching.py` |
+| [Auditor](/docs/agentes/auditor) | `auditor` | No | `auditor contrafactual` | `graph/nodes/auditor.py` |
+| [Postulación](/docs/agentes/postulacion) | `postulacion` | Redacta CV, carta y explicación | `verificador de habilidades` | `graph/nodes/postulacion.py` |
+| [Formación](/docs/agentes/formacion) | `formacion` | Solo explica el plan del solver | `OR-Tools MIP (respaldo greedy)` | `graph/nodes/formacion.py` |
+| [Orientador (HITL)](/docs/agentes/orientador) | `orientador` | No (decide un humano) | `revisión humana (HITL)` | `graph/nodes/orientador.py` |
+
+Las rutas son relativas a `apps/api/src/puente_api/`.
+
+## Patrones comunes
+
+- **Una sola puerta al LLM.** Todo pasa por `LLMClient.structured(prompt, Schema, system=..., default=...)`. La salida se valida con Pydantic; si no valida, se reintenta y luego se usa `default`. Ningún agente se cae por el LLM. Ver [LLM client](/docs/llm-client).
+- **Catálogos deterministas.** Los nombres que propone el LLM se normalizan en código (`graph/taxonomy.py`): coincidencia exacta de etiqueta o alias y luego similitud difusa (`difflib`, umbral 0,82 para habilidades y 0,85 para corregimientos). Lo que no alcanza el umbral se descarta: nunca se inventan habilidades.
+- **Evidencia literal.** `evidence_in` exige que la evidencia sea un fragmento literal del texto fuente (sin acentos, mayúsculas ni signos).
+- **Guardrails antes del LLM.** Mercado y Perfil pasan el texto libre por `screen_input` (`graph/guardrail_port.py`). Ver [Solvers y guardrails](/docs/solvers-guardrails#guardrails).
+- **Traza siempre.** Cada nodo abre `with traced(session, thread_id, "<agente>", llm) as trace:` y rellena `tool`, `input_summary`, `decision`, `reason` y `output_summary`.
+- **Prompts** en `llm/prompts.py` (`MERCADO_*`, `PERFIL_CV_*`, `PERFIL_INTERVIEW_*`, `POSTULACION_*`, `FORMACION_*`).

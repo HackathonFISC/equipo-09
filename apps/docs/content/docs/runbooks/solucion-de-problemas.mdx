@@ -1,0 +1,41 @@
+---
+title: Solución de problemas
+description: Síntoma, causa probable y qué hacer, para la puesta en marcha, los ensayos y Docker.
+---
+
+## Puesta en marcha y LLM
+
+| Síntoma | Causa | Qué hacer |
+|---|---|---|
+| `check_llm.py`: `FALLA (AuthenticationError)` | Clave ausente o incorrecta. `LLM_API_KEY` solo aplica al proveedor de `LLM_MODEL` | Corrige `.env`. Para un respaldo de otro proveedor, define su variable (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`…) |
+| `check_llm.py`: `FALLA (NotFoundError)` o `BadRequestError` | Modelo mal escrito o sin prefijo `proveedor/` | Usa la forma `proveedor/modelo` de LiteLLM |
+| `check_llm.py` pasa, pero la API sigue con «valor por defecto» | La API arrancó antes de editar `.env` (la configuración se cachea por proceso) | Reinicia la API |
+| La traza dice «se usó el valor por defecto seguro» | LLM sin clave, modelo mal escrito o proveedor caído | `uv run python scripts/check_llm.py` y revisa `.env` |
+| La web muestra «Datos de ejemplo» | La API no responde en `NEXT_PUBLIC_API_URL` y la web corre con `auto` | Levanta la API; pon `NEXT_PUBLIC_API_MOCKS=nunca` en `apps/web/.env.local` para ver el error real |
+| Listados vacíos | Faltan las semillas | `uv run python -m puente_api.db.seed` |
+| Error de CORS en la consola del navegador | La web corre en un puerto que no está en `CORS_ORIGINS` | Añádelo en el `.env` raíz, p. ej. `CORS_ORIGINS=["http://localhost:3001","http://localhost:3000"]` |
+| SQLite «database is locked» | Dos procesos de la API sobre el mismo `puente.db` | Deja uno: `pnpm dev` o `uvicorn`, no ambos |
+| «Address already in use» en 8000, 3001 o 3002 | Un proceso viejo, o `pnpm dev` y Docker a la vez | `lsof -i :8000` (Windows: `netstat -ano \| findstr :8000`) y detén el proceso |
+| `next build`: «Failed to fetch Inter from Google Fonts» | Sin internet durante el build | Compila donde haya internet, antes del evento |
+| Windows: `Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)` en `pnpm install`, `next dev` o `next build` | La telemetría de varlock revienta al cerrar el proceso (Node 24). Como pnpm 11 verifica dependencias antes de cada script, falla todo `pnpm --filter …` | Exporta `VARLOCK_TELEMETRY_DISABLED=true` (o `DO_NOT_TRACK=1`) en la terminal y repite `pnpm install` |
+
+## Durante los ensayos
+
+| Síntoma | Causa probable | Arreglo rápido |
+|---|---|---|
+| «Ejecutar matching» tarda más de 30 s | El LLM es lento y Postulación lo llama una vez por candidato | Baja `LLM_BUDGET_S` a 30 y activa `LLM_CACHE_DIR`; escribe las mismas entradas que en el ensayo para que se repitan |
+| Perfil no descubre nada | El LLM cayó a los valores por defecto | `check_llm.py`; el paso de la traza dice por qué |
+| 429 del proveedor en el evento | Límite compartido | Caché encendida y `LLM_FALLBACK_MODEL` de otro proveedor |
+| La lista corta muestra candidatos de corridas viejas | Varias corridas sin reiniciar | Reinicia antes de cada toma ([Antes de cada ensayo](/docs/runbooks/antes-del-ensayo)) |
+| La bandeja dice «dentro de 5 horas» o las entrevistas salen a las 04:00 | Filas guardadas antes de que las fechas pasaran a UTC (H5 J5) | Reinicia los datos |
+
+## Docker Compose (rama de H6)
+
+| Síntoma | Causa | Qué hacer |
+|---|---|---|
+| `uv sync --frozen` falla en Docker | `uv.lock` más viejo que `pyproject.toml` | `uv lock` en local y commitea el lock |
+| `pnpm install --frozen-lockfile` falla en Docker | `pnpm-lock.yaml` desactualizado, o falta copiar el `package.json` de alguna app del workspace (p. ej. `apps/docs/package.json`) | `pnpm install` en local, commitea el lockfile y copia todos los manifiestos en el Dockerfile |
+
+## Reiniciar los datos del demo
+
+Detén la API y, en `apps/api`: `rm -f puente.db puente.db-* puente-checkpoints.sqlite*` y `uv run python -m puente_api.db.seed`. Vuelve a arrancar. En Docker: `docker compose down -v && docker compose up`, que también borra la caché del LLM.

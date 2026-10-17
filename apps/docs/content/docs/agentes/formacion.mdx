@@ -1,0 +1,33 @@
+---
+title: Formación
+description: El solver MIP elige la ruta de cursos; el LLM solo la explica, sin inventar cifras.
+---
+
+**Fuente:** [`graph/nodes/formacion.py`](https://github.com/HackathonFISC/equipo-09/blob/main/apps/api/src/puente_api/graph/nodes/formacion.py) · **Evento:** `training.requested` · **Endpoints:** `POST /youth/{youthId}/training-plan` (calcula) y `GET /youth/{youthId}/training-plan` (la última ruta)
+
+## Entradas
+
+`payload = {youth_id}`. El nodo carga el joven, las ofertas publicadas (ordenadas por vacantes, hasta `max_postings`) y el catálogo de cursos con sesiones (`solvers/training_adapter.load_courses`).
+
+## Herramientas
+
+`solve_training(youth, postings, courses, commute, TrainingParams())` (`solvers/training.py`): MIP con OR-Tools CP-SAT y respaldo greedy. Ver [Solvers → Ruta de formación](/docs/solvers-guardrails#ruta-de-formación-mip).
+
+## Qué hace el LLM y qué hace el código
+
+| LLM (`PlanExplanation`) | Código |
+|---|---|
+| Redacta una explicación (máx. 900 caracteres) a partir de los hechos del solver | Elige los cursos y sesiones, calcula costo y ofertas desbloqueadas |
+| — | `verify_explanation`: la explicación no puede traer **cifras** que no estén en `explanation_facts()` |
+
+## Salidas
+
+- Un `training_plan` (`status="propuesto"`, `total_cost`, `unlocked_postings`, `explanation`) con sus `training_plan_item` (sesión + orden). `created_at` con microsegundos para que «la última ruta» no empate con otra del mismo segundo.
+- `result = {plan_id, courses}`.
+- La traza dice el método (`mip` | `greedy`), el estado del solver, las sesiones candidatas, de dónde salió la explicación y, si aplica, el motivo del respaldo y las brechas sin curso factible.
+
+## Fallbacks
+
+- Si el LLM falla, o trae cifras ajenas al solver, se usa el texto determinista del solver. La traza lo dice: «el LLM trajo cifras ajenas al solver: se usó el texto del solver».
+- Si el plan está vacío (no hay brechas o no hay ruta factible), no se llama al LLM. La traza dice «sin ruta factible o sin brechas que cerrar».
+- Si el MIP no da solución en el límite de tiempo, corre el greedy con la misma interfaz.

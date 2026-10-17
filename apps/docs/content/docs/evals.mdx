@@ -1,0 +1,66 @@
+---
+title: Evals y métricas
+description: Cómo correr los evals deterministas, el eval opcional con LLM real y cómo regenerar results.md.
+---
+
+Los evals viven en [`apps/api/tests/evals/`](https://github.com/HackathonFISC/equipo-09/tree/main/apps/api/tests/evals) (área de Sebastian). Son **deterministas**: usan los solvers OR-Tools y los guardrails directamente, sin LLM, sin red y sin base de datos.
+
+## Correrlos
+
+```bash
+pnpm --filter api evals     # = uv run pytest tests/evals -q
+pnpm --filter api test      # todos los tests (unit + evals)
+```
+
+<Callout type="info">
+  `apps/api/pyproject.toml` ya pone `addopts = "-q"`. El script `evals` añade otro `-q`, así que
+  solo verás puntos; los fallos sí se imprimen completos. Para ver «N passed», corre
+  `cd apps/api && uv run pytest tests/evals`.
+</Callout>
+
+Qué comprueban (`test_evals.py`): que haya al menos 20 casos en total, de las cuatro áreas y sin ids repetidos; que cada caso tenga `id`, `category`, `type`, `description`, `metric`, `input` y `expected` y coincida con su `expected`; y que dos corridas den el mismo resultado. Hoy hay 28 casos.
+
+Un caso **pasa** cuando su salida coincide con `expected` y se cumplen las invariantes transversales: 0 restricciones duras violadas en las asignaciones y 0 fugas de PII o de instrucciones embebidas en `sanitized`.
+
+| Categoría | Archivo | Prefijo de id | Casos |
+|---|---|---|---:|
+| Matching (restricciones duras) | `cases/matching.json` | `match-*` | 7 |
+| Auditor contrafactual y discriminación | `cases/auditor.json` | `audit-*` | 5 |
+| Guardrails de entrada | `cases/guardrails.json` | `guard-*` | 11 |
+| Ruta de formación | `cases/formacion.json` | `train-*` | 5 |
+
+`cases/_world.json` (los archivos con `_` no son casos) tiene lo que comparten los casos: una matriz de traslado base entre ubicaciones ficticias (`A`, `B`, `C`…).
+
+## Regenerar `results.md`
+
+[`results.md`](https://github.com/HackathonFISC/equipo-09/blob/main/apps/api/tests/evals/results.md) se genera; **no se edita a mano**.
+
+```bash
+cd apps/api
+uv run python -m tests.evals.report
+git diff --exit-code tests/evals/results.md   # en el commit final no debe haber diferencias
+```
+
+`report.py` corre todos los casos y escribe:
+
+- **Métricas de éxito del PRD §8** sobre los datos semilla completos (`prd_metrics.py`): violaciones de restricciones duras con el preset **estricto**, asignaciones con holgura en el preset **relajado** del demo, paridad contrafactual por variable, *recall* y precisión de la detección de ofertas discriminatorias, F1 de extracción (si existe `results-llm.md`) y entradas maliciosas bloqueadas.
+- Resumen por categoría, métricas de guardrails y detalle por caso.
+
+## Eval opcional con LLM real
+
+F1 de extracción de habilidades en ofertas y CVs del seed, con los mismos prompts, schemas y normalización que Mercado y Perfil. **No** corre en `pnpm --filter api evals`; necesita un proveedor configurado en `.env`:
+
+```bash
+cd apps/api
+LLM_CACHE_DIR=.llm-cache uv run python -m tests.evals.llm_extraction --limit 5  # prueba
+LLM_CACHE_DIR=.llm-cache uv run python -m tests.evals.llm_extraction            # todo
+uv run python -m tests.evals.report                                              # mete el F1 en results.md
+```
+
+Escribe `results-llm.md`, que `report.py` lee para la fila «Extracción de habilidades de ofertas (F1)» (meta ≥ 0,80). Con la caché, la segunda corrida no gasta llamadas.
+
+## Añadir un caso
+
+1. Añade un objeto a la lista del archivo de su categoría en `tests/evals/cases/`, con un `id` nuevo con el prefijo de la categoría y las claves obligatorias.
+2. `pnpm --filter api evals`.
+3. Regenera `results.md` y súbelo en el mismo commit.

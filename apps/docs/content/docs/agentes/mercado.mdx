@@ -1,0 +1,37 @@
+---
+title: Mercado
+description: Texto de oferta → job_posting con requisitos ESCO-lite, y bloqueo si hay requisitos discriminatorios.
+---
+
+**Fuente:** [`graph/nodes/mercado.py`](https://github.com/HackathonFISC/equipo-09/blob/main/apps/api/src/puente_api/graph/nodes/mercado.py) · **Evento:** `posting.created` · **Endpoint:** `POST /postings`
+
+## Entradas
+
+`payload`: `text` (texto de la oferta, ya leído del formulario o del PDF por `routers/uploads.py`), `company_id`, `input_type` (`texto` | `pdf`) y opcionalmente `raw_input`. Las fotos responden 422 `archivo_invalido` («La lectura de fotos aún no está disponible»). Límites: 5 MB por archivo (413) y 20 000 caracteres (422 `dato_absurdo`).
+
+## Herramientas
+
+- `screen_input(..., "oferta")`: guardrails de entrada. En ofertas la discriminación **no** bloquea aquí; solo bloquean la inyección y el texto fuera de límites.
+- `SkillIndex` y `match_location` (`graph/taxonomy.py`): normalización a ESCO-lite y a corregimientos.
+- `detect_discrimination` (`guardrails/discrimination_rules.py`): reglas deterministas.
+
+## Qué hace el LLM y qué hace el código
+
+| LLM (`PostingExtraction`) | Código |
+|---|---|
+| Extrae `title`, `skills[]` (nombre, peso 1–3, obligatoria, evidencia), `corregimiento`, `schedule`, `salary_min/max`, `vacancies` | Normaliza cada habilidad a ESCO-lite; descarta las que no están en el catálogo; deduplica (peso máximo, obligatoria si alguna lo es) |
+| Propone `flagged_requirements` (tipo + texto) | Solo acepta los hallazgos del LLM que **citan texto literal** de la oferta y los une a los de las reglas (`merge_flags`, sin duplicados) |
+| — | Sanea salarios (≤ 0 o > 100 000 se anulan; si min > max se intercambian) |
+| — | Decide el estado: `bloqueada` si hay hallazgos, si no `publicada` |
+
+## Salidas
+
+- `job_posting` con `posting_requirement[]`. Ubicación: la del corregimiento extraído o, si no se reconoce, la de la empresa.
+- Si hay hallazgos: un `audit_check` (`kind="discriminacion"`, `passed=False`) y una `review_task` de tipo `bloqueo_oferta` con la propuesta `{action: "bloquear", postingTitle, vacancies, salaryMin, salaryMax, originalText, findings}`. Su id va a `review_ids`, y el grafo se pausa en `orientador`.
+- `result = {posting_id, status}`.
+
+## Fallbacks
+
+- Si el LLM falla, `default=PostingExtraction(title=_fallback_title(text))`: primera línea de la oferta, cortada en la primera oración o a 80 caracteres, sin habilidades.
+- **Las reglas deterministas siempre se suman**: aunque el LLM caiga, una oferta discriminatoria queda bloqueada y va a revisión humana. La traza dice cuántos hallazgos vienen de reglas y cuántos del LLM.
+- Si la empresa no existe: `ValueError` (el runner deja traza de error).

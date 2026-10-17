@@ -1,0 +1,28 @@
+---
+title: Auditor
+description: Verificación contrafactual de la corrida de matching y alertas de sesgo para el orientador.
+---
+
+**Fuente:** [`graph/nodes/auditor.py`](https://github.com/HackathonFISC/equipo-09/blob/main/apps/api/src/puente_api/graph/nodes/auditor.py), puerto [`graph/audit_port.py`](https://github.com/HackathonFISC/equipo-09/blob/main/apps/api/src/puente_api/graph/audit_port.py), cálculo en `solvers/auditor.py` · **Corre tras:** `matching`
+
+## Entradas
+
+Del estado: `run_id`, `youth_ids`, `posting_ids` y `matching_result`. El nodo vuelve a cargar la entrada del solver y prepara los atributos protegidos de cada joven (`YouthAttributes`: nombre, género, corregimiento, año de nacimiento), que el solver nunca ve.
+
+## Herramientas
+
+`audit_matching(inp, result, attributes)` del puerto, que adapta la firma real de `solvers.auditor.audit_matching` (de Sebastian). Variables auditadas: `nombre`, `genero` y `corregimiento`. El cálculo está en [Solvers → Auditor contrafactual](/docs/solvers-guardrails#auditor-contrafactual).
+
+## Qué hace el LLM y qué hace el código
+
+**No hay LLM.** El auditor re-ejecuta el solver con entradas contrafactuales y mide la paridad. Pasa si la paridad es ≥ 0,95.
+
+## Salidas
+
+- Un `audit_check` (`kind="contrafactual"`) por variable, con `parity`, `passed` y `findings`.
+- Por cada verificación fallida, una `review_task` de tipo `alerta_sesgo` con la propuesta `{action: "rerun_sin_variable", runId, variable, parity, findings}`. Sus ids se añaden a `review_ids`.
+- La traza dice «N de M verificaciones aprobadas» y la paridad por variable.
+
+## Fallbacks
+
+Si `puente_api.solvers.auditor` no se puede importar, el puerto usa un **STUB** que no audita nada. Devuelve verificaciones aprobadas con el aviso «STUB: auditor contrafactual no instalado…», y la herramienta de la traza dice `(STUB)`, para que nadie lo confunda con un resultado real.

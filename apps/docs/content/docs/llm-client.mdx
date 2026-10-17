@@ -1,0 +1,74 @@
+---
+title: LLM client
+description: La única puerta al LLM — drop_params, errores permanentes y transitorios, circuito, presupuesto, caché y diagnóstico.
+---
+
+**Fuente:** [`llm/client.py`](https://github.com/HackathonFISC/equipo-09/blob/main/apps/api/src/puente_api/llm/client.py). Todo acceso al LLM pasa por `LLMClient` (LiteLLM). Nunca acoples un agente a un proveedor.
+
+## API
+
+```python
+llm.structured(prompt, Schema, model="default", system=None, default=Schema(...))  # texto → Schema
+llm.vision(prompt, image_bytes, Schema, mime_type="image/png", default=...)        # imagen → Schema
+```
+
+- `model` acepta los alias `default` (→ `LLM_MODEL`) y `fast` (→ `LLM_MODEL_FAST`), o un nombre `proveedor/modelo`.
+- El *system prompt* recibe al final el contrato: «Responde únicamente con un objeto JSON válido… que cumpla este JSON Schema», con el JSON Schema de `Schema`.
+- La respuesta se limpia (quita las cercas de código markdown y recorta del primer `{` al último `}`) y se valida con `Schema.model_validate_json`.
+- Con `default`, el cliente **nunca lanza**: si todo falla devuelve `default` y registra «(valor por defecto)». Sin `default` lanza `LLMError`.
+- `llm.call_log` guarda un `LLMCall(model, ok, duration_ms, tokens, note)` por intento. `traced(...)` lo usa para decir en `agent_trace` qué modelo respondió.
+- `get_llm()` es la dependencia de FastAPI; los tests la sustituyen por un cliente con `completion` simulado (sin red, sin esperas).
+
+## Orden de modelos
+
+`resolve_models(model)` devuelve `[principal, respaldo]`. El respaldo es `LLM_FALLBACK_MODEL`; si está vacío, `LLM_MODEL_FAST` (o `LLM_MODEL` si el principal ya era el rápido). Sin duplicados.
+
+Para cada modelo hay hasta `1 + LLM_MAX_RETRIES` intentos.
+
+## `drop_params`
+
+Cada llamada va con `temperature=0` y `drop_params=True`. LiteLLM quita los parámetros que el modelo no acepta (p. ej. `temperature` en algunos modelos de razonamiento) en vez de fallar con 400. `timeout` es `min(LLM_TIMEOUT_S, presupuesto restante)`, con un mínimo de 1 s.
+
+`LLM_API_KEY` solo se envía si el modelo es del **mismo proveedor** que `LLM_MODEL` (y no vale `changeme`). Un respaldo de otro proveedor usa su variable estándar, que LiteLLM lee sola.
+
+Al importar el cliente se fija `LITELLM_LOCAL_MODEL_COST_MAP=True`, para que el primer `import litellm` no intente descargar el mapa de modelos de GitHub (con el wifi del evento tardaría segundos).
+
+## Errores permanentes y transitorios
+
+| Tipo | Cómo se detecta | Qué hace el cliente |
+|---|---|---|
+| **Permanente** | HTTP `400`, `401`, `403`, `404`, `422` (`PERMANENT_STATUS`) | No reintenta con el mismo modelo: pasa directo al respaldo |
+| **Transitorio** | Cualquier otra excepción (429, 5xx, red, timeout, respuesta vacía) | Reintenta con espera exponencial: `min(4 s, LLM_BACKOFF_S · 2^intento)` con jitter de 50–100 % |
+| **Salida inválida** | El JSON no valida contra el schema | El proveedor sí respondió: reinicia el contador del circuito y reintenta mostrándole al modelo los errores de validación («Tu respuesta no cumple el esquema…») |
+
+## Circuito y presupuesto
+
+Ambos son **por cliente**, es decir, por petición HTTP (`get_llm()` crea uno por petición).
+
+- **Circuito:** tras `LLM_CIRCUIT_FAILURES` (4) fallas seguidas del proveedor, no se vuelve a llamar. Cualquier respuesta del proveedor, incluso con JSON inválido, reinicia la cuenta.
+- **Presupuesto:** el reloj empieza en la primera llamada que no viene de la caché. Al pasar `LLM_BUDGET_S` (45 s) no se llama más, y cada llamada usa como timeout lo que queda del presupuesto.
+
+Con el circuito abierto o el presupuesto agotado, el cliente devuelve `default` y el error acumulado dice «circuito abierto tras N fallas seguidas» o «presupuesto de 45 s agotado». Postulación (una llamada por candidato) es la que más se acerca al presupuesto.
+
+## Caché
+
+Con `LLM_CACHE_DIR`, cada respuesta **válida** se guarda en `<dir>/<sha256>.json`. La clave es el hash de los mensajes completos (system + user) y el contenido es `{model, content}`. Se escribe de forma atómica (`mkstemp` + `os.replace`).
+
+- La lectura de caché ocurre antes que nada; un acierto se registra como `"<modelo> [caché]"` con 0 ms.
+- Una entrada corrupta se ignora con un aviso en el log. La caché nunca rompe el flujo.
+- Cambiar el prompt, el schema o el catálogo de habilidades cambia la clave, así que se vuelve a llamar.
+- Para empezar de cero, borra la carpeta (`apps/api/.llm-cache/`).
+
+## Langfuse (opcional)
+
+`llm/observability.py` activa el callback de LiteLLM solo si existen `LANGFUSE_PUBLIC_KEY` y `LANGFUSE_SECRET_KEY` y está instalado el extra (`uv sync --extra langfuse`). Un hilo del grafo es una traza y cada nodo una generación. Por defecto no se envía el contenido de los mensajes (CVs): solo modelo, latencia, tokens y errores.
+
+## Cómo diagnosticar
+
+1. `cd apps/api && uv run python scripts/check_llm.py`. Imprime `LLM_MODEL`, el respaldo y una línea por intento: `modelo: OK en N ms` o `modelo: FALLA (<Excepción>)`.
+2. Lee la excepción:
+   - `AuthenticationError`: clave ausente o incorrecta. Recuerda que `LLM_API_KEY` solo aplica al proveedor de `LLM_MODEL`.
+   - `NotFoundError` / `BadRequestError`: nombre de modelo mal escrito o sin prefijo `proveedor/`.
+   - `RateLimitError` (429): límite compartido. Activa la caché y usa un `LLM_FALLBACK_MODEL` de otro proveedor.
+3. Si `check_llm.py` pasa pero la API sigue con «valor por defecto», **reinicia la API** (la configuración se cachea por proceso).
+4. En la web, la traza del paso dice qué modelo respondió o «el LLM no dio una salida válida: se usó el valor por defecto seguro». En la terminal de la API, el log muestra `LLM <modelo> falló (intento N): ...`.

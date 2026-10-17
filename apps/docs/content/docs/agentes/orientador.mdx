@@ -1,0 +1,43 @@
+---
+title: Orientador (HITL)
+description: La pausa con interrupt y los efectos de cada decisión humana al reanudar.
+---
+
+**Fuentes:** [`graph/nodes/orientador.py`](https://github.com/HackathonFISC/equipo-09/blob/main/apps/api/src/puente_api/graph/nodes/orientador.py), [`graph/hitl.py`](https://github.com/HackathonFISC/equipo-09/blob/main/apps/api/src/puente_api/graph/hitl.py), [`graph/scheduling.py`](https://github.com/HackathonFISC/equipo-09/blob/main/apps/api/src/puente_api/graph/scheduling.py), `routers/reviews.py` · **Endpoints:** `GET /reviews`, `POST /reviews/{reviewId}/decision`
+
+## Entradas
+
+`review_ids` del estado, creados por Mercado, Auditor y Postulación. Al reanudar, un mapa `review_id → {decision, reviewer, comment, edits}`.
+
+## Herramientas
+
+- `interrupt` de LangGraph: pausa el hilo. El checkpoint lo conserva entre peticiones HTTP y reinicios.
+- `validate_decision` (`graph/hitl.py`): valida antes de escribir nada (si falla, 422).
+- `assign_interview_slots` (`graph/scheduling.py`): franjas de 30 min sin choques, de 09:00 a 13:00 hora de Panamá (8 por día), saltando fines de semana, a partir del siguiente día hábil.
+
+## Qué hace el LLM y qué hace el código
+
+**No hay LLM: decide un humano.** El código valida y aplica.
+
+| Tipo | Decisiones válidas | Efecto |
+|---|---|---|
+| `bloqueo_oferta` | `aprobar` · `editar` · `rechazar` | `aprobar`: la oferta sigue `bloqueada`. `editar`: aplica `edits` (solo `title`, `salaryMin`, `salaryMax`, `vacancies`, saneados) y la **publica**. `rechazar`: descarta el bloqueo y la publica |
+| `alerta_sesgo` | `aprobar` · `rechazar` (con comentario obligatorio) | `aprobar`: hallazgo aceptado; **retiene** la lista corta del mismo hilo y marca `rerun_required`. `rechazar`: alerta descartada con justificación. `editar` no se admite |
+| `lista_corta` | `aprobar` · `editar` · `rechazar` | `aprobar`/`editar`: envía los candidatos que quedan (`edits.remove`, `edits.order`, ids que deben estar en la lista), los marca `aprobado` y `enviada` y agenda entrevistas. Los quitados quedan `rechazado`/`descartada`. `rechazar`: descarta a todos |
+
+El orden de aplicación es `alerta_sesgo` → `bloqueo_oferta` → `lista_corta`, para que una alerta aceptada pueda retener la lista.
+
+Decidir una revisión ya resuelta responde **409**.
+
+## Salidas
+
+- Traza `pausa_hitl` («pausa: esperando la decisión del orientador»), una por conjunto de revisiones. Las ids van en `reason` para no duplicarla al reanudar.
+- Una traza `decision_humana` por revisión: «`<decisión>` por `<reviewer>`: `<resultado>`», más el comentario.
+- `result` con `decisions`, y según el caso `posting_status`, `rerun_required` y `shortlist = {sent, removed, held}`.
+- `interview_slot` por candidato enviado, guardado en UTC.
+
+## Fallbacks
+
+- Un hilo con varias revisiones (p. ej. alerta de sesgo + lista corta) solo se reanuda cuando **todas** están decididas. Mientras tanto, cada decisión solo se guarda.
+- Si la revisión no tiene checkpoint (datos de antes del HITL), `apply_reviews` aplica los efectos sin grafo.
+- Antes del `interrupt` no hay efectos secundarios, porque LangGraph re-ejecuta el nodo desde el inicio al reanudar.

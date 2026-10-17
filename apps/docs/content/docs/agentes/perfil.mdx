@@ -1,0 +1,37 @@
+---
+title: Perfil
+description: CV y entrevista adaptativa → profile_skill con evidencia literal.
+---
+
+**Fuente:** [`graph/nodes/perfil.py`](https://github.com/HackathonFISC/equipo-09/blob/main/apps/api/src/puente_api/graph/nodes/perfil.py) · **Eventos:** `profile.cv`, `profile.interview` · **Endpoints:** `POST /youth/{youthId}/cv`, `POST /youth/{youthId}/interview`
+
+## Entradas
+
+- CV: `payload = {youth_id, text}` (texto o PDF; ver límites en [Mercado](/docs/agentes/mercado#entradas)).
+- Entrevista: `payload = {youth_id, answer}`. `answer = null` inicia (o repite la pregunta abierta). Toda la entrevista de un joven usa el mismo hilo, `entrevista-<youthId>`, así queda en una sola línea de tiempo.
+
+## Herramientas
+
+- `screen_input(..., source="cv" | "interview")`: inyección y PII. La discriminación no se evalúa en CV ni entrevistas: allí «casada» o «25 años» son datos del joven, no criterios.
+- `SkillIndex` + `evidence_in` (`graph/taxonomy.py`).
+- `_demand_gaps`: habilidades más pedidas por ofertas `publicada` que el joven aún no tiene (máx. 8).
+
+## Qué hace el LLM y qué hace el código
+
+| LLM | Código |
+|---|---|
+| CV (`CvExtraction`): habilidades con nivel 1–3 y evidencia | Exige evidencia **literal** del texto fuente; normaliza a ESCO-lite; upsert por habilidad (solo sube de nivel) |
+| Entrevista (`InterviewOutput`): habilidades de la respuesta y `next_question` | Calcula los huecos de demanda que se le pasan al LLM; decide cuándo termina |
+
+Cierre de la entrevista (código, no LLM): mínimo 2 respuestas (`MIN_TURNS`), máximo 5 (`MAX_TURNS`). Termina al llegar al tope o cuando el LLM ya no propone pregunta después del mínimo. Responder sin pregunta abierta lanza `InterviewStateError`.
+
+## Salidas
+
+- CV: guarda `cv_raw_text` y las `profile_skill` con `source="cv"`. `result = {youth_id, skill_ids}`.
+- Entrevista: guarda la respuesta en `interview_turn`, las habilidades con `source="entrevista"` y la siguiente pregunta. `result = {done, question, index, skill_ids}` o, al terminar, `{done: true, skill_ids, discovered_ids}`.
+- La traza lista habilidades guardadas y descartadas (con motivo: «evidencia no literal» o «fuera de ESCO-lite»).
+
+## Fallbacks
+
+- CV: si el LLM falla, `CvExtraction()` vacío; no se guarda nada y la traza lo dice.
+- Entrevista: `FALLBACK_QUESTIONS`, cinco preguntas seguras sobre atención al cliente, manejo de dinero, herramientas digitales, organización y oficios. Si el LLM no propone pregunta antes del mínimo, se usa una de estas.
