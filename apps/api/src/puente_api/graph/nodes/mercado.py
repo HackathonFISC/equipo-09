@@ -135,6 +135,7 @@ def mercado_node(state: PuenteState, config: RunnableConfig) -> dict[str, Any]:
         session.add(posting)
         session.flush()
 
+        review_ids: list[str] = []
         if flags:
             variables = {_AUDIT_VARIABLE.get(f.kind) for f in flags} - {None}
             session.add(
@@ -146,18 +147,18 @@ def mercado_node(state: PuenteState, config: RunnableConfig) -> dict[str, Any]:
                     findings=[f"{f.kind}: «{f.text}»" for f in flags],
                 )
             )
-            # La pausa con interrupt y la decisión del orientador llegan en H3 (/reviews).
-            session.add(
-                models.ReviewTask(
-                    kind="bloqueo_oferta",
-                    subject_id=posting.id,
-                    proposal={"action": "bloquear", "findings": [f.model_dump() for f in flags]},
-                    explanation="La oferta contiene requisitos posiblemente discriminatorios: "
-                    + "; ".join(f"«{f.text}» ({f.kind})" for f in flags),
-                    graph_thread_id=thread_id,
-                )
+            # El grafo se pausa en el nodo `orientador` hasta que el orientador decida.
+            task = models.ReviewTask(
+                kind="bloqueo_oferta",
+                subject_id=posting.id,
+                proposal={"action": "bloquear", "findings": [f.model_dump() for f in flags]},
+                explanation="La oferta contiene requisitos posiblemente discriminatorios: "
+                + "; ".join(f"«{f.text}» ({f.kind})" for f in flags),
+                graph_thread_id=thread_id,
             )
+            session.add(task)
             session.flush()
+            review_ids.append(task.id)
 
         trace.decision = f"oferta {status}: «{posting.title}» con {len(requirements)} habilidades"
         reasons = [
@@ -170,4 +171,7 @@ def mercado_node(state: PuenteState, config: RunnableConfig) -> dict[str, Any]:
             reasons.append("hallazgos: " + "; ".join(f"{f.kind} «{f.text}»" for f in flags))
         trace.reason = " | ".join(reasons)
 
-    return {"result": {"posting_id": posting.id, "status": status}}
+    return {
+        "result": {"posting_id": posting.id, "status": status},
+        "review_ids": review_ids,
+    }
