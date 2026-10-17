@@ -13,6 +13,7 @@ from puente_api.db.session import get_db
 from puente_api.graph import runner
 from puente_api.llm import LLMClient, get_llm
 from puente_api.problems import ProblemError
+from puente_api.routers.serializers import match_out, skill_labels
 from puente_api.routers.uploads import read_input
 
 router = APIRouter(prefix="/postings", tags=["empresas"])
@@ -87,3 +88,49 @@ async def ingest_posting(
     }
     thread_id, result = await run_in_threadpool(runner.run, db, llm, "posting.created", payload)
     return schemas.Accepted(thread_id=thread_id, resource_id=result.get("posting_id"))
+
+
+@router.get(
+    "/{posting_id}/shortlist",
+    operation_id="getShortlist",
+    response_model=list[schemas.Application],
+    response_model_exclude_none=True,
+)
+def get_shortlist(posting_id: str, db: DB) -> list[schemas.Application]:
+    """Postulaciones que el orientador aprobó para esta oferta, en el orden que decidió."""
+    if db.get(models.JobPosting, posting_id) is None:
+        raise HTTPException(status_code=404, detail=f"Oferta {posting_id} no existe")
+    rows = db.execute(
+        select(models.Application, models.MatchResult)
+        .join(models.MatchResult, models.MatchResult.id == models.Application.match_result_id)
+        .where(models.MatchResult.posting_id == posting_id, models.Application.status == "enviada")
+    ).all()
+    labels = skill_labels(db)
+    out = []
+    for app, match in rows:
+        slots = sorted(
+            db.scalars(
+                select(models.InterviewSlot).where(models.InterviewSlot.application_id == app.id)
+            ),
+            key=lambda s: s.starts_at,
+        )
+        out.append(
+            schemas.Application(
+                id=app.id,
+                match_result=match_out(match, labels),
+                tailored_cv=app.tailored_cv,
+                cover_letter=app.cover_letter,
+                status=app.status,
+                interview_slots=[
+                    schemas.InterviewSlot(starts_at=s.starts_at, ends_at=s.ends_at) for s in slots
+                ],
+            )
+        )
+    # Orden de entrevista = prioridad que fijó el orientador; sin franja, al final.
+    out.sort(
+        key=lambda a: (
+            not a.interview_slots,
+            a.interview_slots[0].starts_at.isoformat() if a.interview_slots else "",
+        )
+    )
+    return out

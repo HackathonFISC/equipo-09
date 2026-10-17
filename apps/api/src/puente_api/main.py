@@ -13,7 +13,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from puente_api.config import get_settings
 from puente_api.db.session import init_db
 from puente_api.problems import ProblemError
-from puente_api.routers import catalogs, postings, traces, youth
+from puente_api.routers import catalogs, matching, postings, reviews, traces, youth
 
 API_PREFIX = "/api/v1"
 PROBLEM_JSON = "application/problem+json"
@@ -68,6 +68,9 @@ def health() -> dict[str, str]:
 api.include_router(catalogs.router)
 api.include_router(postings.router)
 api.include_router(youth.router)
+api.include_router(matching.youth_router)
+api.include_router(matching.router)
+api.include_router(reviews.router)
 api.include_router(traces.router)
 app.include_router(api)
 
