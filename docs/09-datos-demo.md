@@ -113,7 +113,7 @@ Diferencia con el guion de doc 04: Ana Pérez sale con **1 habilidad obligatoria
 
 ## Identificadores del ensayo 1
 
-Sirven para abrir las pantallas directamente mientras la base no se reinicie.
+Ya no existen: la base se reinició después del ensayo (ver abajo). Solo siguen valiendo los del seed, que se generan iguales en cada siembra (Alexis Morales, Edilma De León).
 
 | Qué | Id |
 |---|---|
@@ -129,4 +129,15 @@ Sirven para abrir las pantallas directamente mientras la base no se reinicie.
 
 ## Antes de grabar
 
-La base de producción **ya contiene** este recorrido: la oferta corregida, Ana Pérez, las 4 entrevistas y la ruta de Alexis. Repetir el guion encima registraría otra Ana Pérez y otra oferta, y el matching cambiaría. Para grabar desde cero hay que reiniciar la base de Railway y volver a sembrar, conservando el volumen `/data` para que la caché del LLM siga llena. Si se graba sobre el estado actual, basta abrir las pantallas con los ids de arriba.
+**Base reiniciada el 2026-10-17** tras el ensayo 1: solo datos semilla (25 ofertas, sin revisiones ni trazas, sin Ana Pérez, Alexis sin ruta). El volumen `/data` no se tocó, así que la caché del LLM del ensayo 1 sigue ahí: con las entradas idénticas de arriba, las llamadas repetidas responden desde la caché.
+
+Pasos previos a grabar sobre esta base:
+
+1. Calcular la ruta de Alexis (paso 6) antes de empezar: es lo único que el guion da por precalculado.
+2. Grabar los pasos 1 a 5 y 7 en vivo, en orden.
+
+Para reiniciar otra vez (p. ej. tras un ensayo fallido):
+
+1. Railway → servicio **Postgres** → **Database → Query**: `DROP SCHEMA public CASCADE; CREATE SCHEMA public;`
+2. Servicio **api** → Variables: cambiar `CHECKPOINT_PATH` a un archivo nuevo (`/data/checkpoints-v3.sqlite`, …). Eso redespliega la API, que siembra al arrancar, y evita pausas viejas sin borrar la caché.
+3. Comprobar que `GET /api/v1/reviews?status=pendiente` está vacío.
