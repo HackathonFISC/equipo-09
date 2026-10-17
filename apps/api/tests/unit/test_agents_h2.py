@@ -153,7 +153,13 @@ def test_discriminatory_posting_is_blocked_with_review_task(client, use_llm, ses
     assert finding["kind"] == "discriminacion"
     assert finding["passed"] is False
     assert finding["variable"] == "genero"
-    assert len(finding["findings"]) == 2
+    # Reglas («Cajera», «Solo mujeres», edad, «buena presencia») + LLM, sin duplicados.
+    assert finding["findings"] == [
+        "genero: «Cajera»",
+        "genero: «Solo mujeres»",
+        "edad: «de 18 a 25 años»",
+        "apariencia: «buena presencia»",
+    ]
     assert not any("soltera" in f for f in finding["findings"])
 
     with session_factory() as s:
@@ -162,6 +168,29 @@ def test_discriminatory_posting_is_blocked_with_review_task(client, use_llm, ses
     assert task.subject_id == posting["id"]
     assert task.graph_thread_id == body["threadId"]
     assert _trace(client, body["threadId"])["status"] == "esperando_revision"
+
+
+def test_rules_block_discriminatory_posting_even_if_llm_fails(client, use_llm):
+    use_llm(ScriptedLLM(mercado="esto no es JSON"))
+    text = "Se busca recepcionista. Mujeres de 18 a 25 años, buena presencia."
+    body = client.post("/api/v1/postings", data={"companyId": COMPANY, "text": text}).json()
+    posting = client.get(f"/api/v1/postings/{body['resourceId']}").json()
+    assert posting["status"] == "bloqueada"
+    [finding] = posting["auditFindings"]
+    kinds = {f.split(":")[0] for f in finding["findings"]}
+    assert {"genero", "edad", "apariencia"} <= kinds
+    assert _trace(client, body["threadId"])["status"] == "esperando_revision"
+
+
+def test_fallback_title_is_short_when_llm_fails(client, use_llm):
+    use_llm(ScriptedLLM(mercado="esto no es JSON"))
+    text = (
+        "Se busca ayudante de bodega para turno de noche en Tocumen. Funciones: recibir, "
+        "contar y despachar mercancía; manejo básico de inventario."
+    )
+    body = client.post("/api/v1/postings", data={"companyId": COMPANY, "text": text}).json()
+    posting = client.get(f"/api/v1/postings/{body['resourceId']}").json()
+    assert posting["title"] == "Se busca ayudante de bodega para turno de noche en Tocumen"
 
 
 def test_ingest_falls_back_when_llm_output_is_invalid(client, use_llm):
