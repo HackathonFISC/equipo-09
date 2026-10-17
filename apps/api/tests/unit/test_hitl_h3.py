@@ -121,7 +121,14 @@ def test_full_run_pauses_and_resumes_after_approval(client, use_llm, seeded, mon
     # Pausado en la revisión humana.
     trace = client.get(f"{API}/traces/{thread}").json()
     assert trace["status"] == "esperando_revision"
-    assert _agents(client, thread) == ["supervisor", "matching", "auditor", "postulacion"]
+    assert _agents(client, thread) == [
+        "supervisor",
+        "matching",
+        "auditor",
+        "postulacion",
+        "orientador",  # fila de pausa HITL
+    ]
+    assert trace["steps"][-1]["kind"] == "pausa_hitl"
     assert llm.calls == 2
 
     run = client.get(f"{API}/match-runs/{run_id}").json()
@@ -194,10 +201,8 @@ def test_unverifiable_draft_falls_back_to_safe_template(client, use_llm, seeded,
     use_llm(PostulacionLLM(bad=True))
     body = _start(client)
     [review] = client.get(f"{API}/reviews").json()
-    assert (
-        "plantilla segura"
-        in client.get(f"{API}/traces/{body['threadId']}").json()["steps"][-1]["reason"]
-    )
+    steps = client.get(f"{API}/traces/{body['threadId']}").json()["steps"]
+    assert "plantilla segura" in next(s for s in steps if s["agent"] == "postulacion")["reason"]
     client.post(
         f"{API}/reviews/{review['id']}/decision", json={"decision": "aprobar", "reviewer": "M"}
     )
@@ -231,7 +236,8 @@ def test_bias_alert_gates_resume_and_holds_shortlist(client, use_llm, seeded, mo
     )
     trace = client.get(f"{API}/traces/{body['threadId']}").json()
     assert trace["status"] == "completado"
-    assert [s["agent"] for s in trace["steps"]].count("orientador") == 2
+    decided = [s for s in trace["steps"] if s["kind"] == "decision_humana"]
+    assert len(decided) == 2
     # Con el sesgo aceptado la lista queda retenida.
     assert client.get(f"{API}/postings/{POST_OK}/shortlist").json() == []
 

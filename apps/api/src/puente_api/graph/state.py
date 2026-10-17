@@ -12,8 +12,10 @@ from sqlalchemy.orm import Session
 
 from puente_api.llm import LLMClient
 
-Event = Literal["posting.created", "profile.cv", "profile.interview", "match.requested"]
-Route = Literal["mercado", "perfil", "matching"]
+Event = Literal[
+    "posting.created", "profile.cv", "profile.interview", "match.requested", "training.requested"
+]
+Route = Literal["mercado", "perfil", "matching", "formacion"]
 
 
 class PuenteState(TypedDict, total=False):

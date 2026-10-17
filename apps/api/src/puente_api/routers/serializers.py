@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from puente_api import schemas
 from puente_api.db import models
+from puente_api.schemas import normalize_slots
 
 
 def skill_labels(db: Session) -> dict[str, str]:
@@ -47,3 +48,36 @@ def review_out(row: models.ReviewTask) -> schemas.ReviewTask:
     out = schemas.ReviewTask.model_validate(row)
     out.agent = REVIEW_AGENT.get(row.kind)
     return out
+
+
+def training_plan_out(db: Session, plan: models.TrainingPlan) -> schemas.TrainingPlan:
+    """Ruta guardada → contrato. El traslado se recalcula desde la matriz (no se persiste)."""
+    youth = db.get(models.Youth, plan.youth_id)
+    items: list[schemas.TrainingPlanItem] = []
+    for item in plan.items:
+        session = db.get(models.CourseSession, item.session_id)
+        if session is None or youth is None:  # curso eliminado después de calcular la ruta
+            continue
+        course = db.get(models.Course, session.course_id)
+        commute = db.get(models.CommuteMatrix, (youth.location_id, course.center.location_id))
+        items.append(
+            schemas.TrainingPlanItem(
+                course_title=course.title,
+                session=schemas.CourseSession(
+                    id=session.id,
+                    schedule=normalize_slots(session.schedule),
+                    start_date=session.start_date,
+                    seats_total=session.seats_total,
+                    seats_taken=session.seats_taken,
+                ),
+                commute_min=commute.minutes if commute else None,
+            )
+        )
+    return schemas.TrainingPlan(
+        id=plan.id,
+        youth_id=plan.youth_id,
+        items=items,
+        total_cost=float(plan.total_cost),
+        unlocked_postings=plan.unlocked_postings,
+        explanation=plan.explanation or "",
+    )
