@@ -1,17 +1,35 @@
 """Configuración por entorno. Lee `.env` de apps/api o de la raíz del monorepo."""
 
+import os
 from functools import lru_cache
 from pathlib import Path
 
+from dotenv import dotenv_values
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 _API_DIR = Path(__file__).resolve().parents[2]
 _REPO_ROOT = _API_DIR.parents[1]
+ENV_FILES = (_REPO_ROOT / ".env", _API_DIR / ".env")
+
+# Variables estándar de proveedor que LiteLLM lee de `os.environ` (respaldo de otro proveedor
+# distinto al de LLM_MODEL). pydantic-settings no exporta lo que lee de `.env`, así que
+# `export_provider_keys` las copia al entorno.
+PROVIDER_KEY_VARS = (
+    "ANTHROPIC_API_KEY",
+    "OPENAI_API_KEY",
+    "GEMINI_API_KEY",
+    "GOOGLE_API_KEY",
+    "GROQ_API_KEY",
+    "MISTRAL_API_KEY",
+    "OPENROUTER_API_KEY",
+    "DEEPSEEK_API_KEY",
+    "OLLAMA_API_BASE",
+)
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=(_REPO_ROOT / ".env", _API_DIR / ".env"),
+        env_file=ENV_FILES,
         env_file_encoding="utf-8",
         extra="ignore",
     )
@@ -43,6 +61,24 @@ class Settings(BaseSettings):
     langfuse_log_content: bool = False
 
 
+def export_provider_keys(env_files: tuple[Path, ...] = ENV_FILES) -> list[str]:
+    """Copia a `os.environ` las claves de proveedor definidas en `.env` sin pisar las existentes.
+
+    Igual que en `Settings`, el último archivo gana (apps/api/.env sobre el de la raíz), y una
+    variable ya definida en el entorno real (p. ej. Docker) gana sobre ambos.
+    """
+    exported: list[str] = []
+    for path in reversed(env_files):
+        if not path.is_file():
+            continue
+        for name, value in dotenv_values(path, encoding="utf-8").items():
+            if name in PROVIDER_KEY_VARS and value and name not in os.environ:
+                os.environ[name] = value
+                exported.append(name)
+    return exported
+
+
 @lru_cache
 def get_settings() -> Settings:
+    export_provider_keys()
     return Settings()
