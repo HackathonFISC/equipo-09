@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+
+html {
+	scrollbar-gutter: stable;
+}
+
+/* Del template de Fumadocs: el diálogo de búsqueda bloquea el scroll sin mover la página. */
+html > body[data-scroll-locked] {
+	/* biome-ignore lint/complexity/noImportantStyles: hay que ganarle al estilo en línea del bloqueo de scroll */
+	margin-right: 0px !important;
+	/* biome-ignore lint/complexity/noImportantStyles: ídem */
+	--removed-body-scroll-bar-size: 0px !important;
+}

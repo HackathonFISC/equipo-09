@@ -1,0 +1,71 @@
+---
+title: Inicio
+description: Qué es Puente, cómo está organizado el repo y quién es dueño de cada parte.
+---
+
+Puente es el sistema del **equipo 09** para el Reto 3 (Empleabilidad) de la Hackathon FISC 2026. Conecta a jóvenes de Panamá Oeste con ofertas de empleo y con cursos de formación. Los agentes (LangGraph) normalizan datos sucios, los solvers (OR-Tools) asignan bajo restricciones reales y un **orientador humano** aprueba las decisiones clave: bloqueo de ofertas, lista corta y alertas de sesgo.
+
+<Callout title="Regla de oro">
+  El LLM extrae, redacta y explica. El código calcula, asigna y decide restricciones. Cada
+  página de agentes de esta documentación separa las dos cosas.
+</Callout>
+
+Esta documentación es **interna**: describe el código de `main` tal como está. Para el producto (problema, actores, historias) lee los documentos de diseño; aquí no se copian, se enlazan.
+
+## Documentos de diseño
+
+| Documento | Contenido |
+|---|---|
+| [01 · PRD](https://github.com/HackathonFISC/equipo-09/blob/main/docs/01-prd.md) | Problema, actores, alcance, historias, métricas de éxito (§8) |
+| [02 · Requerimientos técnicos](https://github.com/HackathonFISC/equipo-09/blob/main/docs/02-requerimientos-tecnicos.md) | Arquitectura, agentes, HITL, guardrails, evals, fuentes de datos |
+| [03 · App flow](https://github.com/HackathonFISC/equipo-09/blob/main/docs/03-app-flow.md) | Diagrama de arquitectura, secuencias, pantallas |
+| [04 · Design brief](https://github.com/HackathonFISC/equipo-09/blob/main/docs/04-design-brief.md) | Principios, identidad visual, guion del demo |
+| [05 · Esquema del backend](https://github.com/HackathonFISC/equipo-09/blob/main/docs/05-esquema-backend.md) | Modelo de datos y API |
+| [06 · Plan de implementación](https://github.com/HackathonFISC/equipo-09/blob/main/docs/06-plan-implementacion.md) | Bloques de 24 h, responsables, checklist de entrega (§6) |
+
+## Mapa del repo
+
+Monorepo pnpm 11 + Turborepo:
+
+```txt
+apps/api            FastAPI + LangGraph + OR-Tools (Python ≥ 3.12, uv)
+  src/puente_api/
+    graph/          supervisor, nodos de agentes, HITL, checkpointer, runner
+    llm/            LLMClient (LiteLLM), prompts, Langfuse opcional
+    solvers/        matching CP-SAT, auditor contrafactual, ruta de formación MIP
+    guardrails/     inyección, PII y discriminación (reglas en código)
+    routers/        endpoints /api/v1/...
+    db/             modelos SQLAlchemy 2 y datos semilla (db/seed/)
+    tracing.py      registro agent_trace
+  scripts/          check_llm.py
+  tests/            unit/ y evals/ (results.md)
+apps/web            Next.js 16 + Tailwind 4 (puerto 3001)
+apps/docs           esta documentación (Fumadocs, puerto 3002)
+packages/ui         componentes shadcn compartidos
+packages/api-spec   contrato OpenAPI 3.1 (fuente de verdad) + vista Scalar
+packages/config     tsconfig base
+docs/               documentos de diseño 01–06
+```
+
+## Quién es dueño de qué
+
+Sale de `.claude/agents/*.md`. Si necesitas algo del área de otra persona, define la interfaz y avísale; no edites su paquete.
+
+| Persona | Área | Paquetes propios | No toca |
+|---|---|---|---|
+| José Vásquez (@devoncats) | Agentes y API | `apps/api/.../graph/`, `llm/`, `tracing.py`, `routers/` (salvo los de datos), `main.py`, `db/models.py`, `apps/docs/` | `solvers/`, `db/seed/`, `guardrails/`, `tests/evals/`, `apps/web/` |
+| Sebastian Olivera (@sebolive386) | Datos, solvers y evals | `apps/api/.../solvers/`, `db/seed/`, `guardrails/`, `apps/api/tests/` (unitarios de solvers y `tests/evals/`) | `graph/`, `llm/`, `apps/web/` |
+| Kenneth Zhong (@Xyryung) | Web y demo | `apps/web/`, `packages/ui/` | `apps/api/` |
+
+`packages/api-spec/openapi.yaml` es de todos, pero se cambia **primero** y con aviso (ver [Convenciones](/docs/convenciones)).
+
+Los puntos de contacto entre áreas son puertos explícitos: `graph/audit_port.py` (el grafo llama al auditor de Sebastian) y `graph/guardrail_port.py` (el grafo llama a los guardrails de Sebastian). Ambos tienen un STUB que lo dice en la traza si la implementación no se puede importar.
+
+## Por dónde empezar
+
+<Cards>
+  <Card title="Puesta en marcha local" href="/docs/puesta-en-marcha" />
+  <Card title="Arquitectura del grafo" href="/docs/arquitectura" />
+  <Card title="Agentes" href="/docs/agentes" />
+  <Card title="Antes de cada ensayo" href="/docs/runbooks/antes-del-ensayo" />
+</Cards>

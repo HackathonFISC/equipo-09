@@ -1,0 +1,123 @@
+---
+title: Puesta en marcha local
+description: .env, semillas, comprobación del LLM, pnpm dev y cómo reiniciar los datos del demo.
+---
+
+Requisitos: Node ≥ 22, pnpm 11, Python ≥ 3.12 y [uv](https://docs.astral.sh/uv/).
+
+## 1. Instalar
+
+```bash
+cp .env.example .env
+pnpm install
+cd apps/api && uv sync
+```
+
+<Callout type="warn" title="Windows: varlock se cae al salir">
+  Si `pnpm install` o `next dev` terminan con
+  `Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)`, es la telemetría de varlock al cerrar
+  el proceso (Node 24). Exporta `VARLOCK_TELEMETRY_DISABLED=true` (o `DO_NOT_TRACK=1`) en tu
+  terminal y repite. Detalle en [Solución de problemas](/docs/runbooks/solucion-de-problemas).
+</Callout>
+
+## 2. Configurar `.env`
+
+La API lee `.env` de la **raíz** del monorepo y luego `apps/api/.env` (`config.py`). La web lee su propia configuración de `apps/web/.env.local` (no del `.env` raíz).
+
+### LLM
+
+LiteLLM elige el proveedor por el **prefijo** del modelo: `proveedor/modelo`. Sin prefijo, la llamada falla con `NotFoundError` o `BadRequestError`.
+
+```bash title=".env (ejemplo con Gemini)"
+LLM_MODEL=gemini/gemini-2.5-flash
+LLM_MODEL_FAST=gemini/gemini-2.5-flash-lite
+LLM_API_KEY=tu-clave-de-gemini
+LLM_FALLBACK_MODEL=
+LLM_CACHE_DIR=.llm-cache
+```
+
+| Variable | Valor por defecto (`config.py`) | Qué hace |
+|---|---|---|
+| `LLM_MODEL` | `anthropic/claude-sonnet-5-5` | Modelo principal (alias `default`) |
+| `LLM_MODEL_FAST` | `anthropic/claude-haiku-5-5` | Alias `fast`; también es el respaldo automático |
+| `LLM_FALLBACK_MODEL` | vacío | Respaldo explícito. Vacío = usa `LLM_MODEL_FAST` (o `LLM_MODEL` si el principal ya era el rápido) |
+| `LLM_API_KEY` | vacío | Clave del proveedor de `LLM_MODEL`. Solo se envía a modelos del **mismo** proveedor; un respaldo de otro proveedor usa su variable estándar (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`…) |
+| `LLM_MAX_RETRIES` | `2` | Reintentos por modelo |
+| `LLM_TIMEOUT_S` | `60` (`.env.example`: `25`) | Tiempo máximo por llamada |
+| `LLM_BUDGET_S` | `45` | Presupuesto de tiempo por petición HTTP |
+| `LLM_BACKOFF_S` | `0.5` | Espera base entre reintentos transitorios |
+| `LLM_CIRCUIT_FAILURES` | `4` | Fallas seguidas que abren el circuito |
+| `LLM_CACHE_DIR` | vacío (apagada) | Carpeta de caché de respuestas válidas |
+
+Con `LLM_CACHE_DIR=.llm-cache` la ruta es relativa al directorio desde el que corre la API (`apps/api` con `pnpm dev`), es decir `apps/api/.llm-cache/`, que ya está en `.gitignore`. La misma entrada se repite sin red: útil para ensayos y evals. Detalle en [LLM client](/docs/llm-client).
+
+<Callout type="info">
+  Los valores por defecto de `.env.example` usan Anthropic. Cualquier proveedor de LiteLLM sirve;
+  fija uno desde el ensayo 1 hasta la grabación.
+</Callout>
+
+### Resto de variables
+
+| Variable | Valor | Notas |
+|---|---|---|
+| `DATABASE_URL` | `sqlite:///./puente.db` | Relativa a `apps/api`. Los checkpoints del grafo van a `puente-checkpoints.sqlite` junto a la BD |
+| `CORS_ORIGINS` | `["http://localhost:3000","http://localhost:3001"]` | Añade aquí cualquier puerto nuevo de la web |
+| `LANGFUSE_PUBLIC_KEY` / `LANGFUSE_SECRET_KEY` | vacías | Langfuse se activa solo con **ambas** y `uv sync --extra langfuse`. Por defecto no envía el contenido (`LANGFUSE_LOG_CONTENT=false`) |
+| `NEXT_PUBLIC_API_URL` | `http://localhost:8000` | Para la web, en `apps/web/.env.local` |
+| `NEXT_PUBLIC_API_MOCKS` | `auto` | `auto` muestra datos de ejemplo si la API no responde. Para el demo usa `nunca` en `apps/web/.env.local` |
+
+Nunca subas claves reales: `.env` está en `.gitignore`.
+
+## 3. Cargar las semillas
+
+Sin este paso la API arranca con la base vacía.
+
+```bash
+cd apps/api
+uv run python -m puente_api.db.seed          # idempotente: «Seeds ya cargados» si ya existen
+uv run python -m puente_api.db.seed --reset  # borra las tablas semilla y recarga
+```
+
+Crea las tablas si faltan (`init_db`) e inserta 50 corregimientos, la matriz de traslado 50 × 50, 150 habilidades ESCO-lite, 15 empresas, 25 ofertas, 4 centros con 12 cursos y 40 jóvenes. Fuentes y qué es sintético: [`db/seed/README.md`](https://github.com/HackathonFISC/equipo-09/blob/main/apps/api/src/puente_api/db/seed/README.md).
+
+## 4. Comprobar el LLM
+
+```bash
+cd apps/api
+uv run python scripts/check_llm.py
+```
+
+Hace una llamada real con el mismo `LLMClient` que los agentes e imprime el modelo, la latencia y si hubo que usar el valor por defecto. Sale con código 1 si el LLM no respondió. Si falla, los agentes **siguen funcionando** con plantillas, y la traza lo dice.
+
+## 5. Levantar
+
+```bash
+pnpm dev          # turbo: web :3001 · api :8000 (Scalar en http://localhost:8000/docs)
+pnpm dev:api      # solo la API
+pnpm dev:web      # solo la web
+pnpm api:docs     # contrato OpenAPI en Scalar :4010
+pnpm docs:dev     # esta documentación en :3002 (no la levanta pnpm dev)
+```
+
+`pnpm dev` corre el script `dev` de cada app; `apps/docs` no tiene script `dev` (el suyo se llama `docs:dev`) para no cargar la máquina durante el demo.
+
+<Callout type="warn">
+  La configuración de la API se cachea por proceso (`get_settings` usa `lru_cache`). Si editas
+  `.env`, **reinicia la API**: `check_llm.py` puede pasar mientras la API sigue con la clave vieja.
+</Callout>
+
+## 6. Reiniciar los datos del demo
+
+Cada corrida de matching crea revisiones nuevas, así que reinicia antes de cada ensayo:
+
+```bash
+# detén pnpm dev (Ctrl+C) y luego:
+cd apps/api
+rm -f puente.db puente.db-* puente-checkpoints.sqlite*
+uv run python -m puente_api.db.seed
+cd ../.. && pnpm dev
+```
+
+En PowerShell: `Remove-Item puente.db, puente.db-*, puente-checkpoints.sqlite* -ErrorAction SilentlyContinue`.
+
+Conserva `apps/api/.llm-cache/` entre ensayos si usas `LLM_CACHE_DIR`: las entradas idénticas se repiten sin red.

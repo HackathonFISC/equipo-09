@@ -1,0 +1,37 @@
+---
+title: Postulación
+description: CV y carta adaptados por candidato, verificados contra el perfil, y la lista corta para el orientador.
+---
+
+**Fuente:** [`graph/nodes/postulacion.py`](https://github.com/HackathonFISC/equipo-09/blob/main/apps/api/src/puente_api/graph/nodes/postulacion.py) · **Corre tras:** `auditor`
+
+## Entradas
+
+Los `match_result` de la corrida (`run_id`) en estado `propuesto`, ordenados por puntaje y limitados a 40 (`MAX_CANDIDATES`), junto con el perfil de cada joven (habilidades, nivel, evidencia) y los requisitos de cada oferta.
+
+## Herramientas
+
+- `verify_draft` y `foreign_skills`: el **verificador de habilidades**. Busca en el CV y la carta cualquier etiqueta o alias del catálogo que el perfil no tenga, y revisa que `skills_used` esté en el perfil.
+- `fallback_draft`: plantilla determinista armada solo con el perfil.
+
+## Qué hace el LLM y qué hace el código
+
+| LLM (`ApplicationDraft`) | Código |
+|---|---|
+| Redacta `tailored_cv`, `cover_letter`, `explanation` (verbaliza el desglose del solver) y `skills_used` | Elige quién entra a la lista corta: los emparejamientos del solver, por puntaje |
+| — | Rechaza el borrador si menciona habilidades ausentes del perfil y usa la plantilla |
+| — | Arma la lista corta por oferta y crea la revisión |
+
+Nada se envía a la empresa hasta que el orientador apruebe la lista.
+
+## Salidas
+
+- Una `application` por candidato (`status="en_lista_corta"`), y la explicación del borrador sustituye a la del `match_result`.
+- Una `review_task` de tipo `lista_corta` con la propuesta `{action: "enviar_lista_corta", runId, postings: [{postingId, title, vacancies, candidates: [{rank, matchResultId, applicationId, youthId, displayName, score, explanation}]}]}`. Su id se añade a `review_ids` y el grafo se pausa en `orientador`.
+- `result.shortlists`: número de listas cortas.
+
+## Fallbacks
+
+- Si el LLM no da una salida válida, o el borrador no pasa el verificador, se usa `fallback_draft`: CV con habilidades y evidencias del propio perfil y una carta genérica. La traza lista «plantilla segura en N: …» con el motivo por candidato.
+- Sin candidatos: no se crea revisión y el grafo termina (`shortlists: 0`).
+- Postulación llama al LLM **una vez por candidato**. Si el matching tarda, baja `LLM_BUDGET_S` y activa `LLM_CACHE_DIR` (ver [Solución de problemas](/docs/runbooks/solucion-de-problemas)).

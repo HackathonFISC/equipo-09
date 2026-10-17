@@ -1,0 +1,49 @@
+---
+title: Antes de cada ensayo
+description: Los cinco minutos que se repiten antes de cada ensayo y de cada toma del video.
+---
+
+Hazlo **antes de cada ensayo** y de cada toma. Cada corrida de matching crea revisiones nuevas, y la lista corta mostraría candidatos de corridas viejas.
+
+## 1. El LLM responde
+
+```bash
+cd apps/api
+uv run python scripts/check_llm.py
+```
+
+Debe terminar con «El LLM respondió en N s.». Si dice «El LLM NO respondió», ve a [Solución de problemas](/docs/runbooks/solucion-de-problemas). El demo funciona sin LLM, pero con plantillas, y la traza lo dice.
+
+Fija el modelo desde el ensayo 1 hasta la grabación. No lo cambies entre tomas.
+
+## 2. Reiniciar los datos
+
+```bash
+# detén pnpm dev (Ctrl+C)
+cd apps/api
+rm -f puente.db puente.db-* puente-checkpoints.sqlite*
+uv run python -m puente_api.db.seed
+cd ../.. && pnpm dev
+```
+
+En Docker Compose (rama de H6): `docker compose down -v && docker compose up`. Esto también borra la caché del LLM.
+
+## 3. Configuración de la web
+
+`apps/web/.env.local` con `NEXT_PUBLIC_API_MOCKS=nunca`. Así, si la API falla, se ve el error y no «Datos de ejemplo».
+
+## 4. Caché del LLM
+
+Con `LLM_CACHE_DIR=.llm-cache` en `.env`, **no borres** `apps/api/.llm-cache/` entre ensayos. Escribe las mismas entradas que en el ensayo anterior y se repetirán sin red: el ensayo 2 y la grabación salen más rápidos y estables.
+
+## 5. Mirar durante el ensayo
+
+- Terminal de la API: líneas `LLM <modelo> falló (intento N)` o «se usa el valor por defecto».
+- `/traza/[threadId]` en la web: cada paso dice qué herramienta usó, qué decidió y si cayó a la plantilla.
+- Anota cada problema en el registro del ensayo: un problema por fila, con el segmento del guion donde ocurrió.
+
+<Callout type="info">
+  La guía de H6 añade `scripts/smoke_demo.py --strict-llm` (rama `feat/api-h6-docker`), que
+  recorre el guion por la API en segundos. Cuando esté en `main`, córrelo después de
+  `check_llm.py` y **antes** de reiniciar los datos, porque crea datos nuevos.
+</Callout>

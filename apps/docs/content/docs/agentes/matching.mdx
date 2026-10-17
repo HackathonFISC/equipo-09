@@ -1,0 +1,30 @@
+---
+title: Matching
+description: Ejecuta el solver CP-SAT y guarda match_run y match_result con una explicación determinista.
+---
+
+**Fuente:** [`graph/nodes/matching.py`](https://github.com/HackathonFISC/equipo-09/blob/main/apps/api/src/puente_api/graph/nodes/matching.py) · **Evento:** `match.requested` · **Endpoint:** `POST /match-runs`
+
+## Entradas
+
+`payload`: `youth_ids` y `posting_ids` opcionales (vacío = todos los jóvenes y las ofertas **publicadas**), `time_limit_seconds` (por defecto 5 s) y `triggered_by`.
+
+## Herramientas
+
+- `load_matching_input` (`solvers/matching_adapter.py`): BD → `YouthIn`, `PostingIn` y la matriz de traslado. `YouthIn` no tiene nombre ni género.
+- `solve_matching` con `MatchingParams.relaxed(...)` (`solvers/matching.py`). Ver [Solvers](/docs/solvers-guardrails#matching-cp-sat).
+
+## Qué hace el LLM y qué hace el código
+
+**No hay LLM.** El código asigna. La explicación inicial de cada `match_result` es la plantilla `describe_match`, que solo repite el desglose del solver («Cobertura de habilidades 80%, traslado 60%… Le faltan: …»). Postulación la verbaliza después con el LLM.
+
+## Salidas
+
+- `match_run` con los parámetros del solver (`run_params`) y `graph_thread_id`.
+- `match_result[]` con `score_breakdown` y la explicación.
+- Estado: `run_id`, `youth_ids`, `posting_ids` exactos de la entrada y `matching_result` serializado, que reutilizan Auditor y Postulación.
+- La traza resume pares elegibles, jóvenes sin asignar, cupos vacíos y las restricciones del preset relajado.
+
+## Fallbacks
+
+El solver nunca devuelve INFEASIBLE por falta de opciones: usa holguras penalizadas (`sin_asignar`, `cupos_vacios`). Si se agota el límite de tiempo, el estado es `TIMEOUT` o `FEASIBLE` con la mejor solución hallada. Un tamaño fuera de límites (`max_youths=200`, `max_postings=100`) lanza `ValueError`, y el endpoint responde 422.

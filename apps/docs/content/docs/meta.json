@@ -1,0 +1,15 @@
+{
+	"title": "Puente",
+	"pages": [
+		"index",
+		"puesta-en-marcha",
+		"arquitectura",
+		"agentes",
+		"llm-client",
+		"solvers-guardrails",
+		"api",
+		"evals",
+		"runbooks",
+		"convenciones"
+	]
+}

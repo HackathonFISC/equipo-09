@@ -1,0 +1,64 @@
+---
+title: Convenciones del equipo
+description: Ramas, commits, PRs, contrato primero y comprobaciones antes de cada PR.
+---
+
+Base: [plan §5](https://github.com/HackathonFISC/equipo-09/blob/main/docs/06-plan-implementacion.md#5-convenciones-de-trabajo) y `.claude/agents/*.md`.
+
+## Ramas
+
+- Cortas, una por bloque y área: `feat/<area>-<tema>`. Ejemplos reales: `feat/api-h5-endurecer`, `feat/datos-h5-metricas`, `feat/web-h5-estados`; en H6, `feat/api-h6-docker`, `feat/datos-h6-docs`, `feat/web-h6-guion`.
+- Arreglos tras el congelamiento: `fix/<tema>` (ver [Entrega final](/docs/runbooks/entrega-final#reglas-tras-el-congelamiento-h7)).
+- Nunca trabajes directo en `main`.
+
+## Commits
+
+- Pequeños y frecuentes: los organizadores revisan la actividad durante las 24 h.
+- En español, en presente, diciendo qué cambia. El historial usa el prefijo del paso de la guía (`H5 J1: LLM con drop_params, …`) o el estilo convencional (`feat(api): …`, `fix(api): …`, `docs: …`, `chore: …`).
+- Nunca subas claves: `.env` está en `.gitignore`.
+
+## Pull requests
+
+- Un PR pequeño a `main` al final de cada bloque.
+- Antes de abrirlo:
+
+```bash
+pnpm check                  # Biome (lint + formato, con --write)
+pnpm check-types            # tsc en web, docs y paquetes
+pnpm --filter api test      # pytest (unit + evals)
+pnpm api:lint               # si tocaste openapi.yaml
+```
+
+- Si cambiaste lo que otra área consume (un endpoint, un puerto, un schema), dilo en la descripción y menciona al dueño.
+- En Windows, Git convierte los finales de línea (`core.autocrlf=true`). Los avisos de Biome que son **solo** por CRLF en la copia de trabajo no bloquean.
+
+## Contrato primero
+
+`packages/api-spec/openapi.yaml` manda:
+
+1. Cambia primero el contrato y valida con `pnpm api:lint`.
+2. Avisa: la web trabaja con mocks generados desde el contrato mientras la API implementa.
+3. Implementa en FastAPI con el mismo `operationId` y regenera el cliente web con `pnpm api:generate`.
+
+La web no escribe tipos de la API a mano; la API no inventa endpoints fuera del contrato (`test_contract_h5.py` lo comprueba).
+
+## Reglas de código
+
+- **El LLM extrae, redacta y explica; el código calcula, asigna y decide restricciones.**
+- Todo acceso al LLM pasa por `LLMClient`, con salida validada por Pydantic y un `default` seguro.
+- Cada nodo del grafo escribe un registro en `agent_trace`.
+- Los solvers son deterministas, con límite de tiempo y holguras penalizadas; cada restricción tiene su test.
+- Las reglas de discriminación e inyección viven en código, no en el prompt.
+- Los datos sintéticos se marcan `is_synthetic` y se documenta la fuente de cada dato real.
+- Python ≥ 3.12 con uv (`uv add`, `uv run`), SQLAlchemy 2 y Ruff. Web: reutiliza `packages/ui` antes de crear componentes; accesibilidad AA.
+
+## Bitácora de IA
+
+Todo uso de IA se anota en la **Bitácora de IA** del README: qué se hizo, con qué herramienta y qué se modificó a mano.
+
+## Esta documentación
+
+- Vive en `apps/docs/content/docs/*.mdx`; el orden del menú está en los `meta.json`.
+- `pnpm docs:dev` (puerto 3002) y `pnpm docs:build`. No la levanta `pnpm dev`.
+- Escribe desde el código, no desde la memoria, y enlaza los documentos `docs/0X-*.md` en vez de copiarlos.
+- Los bloques de código con lenguaje `mermaid` se dibujan como diagramas.

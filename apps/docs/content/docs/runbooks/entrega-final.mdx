@@ -1,0 +1,52 @@
+---
+title: Entrega final y tag final-24h
+description: Checklist de entregables (plan §6), reglas de arreglos tras el congelamiento y cómo poner el tag final-24h.
+---
+
+La checklist oficial es la del [plan §6](https://github.com/HackathonFISC/equipo-09/blob/main/docs/06-plan-implementacion.md#6-checklist-de-entregables-hora-24). Revisa cada punto como lo haría el jurado, no de memoria.
+
+## Checklist
+
+- [ ] **Un clon limpio funciona.** `git clone` en una carpeta nueva, en una máquina que no sea la tuya, y sigue el README al pie de la letra, midiendo el tiempo. Es la revisión que más vale: atrapa un paso de semillas que falta, un archivo ausente o una clave que solo vive en una laptop.
+- [ ] **Actividad durante el periodo.** `git shortlog -sn --since="<inicio de la hackathon>"` lista a los tres.
+- [ ] **README** con problema, arquitectura, tecnologías, fuentes de datos, instalación, ejecución y credenciales del demo. La línea `Reto: 3` queda intacta.
+- [ ] **Diagrama de arquitectura** ([doc 03 §1](https://github.com/HackathonFISC/equipo-09/blob/main/docs/03-app-flow.md)) se ve en GitHub.
+- [ ] **Evals:** tabla en el README y `results.md` regenerado en el commit final (`uv run python -m tests.evals.report`, luego `git diff --exit-code tests/evals/results.md`). Ver [Evals](/docs/evals).
+- [ ] **Bitácora de IA** completa y **metodología** enlazada desde el README.
+- [ ] **Sin secretos.** `git log -p | grep -nE "sk-ant-|sk-proj-|sk-[A-Za-z0-9]{20,}"` no imprime nada. Si alguna clave llegó a commitearse, revócala en el proveedor ya: reescribir la historia a la hora 23 es más riesgoso que una clave revocada.
+- [ ] **Video** (≤ 3 min) enlazado en el README; el enlace abre en una ventana privada.
+
+## Reglas tras el congelamiento (H7)
+
+Un bug se arregla en H7 solo si apareció en un ensayo, rompe un segmento del guion y su arreglo toma menos de 30 minutos. Lo demás va a «Límites conocidos» en la metodología.
+
+Cada arreglo lleva:
+
+- una rama `fix/<tema>`,
+- un test o un paso de la prueba de humo que lo reproduzca primero,
+- la revisión de un compañero,
+- la prueba de humo en verde antes de fusionar.
+
+Después de la hora 23:30 no se fusiona nada salvo el tag.
+
+## Tag `final-24h`
+
+Lo pone una persona con permisos de push, con los otros dos mirando. Pon una alarma 30 minutos antes del cierre.
+
+```bash
+git checkout main && git pull
+cd apps/api && uv run pytest && cd ../..     # última revisión
+pnpm check-types
+git log --oneline -1                              # este es el commit que vas a etiquetar
+git tag -a final-24h -m "Entrega final · Hackathon FISC 2026 · Equipo 09"
+git push origin final-24h
+git ls-remote --tags origin | grep final-24h      # prueba que llegó a GitHub
+```
+
+<Callout type="warn" title="Trampas">
+  - `git push` a secas **no** sube tags.
+  - Etiqueta un commit que ya esté en `origin/main`, nunca uno solo local.
+  - Si hay que mover el tag **antes** del cierre: `git tag -d final-24h && git push origin
+    :refs/tags/final-24h` y vuelve a etiquetar. Después del cierre no se toca.
+  - Usa un tag anotado (`-a`): registra quién y cuándo, que es lo que debe llevar una entrega.
+</Callout>
