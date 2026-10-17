@@ -2,6 +2,7 @@
 
     START → supervisor ─┬─ posting.created ──→ mercado ──(oferta bloqueada)──┐
                         ├─ profile.cv / profile.interview → perfil → END     │
+                        ├─ training.requested → formacion → END             │
                         └─ match.requested → matching → auditor → postulacion┤
                                                                              ▼
                                               orientador (interrupt HITL) → END
@@ -21,6 +22,7 @@ from langgraph.graph.state import CompiledStateGraph
 
 from puente_api.graph.checkpoint import get_checkpointer
 from puente_api.graph.nodes.auditor import auditor_node
+from puente_api.graph.nodes.formacion import formacion_node
 from puente_api.graph.nodes.matching import matching_node
 from puente_api.graph.nodes.mercado import mercado_node
 from puente_api.graph.nodes.orientador import orientador_node
@@ -34,6 +36,7 @@ ROUTES: dict[str, Route] = {
     "profile.cv": "perfil",
     "profile.interview": "perfil",
     "match.requested": "matching",
+    "training.requested": "formacion",
 }
 
 
@@ -65,16 +68,25 @@ def build_graph(checkpointer: BaseCheckpointSaver | None = None) -> CompiledStat
     graph.add_node("supervisor", supervisor_node)
     graph.add_node("mercado", mercado_node)
     graph.add_node("perfil", perfil_node)
+    graph.add_node("formacion", formacion_node)
     graph.add_node("matching", matching_node)
     graph.add_node("auditor", auditor_node)
     graph.add_node("postulacion", postulacion_node)
     graph.add_node("orientador", orientador_node)
     graph.add_edge(START, "supervisor")
     graph.add_conditional_edges(
-        "supervisor", _next, {"mercado": "mercado", "perfil": "perfil", "matching": "matching"}
+        "supervisor",
+        _next,
+        {
+            "mercado": "mercado",
+            "perfil": "perfil",
+            "matching": "matching",
+            "formacion": "formacion",
+        },
     )
     graph.add_conditional_edges("mercado", _review_or_end, ["orientador", END])
     graph.add_edge("perfil", END)
+    graph.add_edge("formacion", END)
     graph.add_edge("matching", "auditor")
     graph.add_edge("auditor", "postulacion")
     graph.add_conditional_edges("postulacion", _review_or_end, ["orientador", END])

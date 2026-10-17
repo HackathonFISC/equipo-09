@@ -71,6 +71,7 @@ Qué partes se hicieron con IA, con qué herramienta y qué se modificó a mano.
 
 - **Web H1 (layout, selector de rol, cliente tipado):** Claude Code (agente `kenneth-web`) generó `apps/web` (rutas por rol, `/datos`, cliente `openapi-fetch` desde el contrato, mocks tipados) y los tokens de color de `packages/ui`. Pendiente de revisión manual de Kenneth.
 - **Agentes H3 (Postulación, HITL, /reviews, /match-runs):** Claude Code (agente `jose-agentes`) escribió los nodos matching, auditor (puerto), postulación y orientador con `interrupt`, el checkpointer y los endpoints, con tests. Pendiente de revisión manual de José.
+- **Agentes H4 (trazas, Langfuse, guardrails, ruta de formación):** Claude Code (agente `jose-agentes`) enriqueció `agent_trace` (herramienta, salida, tipo de fila, pausa HITL), añadió `GET /traces`, el callback opcional de Langfuse sobre LiteLLM, el puerto `graph/guardrail_port.py` y el agente de Formación con `GET/POST /youth/{id}/training-plan`, con tests. Pendiente de revisión manual de José.
 
 ---
 

@@ -1,6 +1,6 @@
 """Esquemas de respuesta: reflejan `components/schemas` de packages/api-spec/openapi.yaml."""
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any, Literal
 
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field, field_validator
@@ -176,6 +176,29 @@ AgentName = Literal[
     "auditor",
     "orientador",
 ]
+
+
+class CourseSession(ApiModel):
+    id: str | None = None
+    schedule: list[TimeSlot]
+    start_date: date
+    seats_total: int = Field(ge=1)
+    seats_taken: int | None = Field(default=None, ge=0)
+
+
+class TrainingPlanItem(ApiModel):
+    course_title: str
+    session: CourseSession
+    commute_min: int | None = None
+
+
+class TrainingPlan(ApiModel):
+    id: str
+    youth_id: str
+    items: list[TrainingPlanItem]
+    total_cost: float
+    unlocked_postings: int
+    explanation: str
 
 
 TraceStatus = Literal["en_curso", "esperando_revision", "completado", "error"]
