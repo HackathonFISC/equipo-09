@@ -13,6 +13,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from puente_api.db import models
+from puente_api.graph.guardrail_port import screen_input
 from puente_api.graph.state import PuenteState, deps
 from puente_api.graph.taxonomy import SkillIndex, evidence_in
 from puente_api.llm import LLMClient
@@ -236,7 +237,13 @@ def perfil_node(state: PuenteState, config: RunnableConfig) -> dict[str, Any]:
     with traced(session, thread_id, "perfil", llm) as trace:
         trace.tool = "ESCO-lite + evidencia literal"
         if state["event"] == "profile.cv":
-            result = _run_cv(session, llm, youth, payload["text"], trace)
+            text = screen_input(session, thread_id, "perfil", payload["text"], "CV")
+            result = _run_cv(session, llm, youth, text, trace)
         else:
-            result = _run_interview(session, llm, youth, payload.get("answer"), trace)
+            answer = payload.get("answer")
+            if answer is not None:
+                answer = screen_input(
+                    session, thread_id, "perfil", answer, "respuesta de entrevista"
+                )
+            result = _run_interview(session, llm, youth, answer, trace)
     return {"result": result}

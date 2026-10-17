@@ -11,6 +11,7 @@ from langchain_core.runnables import RunnableConfig
 from langgraph.types import Command
 from sqlalchemy.orm import Session
 
+from puente_api.graph.guardrail_port import GuardrailBlocked
 from puente_api.graph.state import Event
 from puente_api.graph.supervisor import ROUTES, get_graph
 from puente_api.llm import LLMClient
@@ -23,6 +24,20 @@ def _config(session: Session, llm: LLMClient, thread_id: str) -> RunnableConfig:
 
 def _fail(session: Session, thread_id: str, agent: str, summary: str, exc: Exception) -> None:
     session.rollback()
+    if isinstance(exc, GuardrailBlocked):
+        record_trace(
+            session,
+            thread_id,
+            exc.agent,
+            kind="guardrail",
+            tool="guardrails.screen_text",
+            input_summary=f"{exc.label}: texto de entrada",
+            decision=f"bloqueado: {exc.label}",
+            reason="; ".join(exc.reasons),
+            duration_ms=0,
+        )
+        session.commit()
+        return
     record_trace(
         session,
         thread_id,
