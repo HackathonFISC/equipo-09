@@ -340,6 +340,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/traces": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Hilos recientes con su estado
+         * @description Hilos del grafo ordenados del más reciente al más antiguo, para navegar a su línea de tiempo.
+         */
+        get: operations["listTraces"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/traces/{threadId}": {
         parameters: {
             query?: never;
@@ -655,13 +675,38 @@ export interface components {
             /** @enum {string} */
             agent: "supervisor" | "mercado" | "perfil" | "matching" | "formacion" | "postulacion" | "entrevista" | "auditor" | "orientador";
             step: number;
+            /**
+             * @description Tipo de fila para pintar la línea de tiempo: `paso` (nodo del grafo), `pausa_hitl` (el grafo
+             *     espera a una persona), `decision_humana` (decisión del orientador), `guardrail` (texto
+             *     bloqueado o saneado antes del LLM) y `error`.
+             * @default paso
+             * @enum {string}
+             */
+            kind: "paso" | "pausa_hitl" | "decision_humana" | "guardrail" | "error";
             inputSummary?: string;
+            outputSummary?: string;
+            /** @description Herramienta usada: solver, modelo LLM, reglas, HITL... */
+            tool?: string;
             decision: string;
             reason?: string;
             durationMs?: number;
             langfuseTraceId?: string;
             /** Format: date-time */
             createdAt: string;
+        };
+        /** @enum {string} */
+        TraceStatus: "en_curso" | "esperando_revision" | "completado" | "error";
+        TraceSummary: {
+            threadId: string;
+            status: components["schemas"]["TraceStatus"];
+            stepCount: number;
+            /** @description Agentes que participaron, en orden de aparición */
+            agents: string[];
+            lastDecision?: string;
+            /** Format: date-time */
+            startedAt: string;
+            /** Format: date-time */
+            lastActivityAt: string;
         };
     };
     responses: {
@@ -1185,6 +1230,29 @@ export interface operations {
             422: components["responses"]["ValidationError"];
         };
     };
+    listTraces: {
+        parameters: {
+            query?: {
+                limit?: number;
+                status?: components["schemas"]["TraceStatus"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TraceSummary"][];
+                };
+            };
+        };
+    };
     getTrace: {
         parameters: {
             query?: never;
@@ -1204,8 +1272,11 @@ export interface operations {
                 content: {
                     "application/json": {
                         threadId: string;
-                        /** @enum {string} */
-                        status: "en_curso" | "esperando_revision" | "completado" | "error";
+                        status: components["schemas"]["TraceStatus"];
+                        /** @description Suma de la duración de los pasos */
+                        totalDurationMs?: number;
+                        /** @description Revisiones humanas que mantienen el hilo en pausa */
+                        pendingReviewIds?: string[];
                         steps: components["schemas"]["AgentTrace"][];
                     };
                 };

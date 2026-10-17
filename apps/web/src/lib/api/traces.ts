@@ -10,6 +10,7 @@ import {
 	MOCK_MODE,
 	type Skill,
 	type Trace,
+	type TraceSummary,
 	type TrainingPlan,
 } from "./client";
 import { MockProblem } from "./mock-agents";
@@ -37,6 +38,14 @@ export function loadTrace(threadId: string): Promise<Result<Trace>> {
 			}
 			return t;
 		},
+	);
+}
+
+/** Corridas recientes del grafo, de la más nueva a la más antigua. */
+export function loadTraces(limit = 30): Promise<Result<TraceSummary[]>> {
+	return withMock(
+		(signal) => api.GET("/traces", { params: { query: { limit } }, signal }),
+		() => mock.listTraces(),
 	);
 }
 

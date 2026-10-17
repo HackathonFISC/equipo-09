@@ -154,6 +154,8 @@ function traceStep(
 	return {
 		agent,
 		step,
+		kind: agent === "orientador" ? "pausa_hitl" : "paso",
+		tool: agent === "orientador" ? "Pausa del grafo (interrupt)" : undefined,
 		decision,
 		reason,
 		inputSummary,
