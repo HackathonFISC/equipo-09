@@ -209,7 +209,7 @@ export function ReviewInbox() {
 
 			<DataSourceNote source={state.source} reason={state.reason} />
 
-			<div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+			<div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
 				<section aria-labelledby="lista-titulo" className="flex flex-col gap-2">
 					<h2 id="lista-titulo" className="font-medium text-sm">
 						{tab === "pendientes"

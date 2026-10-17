@@ -7,6 +7,7 @@
 import { attempt, MOCK_ALWAYS, type Result, runMock, withMock } from "./agents";
 import {
 	type AgentTrace,
+	type Application,
 	api,
 	type JobPosting,
 	type MatchResult,
@@ -15,6 +16,7 @@ import {
 	type ReviewTask,
 } from "./client";
 import * as mock from "./mock-reviews";
+import { MOCK_THREAD_RUN } from "./mock-traces";
 import { mockPostings } from "./mocks";
 
 export type { Result };
@@ -86,6 +88,72 @@ export async function loadReviewTrace(
 		8000,
 	);
 	return r.kind === "ok" ? r.data.steps : null;
+}
+
+/**
+ * Postulaciones enviadas (lista corta aprobada) de cada oferta, con sus franjas
+ * de entrevista: es la acción real que deja el orientador al aprobar.
+ */
+export async function loadShortlists(
+	postingIds: string[],
+): Promise<Result<{ postingId: string; applications: Application[] }[]>> {
+	const results = await Promise.all(
+		postingIds.map(async (postingId) => ({
+			postingId,
+			r: await attempt(
+				(signal) =>
+					api.GET("/postings/{postingId}/shortlist", {
+						params: { path: { postingId } },
+						signal,
+					}),
+				10_000,
+			),
+		})),
+	);
+	const failed = results.find(({ r }) => r.kind !== "ok");
+	if (failed && failed.r.kind === "error") {
+		return { ok: false, message: failed.r.message, problem: failed.r.problem };
+	}
+	if (failed && failed.r.kind === "unavailable") {
+		return { ok: false, message: failed.r.reason };
+	}
+	return {
+		ok: true,
+		source: "api",
+		data: results.map(({ postingId, r }) => ({
+			postingId,
+			applications: r.kind === "ok" ? r.data : [],
+		})),
+	};
+}
+
+/**
+ * Ejecuta Matching → Auditor → Postulación (POST /match-runs). La API corre el
+ * grafo dentro de la petición y responde cuando se detiene en la revisión del
+ * orientador; Postulación llama al LLM por candidato, por eso el plazo es largo.
+ */
+export async function runMatching(): Promise<
+	Result<{ threadId: string; runId?: string }>
+> {
+	const fromMock = (reason: string) =>
+		runMock(async () => ({ threadId: MOCK_THREAD_RUN }), reason);
+	if (MOCK_MODE === "siempre") return fromMock(MOCK_ALWAYS);
+	const r = await attempt(
+		(signal) => api.POST("/match-runs", { body: {}, signal }),
+		90_000,
+	);
+	if (r.kind === "ok") {
+		return {
+			ok: true,
+			data: { threadId: r.data.threadId, runId: r.data.resourceId },
+			source: "api",
+		};
+	}
+	if (r.kind === "error") {
+		return { ok: false, message: r.message, problem: r.problem };
+	}
+	if (MOCK_MODE === "nunca") return { ok: false, message: r.reason };
+	return fromMock(r.reason);
 }
 
 // ---------------------------------------------------------------------------

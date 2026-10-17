@@ -41,7 +41,7 @@ export const roles: Role[] = [
 		icon: Building2,
 		promise: "Publica una oferta y recibe candidatos revisados",
 		detail:
-			"Pega el texto o sube una foto. Mercado la estructura y el Auditor revisa que no discrimine.",
+			"Pega el texto de la oferta. Mercado la estructura y detiene los requisitos que discriminan.",
 		context: "Laptop",
 	},
 	{

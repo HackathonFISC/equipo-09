@@ -113,7 +113,7 @@ export default async function EmpresaPage({
 							<p className="max-w-sm text-muted-foreground text-sm">
 								{status
 									? "Prueba con otro estado o revisa todas tus ofertas."
-									: "Pega el texto de una oferta o sube una foto y el agente de Mercado la estructura por ti."}
+									: "Pega el texto de una oferta y el agente de Mercado la estructura por ti."}
 							</p>
 							{status ? (
 								<Link

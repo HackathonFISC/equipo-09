@@ -20,7 +20,7 @@ const steps = [
 	{
 		title: "Arma tu perfil",
 		detail:
-			"Sube tu CV o una foto. Si no tienes, respondes máximo 8 preguntas y encontramos tus habilidades.",
+			"Sube tu CV en PDF o pégalo como texto. Si no tienes, respondes máximo 5 preguntas y encontramos tus habilidades.",
 	},
 	{
 		title: "Mira tus oportunidades",

@@ -7,14 +7,14 @@ import { DataSourceNote, ErrorState } from "@/components/data-states";
 import { PageShell, RoleHeader } from "@/components/page-shell";
 import { loadCourses, loadSkills } from "@/lib/api/catalog";
 import type { Skill } from "@/lib/api/client";
-import { formatSchedule } from "@/lib/format";
+import { formatSchedule, skillGroupLabel } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Cursos" };
 
 function groupSkills(skills: Skill[]) {
 	const groups = new Map<string, Skill[]>();
 	for (const skill of skills) {
-		const key = skill.group ?? "Sin grupo";
+		const key = skillGroupLabel(skill.group);
 		groups.set(key, [...(groups.get(key) ?? []), skill]);
 	}
 	return [...groups.entries()].sort(([a], [b]) => a.localeCompare(b, "es"));

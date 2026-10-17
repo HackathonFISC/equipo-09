@@ -41,7 +41,7 @@ const GUARDRAIL_COPY: Record<NonNullable<Problem["guardrail"]>, string> = {
 	fuera_de_alcance: "La entrada no corresponde a lo que este paso procesa.",
 	dato_absurdo: "Algún dato no es plausible. Revísalo e inténtalo de nuevo.",
 	archivo_invalido:
-		"El archivo no es válido. Usa PDF, JPG o PNG de hasta 5 MB.",
+		"El archivo no es válido. Usa PDF o texto (.txt) de hasta 5 MB.",
 	pii: "La entrada contiene datos personales sensibles que no debemos guardar.",
 };
 

@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-
+import { MatchRunButton } from "@/components/match-run-button";
 import { PageShell, RoleHeader } from "@/components/page-shell";
 import { ReviewInbox } from "@/components/review-inbox";
 
@@ -17,7 +17,8 @@ const kinds: { label: string; icon: LucideIcon; trigger: string }[] = [
 	{
 		label: "Bloqueo de oferta",
 		icon: Ban,
-		trigger: "El Auditor encontró un requisito discriminatorio en una oferta.",
+		trigger:
+			"Mercado (reglas y LLM) encontró un requisito discriminatorio en una oferta.",
 	},
 	{
 		label: "Lista corta",
@@ -40,13 +41,16 @@ export default function OrientadorPage() {
 				title="Bandeja de revisión"
 				description="Las decisiones con impacto se detienen aquí hasta que usted las apruebe, edite o rechace. Cada una trae la propuesta del agente, su explicación y la traza."
 				actions={
-					<Link
-						href="/traza"
-						className="inline-flex min-h-11 items-center gap-2 border px-4 font-medium text-sm outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/50"
-					>
-						<Waypoints className="size-4" aria-hidden="true" />
-						Corridas recientes
-					</Link>
+					<>
+						<MatchRunButton />
+						<Link
+							href="/traza"
+							className="inline-flex min-h-11 items-center gap-2 border px-4 font-medium text-sm outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/50"
+						>
+							<Waypoints className="size-4" aria-hidden="true" />
+							Corridas recientes
+						</Link>
+					</>
 				}
 			/>
 

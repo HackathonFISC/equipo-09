@@ -21,6 +21,7 @@ import { useEffect, useId, useState } from "react";
 import { toast } from "sonner";
 
 import { AgentBadge, TraceSteps } from "@/components/agents";
+import { ScheduledInterviews } from "@/components/scheduled-interviews";
 import { TraceLink } from "@/components/trace-link";
 import type {
 	AgentTrace,
@@ -587,13 +588,39 @@ function FindingsPlain({ findings }: { findings: string[] }) {
 // Decisión
 // ---------------------------------------------------------------------------
 
+/*
+ * Mismo significado que la API (apps/api/.../graph/nodes/orientador.py): «aprobar»
+ * acepta la PROPUESTA del agente. En un bloqueo, la propuesta es bloquear; en una
+ * alerta de sesgo, es retener la lista y volver a correr el matching.
+ */
 const DECISION_HELP: Record<ReviewTask["kind"], string> = {
 	bloqueo_oferta:
-		"Aprobar publica el texto sugerido. Editar publica su versión corregida. Rechazar mantiene la oferta bloqueada.",
+		"Confirmar bloqueo deja la oferta sin publicar. Corregir y publicar guarda su versión (título, salario, vacantes) y la publica. Liberar oferta descarta el bloqueo y la publica tal cual; explique el motivo en el comentario.",
 	lista_corta:
-		"Aprobar envía la lista a la empresa tal cual. Editar permite reordenar o quitar candidatos con motivo. Rechazar la devuelve a Postulación.",
+		"Enviar lista la manda a la empresa y agenda las entrevistas sin choques. Reordenar o quitar le deja cambiar el orden o sacar candidatos con motivo antes de enviarla. Descartar lista no envía a nadie; explique el motivo.",
 	alerta_sesgo:
-		"Aprobar libera la corrida a pesar de la alerta. Rechazar la descarta para que Matching la repita.",
+		"Aceptar hallazgo retiene la lista corta de esta corrida: hay que volver a ejecutar el matching. Descartar alerta deja seguir la lista; la justificación es obligatoria.",
+};
+
+const DECISION_LABEL: Record<
+	ReviewTask["kind"],
+	Record<ReviewDecision["decision"], string>
+> = {
+	bloqueo_oferta: {
+		aprobar: "Confirmar bloqueo",
+		editar: "Corregir y publicar",
+		rechazar: "Liberar oferta",
+	},
+	lista_corta: {
+		aprobar: "Enviar lista",
+		editar: "Reordenar o quitar",
+		rechazar: "Descartar lista",
+	},
+	alerta_sesgo: {
+		aprobar: "Aceptar hallazgo",
+		editar: "Editar",
+		rechazar: "Descartar alerta",
+	},
 };
 
 function DecisionForm({
@@ -632,7 +659,9 @@ function DecisionForm({
 			return;
 		}
 		if (decision === "rechazar" && !comment.trim()) {
-			setError("Para rechazar, explique el motivo en el comentario.");
+			setError(
+				`Para «${DECISION_LABEL[task.kind].rechazar}», explique el motivo en el comentario.`,
+			);
 			document.getElementById(ids.comment)?.focus();
 			return;
 		}
@@ -726,7 +755,7 @@ function DecisionForm({
 					<Label htmlFor={ids.comment} className="font-medium text-sm">
 						Comentario{" "}
 						<span className="font-normal text-muted-foreground">
-							(obligatorio para rechazar)
+							(obligatorio para «{DECISION_LABEL[task.kind].rechazar}»)
 						</span>
 					</Label>
 					<Textarea
@@ -762,7 +791,9 @@ function DecisionForm({
 					onClick={() => submit("aprobar")}
 				>
 					<CircleCheck aria-hidden="true" />
-					{pending === "aprobar" ? "Registrando…" : "Aprobar"}
+					{pending === "aprobar"
+						? "Registrando…"
+						: DECISION_LABEL[task.kind].aprobar}
 				</Button>
 				{canEdit ? (
 					editing ? (
@@ -798,7 +829,7 @@ function DecisionForm({
 							onClick={() => setEditing(true)}
 						>
 							<Pencil aria-hidden="true" />
-							Editar
+							{DECISION_LABEL[task.kind].editar}
 						</Button>
 					)
 				) : null}
@@ -811,7 +842,9 @@ function DecisionForm({
 					onClick={() => submit("rechazar")}
 				>
 					<Ban aria-hidden="true" />
-					{pending === "rechazar" ? "Registrando…" : "Rechazar"}
+					{pending === "rechazar"
+						? "Registrando…"
+						: DECISION_LABEL[task.kind].rechazar}
 				</Button>
 			</div>
 		</form>
@@ -960,6 +993,11 @@ export function ReviewDetail({
 						<p className="text-pretty text-muted-foreground">
 							«{task.comment}»
 						</p>
+					) : null}
+					{task.kind === "lista_corta" &&
+					task.status !== "rechazada" &&
+					!simulated ? (
+						<ScheduledInterviews task={task} />
 					) : null}
 				</section>
 			)}

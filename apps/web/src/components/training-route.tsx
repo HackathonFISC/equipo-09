@@ -37,6 +37,8 @@ type Item = TrainingPlan["items"][number];
 type State =
 	| { status: "loading" }
 	| { status: "error"; message: string }
+	/** El joven aún no tiene ruta: se ofrece calcularla (no es un error). */
+	| { status: "empty" }
 	| {
 			status: "ready";
 			view: PlanView;
@@ -236,6 +238,11 @@ export function TrainingRoute({ youthId }: { youthId: string }) {
 			return;
 		}
 		rememberYouth(youthId);
+		if (plan.data === null) {
+			setState({ status: "empty" });
+			return;
+		}
+		const view = plan.data;
 		const gaps = new Set<string>();
 		if (opps.ok) {
 			for (const o of opps.data) {
@@ -247,7 +254,7 @@ export function TrainingRoute({ youthId }: { youthId: string }) {
 		if (plan.source === "mock") setThreadId(MOCK_PLAN_THREAD);
 		setState({
 			status: "ready",
-			view: plan.data,
+			view,
 			source: plan.source,
 			reason: plan.reason,
 			gaps,
@@ -288,6 +295,41 @@ export function TrainingRoute({ youthId }: { youthId: string }) {
 						</div>
 					</div>
 				))}
+			</div>
+		);
+	}
+
+	if (state.status === "empty") {
+		return (
+			<div className="flex flex-col items-center gap-3 border border-dashed px-6 py-12 text-center">
+				<GraduationCap
+					className="size-8 text-muted-foreground"
+					aria-hidden="true"
+				/>
+				<p className="font-medium">Todavía no tienes una ruta de formación</p>
+				<p className="max-w-sm text-muted-foreground text-sm">
+					Formación compara tus habilidades con las ofertas a tu alcance y elige
+					los cursos que más vacantes te abren, sin chocar con tu horario ni tu
+					presupuesto.
+				</p>
+				{computing ? (
+					<AgentWorking agent="formacion">
+						Formación está armando tu ruta…
+					</AgentWorking>
+				) : (
+					<Button
+						size="lg"
+						className="h-11"
+						onClick={() => void compute(false)}
+					>
+						Calcular mi ruta
+					</Button>
+				)}
+				{computeError ? (
+					<p role="alert" className="text-danger-fg text-sm">
+						{computeError}
+					</p>
+				) : null}
 			</div>
 		);
 	}

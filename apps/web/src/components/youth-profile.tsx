@@ -34,7 +34,7 @@ import type { InterviewStep, ProfileSkill, Youth } from "@/lib/api/client";
 import { plural } from "@/lib/format";
 import { rememberYouth } from "@/lib/youth-session";
 
-const MAX_QUESTIONS = 8;
+const MAX_QUESTIONS = 5;
 const MAX_FILE = 5 * 1024 * 1024;
 
 type Loaded = Extract<Result<Youth>, { ok: true }> & { status: "ready" };
