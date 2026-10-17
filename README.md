@@ -54,12 +54,55 @@ LLM agnóstico vía LiteLLM. Fuentes: ofertas de portales públicos, cursos INAD
 Requisitos: Node ≥ 22, pnpm 11, Python ≥ 3.12, uv.
 
 ```bash
-cp .env.example .env
+cp .env.example .env              # completa LLM_MODEL y LLM_API_KEY (ver abajo)
 pnpm install
-cd apps/api && uv sync && cd ../..
+cd apps/api && uv sync
+uv run python -m puente_api.db.seed      # carga los datos semilla (idempotente)
+uv run python scripts/check_llm.py       # comprueba que el LLM responde
+cd ../..
 pnpm dev          # web :3001 · api :8000 (Scalar en /docs)
 pnpm api:docs     # contrato OpenAPI en Scalar :4010
 ```
+
+Sin el paso de semillas la API arranca con la base vacía.
+
+### Credenciales del demo (`.env`)
+
+- `LLM_MODEL` / `LLM_MODEL_FAST`: el prefijo elige el proveedor (`anthropic/…`, `openai/…`, `gemini/…`, `ollama/…`).
+- `LLM_API_KEY`: clave del proveedor de `LLM_MODEL` (solo se usa con ese proveedor). Para un respaldo (`LLM_FALLBACK_MODEL`) de otro proveedor, define en el mismo `.env` su variable estándar (`GEMINI_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`…): la API la exporta al entorno para LiteLLM sin pisar una ya definida.
+- Si el LLM no responde, los agentes siguen con valores por defecto seguros y la traza lo dice («se usó el valor por defecto seguro»). `scripts/check_llm.py` lo detecta antes del demo.
+- `LLM_CACHE_DIR=.llm-cache` guarda las respuestas válidas: la misma entrada se repite sin red (útil para ensayos y evals).
+- La web lee su configuración de `apps/web/.env.local`, no del `.env` de la raíz. Para el demo crea ese archivo con `NEXT_PUBLIC_API_MOCKS=nunca`: así un fallo de la API se ve como error y no como datos de ejemplo (`auto`, el valor por defecto, los muestra si la API no responde).
+
+Nunca subas claves reales: `.env` está en `.gitignore`.
+
+### Docker Compose
+
+```bash
+cp .env.example .env              # con tu clave de LLM
+docker compose up --build         # postgres + api (siembra al arrancar) + web
+```
+
+Web en http://localhost:3001 y API en http://localhost:8000/docs. La API usa PostgreSQL y guarda en el volumen `apidata` los checkpoints del grafo (las pausas del orientador sobreviven a un reinicio) y la caché del LLM. Para empezar de cero: `docker compose down -v`.
+
+### Prueba de humo del demo
+
+Con la API corriendo (local o Docker):
+
+```bash
+cd apps/api && uv run python scripts/smoke_demo.py            # añade --strict-llm para exigir LLM
+```
+
+Recorre el guion por la API (oferta bloqueada, entrevista, inyección bloqueada, matching con pausa, aprobación con entrevistas agendadas, ruta de formación, trazas) e imprime OK/FALLA por paso. Crea datos nuevos: úsala sobre una base de ensayo.
+
+### Solución de problemas
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| La traza dice «se usó el valor por defecto seguro» | LLM sin clave, modelo mal escrito o proveedor caído | `uv run python scripts/check_llm.py` y revisa `.env` |
+| La web muestra «Datos de ejemplo» | La API no responde en `NEXT_PUBLIC_API_URL` | Levanta la API, o pon `NEXT_PUBLIC_API_MOCKS=nunca` en `apps/web/.env.local` para ver el error real |
+| Listados vacíos | Faltan las semillas | `uv run python -m puente_api.db.seed` |
+| Reiniciar los datos del demo | — | Detén la API, borra `apps/api/puente.db*` y `apps/api/puente-checkpoints.sqlite*`, vuelve a sembrar |
 
 ## Evals
 
