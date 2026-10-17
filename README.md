@@ -70,6 +70,7 @@ Al menos 15 casos de prueba, métrica y resultados.
 Qué partes se hicieron con IA, con qué herramienta y qué se modificó a mano.
 
 - **Web H1 (layout, selector de rol, cliente tipado):** Claude Code (agente `kenneth-web`) generó `apps/web` (rutas por rol, `/datos`, cliente `openapi-fetch` desde el contrato, mocks tipados) y los tokens de color de `packages/ui`. Pendiente de revisión manual de Kenneth.
+- **Agentes H3 (Postulación, HITL, /reviews, /match-runs):** Claude Code (agente `jose-agentes`) escribió los nodos matching, auditor (puerto), postulación y orientador con `interrupt`, el checkpointer y los endpoints, con tests. Pendiente de revisión manual de José.
 
 ---
 
